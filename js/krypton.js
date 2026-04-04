@@ -847,6 +847,9 @@ function initKrypton() {
                 var h = bar.offsetHeight;
                 rightCol.style.top = (h + 20) + 'px';
                 rightCol.style.maxHeight = 'calc(100vh - ' + (h + 40) + 'px)';
+                // 也设置内部高度，防止由于长列表撑开容器导致底部统计不可见
+                var panels = rightCol.querySelectorAll('.cart-panel, .activity-panel');
+                panels.forEach(function(p){ p.style.maxHeight = 'calc(50% - 10px)'; });
             }
         }
         window.addEventListener('resize', syncStickyOffset);
@@ -887,23 +890,23 @@ function initKrypton() {
         // 右栏布局
         '.plan-layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;}',
         '@media(max-width:860px){.plan-layout{grid-template-columns:1fr;}}',
-        '.right-column{display:flex;flex-direction:column;gap:12px;position:sticky;top:200px;max-height:calc(100vh - 220px);overflow-y:auto;}',
-        '.activity-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;}',
+        '.right-column{display:flex;flex-direction:column;gap:15px;position:sticky;top:200px;max-height:calc(100vh - 220px);overflow:hidden;}',
+        '.activity-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:180px;}',
         '.activity-panel-header{padding:10px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
         '.activity-panel-title{font-size:14px;font-weight:700;color:#5d4037;letter-spacing:1px;}',
-        '.activity-panel-body{padding:10px;display:flex;flex-direction:column;gap:8px;}',
+        '.activity-panel-body{padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;padding-bottom:30px;}',
         // 购物清单
-        '.cart-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;}',
+        '.cart-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:220px;}',
         '.cart-panel-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
         '.cart-title{font-size:13px;font-weight:700;color:#5d4037;}',
-        '.cart-item-list{max-height:180px;overflow-y:auto;padding:8px 12px;}',
+        '.cart-item-list{flex:1;overflow-y:auto;padding:8px 12px;padding-bottom:30px;}',
         '.cart-empty-msg{font-size:12px;color:#aaa;text-align:center;padding:12px 0;}',
         '.cart-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f0e8;}',
         '.cart-row-name{color:#5d4037;font-weight:600;flex:1;}',
         '.cart-row-info{color:#8d7365;margin-left:8px;}',
-        '.cart-stats{padding:8px 12px;border-top:1px solid #f0ebe0;}',
+        '.cart-stats{padding:8px 12px 15px 12px;border-top:1px solid #f0ebe0;}',
         '.stat-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#7a6f66;}',
-        '.stat-total{font-weight:700;color:#3e3a33;font-size:13px;border-top:1px solid #e8e2d4;padding-top:5px;margin-top:3px;}',
+        '.stat-total{font-weight:700;color:#3e3a33;font-size:13px;border-top:1px solid #e8e2d4;padding-top:5px;margin-top:3px;padding-bottom:4px;}',
         // 原版卡片
         '.ziyong-card{background:#fdfaf3;border:1.5px solid #d5c8b2;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
         '.ziyong-card:hover:not(.disabled){border-color:#c09d62;box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-2px);}',
@@ -935,7 +938,7 @@ function initKrypton() {
         '.cat-btn{padding:2px 8px;border:1px solid #d5c8b2;border-radius:4px;background:#fff;color:#7a6f66;font-size:11px;cursor:pointer;transition:all .15s;}',
         '.cat-btn:hover{background:#f2e6ce;border-color:#c09d62;}',
         // 活动进度
-        '.activity-item{background:#fdfaf3;border:1px solid #e8e2d4;border-radius:8px;padding:10px 12px;}',
+        '.activity-item{background:#fdfaf3;border:1px solid #e8e2d4;border-radius:8px;padding:10px 12px;margin-bottom:15px;}',
         '.activity-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;}',
         '.activity-info{flex:1;min-width:0;}',
         '.activity-title{font-size:12px;font-weight:700;color:#5d4037;cursor:pointer;user-select:none;line-height:1.4;display:block;}',
