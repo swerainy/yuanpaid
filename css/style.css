@@ -1018,7 +1018,7 @@
 
         @keyframes tabFadeIn {
             from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; transform: none; }
         }
 
         /* 推荐方案区域 */
@@ -2000,9 +2000,9 @@
 /* 统一收据面板及侧栏包裹 */
 .right-column {
     position: sticky;
-    top: 15px;
+    top: 220px;
     align-self: flex-start;
-    max-height: calc(100vh - 30px);
+    max-height: calc(100vh - 240px);
     display: flex;
     flex-direction: column;
     gap: 15px;

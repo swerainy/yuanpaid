@@ -839,6 +839,18 @@ function initKrypton() {
             saveState();
         }
 
+        // ── 动态同步粘性偏移量 ──
+        function syncStickyOffset() {
+            var bar = document.querySelector('.ziyong-control-bar');
+            var rightCol = document.querySelector('.right-column');
+            if (bar && rightCol) {
+                var h = bar.offsetHeight;
+                rightCol.style.top = (h + 20) + 'px';
+                rightCol.style.maxHeight = 'calc(100vh - ' + (h + 40) + 'px)';
+            }
+        }
+        window.addEventListener('resize', syncStickyOffset);
+        
         // ── 初始化启动 ──
         loadState();
         initMappingPanel();
@@ -846,8 +858,15 @@ function initKrypton() {
         setTimeout(function(){
             loadEvents();
             if (!eventsData.length&&window.calendar) setTimeout(loadEvents,1000);
+            syncStickyOffset();
             console.log('[Krypton] v3 完成');
         },800);
+        // 也可额外在 updateAll() 中同步（防止内容折行引起高度变化）
+        var oldUpdateAll = updateAll;
+        updateAll = function() {
+            oldUpdateAll();
+            setTimeout(syncStickyOffset, 50);
+        };
 
     } catch(err) { console.error('[Krypton] 严重错误:',err); }
 }
@@ -868,7 +887,7 @@ function initKrypton() {
         // 右栏布局
         '.plan-layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;}',
         '@media(max-width:860px){.plan-layout{grid-template-columns:1fr;}}',
-        '.right-column{display:flex;flex-direction:column;gap:12px;position:sticky;top:56px;max-height:calc(100vh - 70px);overflow-y:auto;}',
+        '.right-column{display:flex;flex-direction:column;gap:12px;position:sticky;top:200px;max-height:calc(100vh - 220px);overflow-y:auto;}',
         '.activity-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;}',
         '.activity-panel-header{padding:10px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
         '.activity-panel-title{font-size:14px;font-weight:700;color:#5d4037;letter-spacing:1px;}',
