@@ -1,0 +1,2534 @@
+        /* ================= 基础设置 ================= */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4eee1;
+            font-family: 'Noto Serif SC', 'Noto Serif', Georgia, serif;
+            color: #3e3a33;
+            scroll-behavior: smooth;
+        }
+
+        /* ================= 顶部与导航 ================= */
+        .header-wrapper {
+            max-width: 900px;
+            margin: 20px auto 0 auto;
+            padding: 10px 20px 0 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #5d4037;
+            padding-bottom: 4px;
+        }
+
+        #toggleBtn {
+            cursor: pointer;
+            font-size: 13px;
+            color: #5d4037;
+            background-color: #e8e2d4;
+            border: 1px solid #d5c8b2;
+            border-radius: 4px;
+            padding: 3px 8px;
+            transition: all 0.3s ease;
+        }
+
+        #toggleBtn:hover {
+            background-color: #d7ccc8;
+            transform: translateY(-1px);
+        }
+
+        .version-select {
+            padding: 4px 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #c7bca7;
+            background-color: #fdfaf3;
+            cursor: pointer;
+            color: #3e3a33;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .version-select:hover {
+            border-color: #5d4037;
+        }
+
+        /* ================= 筛选器 ================= */
+        .filters-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .filter-actions-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+            gap: 10px;
+        }
+
+        .export-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            background-color: #fdfaf3;
+            color: #8d7365;
+            border: 1px solid #d5c8b2;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            user-select: none;
+            font-weight: 600;
+        }
+
+        .filter-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-tag.active {
+            background-color: #5d4037;
+            color: #fdfaf3;
+            border-color: #5d4037;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            border-left: 2px solid #d5c8b2;
+            padding-left: 10px;
+        }
+
+        .filter-action-btn {
+            background-color: #e8e2d4;
+            border: 1px solid #c7bca7;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #5d4037;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-action-btn:hover {
+            background-color: #d7ccc8;
+            transform: translateY(-2px);
+        }
+
+        /* ================= 日历容器与动画 ================= */
+        #calendar-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-width: 900px;
+            margin: 15px auto 40px auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            border-radius: 8px;
+            background-color: #fdfaf3;
+            border: 1px solid #e8e2d4;
+        }
+
+        #calendar-wrapper.collapsed {
+            grid-template-rows: 0fr;
+            margin-bottom: 0;
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        #calendar-container {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        #calendar-inner {
+            padding: 20px 25px;
+        }
+
+        /* 视图切换的丝滑动画定义 */
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateX(-10px);
+                max-width: 0px;
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateX(0);
+                max-width: 200px;
+            }
+        }
+
+        @keyframes popOut {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateX(0);
+                max-width: 200px;
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translateX(-10px);
+                max-width: 0px;
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+        }
+
+        .anim-pop-in {
+            display: inline-block;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: bottom;
+            margin-left: 2px;
+        }
+
+        .anim-pop-out {
+            display: inline-block;
+            animation: popOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 1) forwards;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: bottom;
+            margin-left: 2px;
+        }
+
+        .fc-view-harness {
+            animation: fadeSlide 0.4s ease-out;
+        }
+
+        /* 年视图性能优化 */
+        .fc-multimonth .fc-daygrid-day {
+            contain: layout style;
+        }
+
+        /* ================= FullCalendar 核心优化 ================= */
+        .fc {
+            border: none;
+            --fc-border-color: #e6dfcf;
+        }
+
+        .fc-theme-standard td,
+        .fc-theme-standard th {
+            border-color: #e6dfcf;
+        }
+
+        /* 标题强制居中 */
+        .fc .fc-toolbar {
+            position: relative;
+            justify-content: space-between !important;
+        }
+
+        .fc .fc-toolbar-chunk:nth-child(2) {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #5d4037;
+        }
+
+        /* 按钮样式与动画 */
+        .fc .fc-button-primary {
+            background-color: transparent;
+            border: 1px solid #d5c8b2;
+            color: #5d4037;
+            font-weight: 600;
+            padding: 4px 10px;
+            font-size: 13px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        }
+
+        .fc .fc-button-primary:hover {
+            background-color: #eee5d3;
+            transform: scale(1.05);
+        }
+
+        .fc .fc-button-primary:not(:disabled):active,
+        .fc .fc-button-primary:not(:disabled).fc-button-active {
+            background-color: #d7ccc8;
+            color: #4e342e;
+            box-shadow: none;
+        }
+
+        /* ================= 年视图优化 ================= */
+        /* 在年视图中隐藏事件条，并精简单元格样式 */
+        .fc-multimonth-daygrid .fc-event {
+            display: none !important;
+        }
+
+        .fc-multimonth-daygrid .fc-daygrid-day-frame {
+            padding: 1px !important;
+            min-height: auto !important;
+        }
+
+        /* 强制年视图为3列4行 */
+        .fc-multimonth {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 8px !important;
+        }
+
+        .fc-multimonth-month {
+            break-inside: avoid;
+            border: 1px solid #d5c8b2 !important;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(93, 64, 55, 0.05);
+        }
+
+        /* 年视图底色统一 */
+        .fc-multimonth,
+        .fc-multimonth-month,
+        .fc-multimonth-daygrid,
+        .fc-multimonth .fc-scrollgrid,
+        .fc-multimonth .fc-daygrid-day,
+        .fc-multimonth .fc-col-header-cell,
+        .fc-multimonth-title,
+        .fc-multimonth-header {
+            background-color: #fdfaf3 !important;
+        }
+
+        /* 年视图星期头与日期格线对齐（去掉daygrid额外内边距） */
+        .fc-multimonth-month .fc-multimonth-daygrid {
+            padding: 0 !important;
+        }
+
+        /* 隐藏年视图中的"另外N个"链接及事件内容 */
+        .fc-multimonth .fc-daygrid-more-link,
+        .fc-multimonth .fc-daygrid-day-bottom,
+        .fc-multimonth .fc-daygrid-day-events {
+            display: none !important;
+        }
+
+        /* 年视图网格修复 - 使用实际单元格边框取代不稳定的伪元素方案 */
+        .fc-multimonth-daygrid {
+            position: relative !important;
+        }
+
+        /* 彻底移除伪元素背景方案以免干扰 */
+        .fc-multimonth-daygrid::before {
+            display: none !important;
+        }
+
+        /* 为年视图内部表格设置合并边框，确保线框连贯且不加粗 */
+        .fc-multimonth-daygrid-table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+            box-sizing: border-box;
+            border: none !important;
+            /* 外边框已由 month 容器提供 */
+        }
+
+        .fc-multimonth-daygrid-table td,
+        .fc-multimonth-daygrid-table th {
+            visibility: visible !important;
+            border: none !important;
+            box-sizing: border-box;
+        }
+
+        /* 补丁单元格样式：移除内部边框 */
+        .dummy-cell {
+            background-color: #fdfaf3 !important;
+            border: none !important;
+        }
+
+        /* 年视图中移除当天日期的粉色底层背景（保留数字红点） */
+        .fc-multimonth .fc-day-today::after {
+            display: none !important;
+        }
+
+        /* 隐藏年视图中非当前月的日期（仅隐藏内容，保留格子边框） */
+        .fc-multimonth .fc-day-other .fc-daygrid-day-top {
+            visibility: hidden !important;
+        }
+
+        /* 年视图中禁用非当前月的淡化层以免影响边框 */
+        .fc-multimonth .fc-day-other::after {
+            display: none !important;
+        }
+
+        /* 年视图星期头简化 */
+        .fc-multimonth .fc-col-header-cell {
+            font-size: 11px !important;
+            padding: 2px 0 !important;
+            color: #8d7365;
+        }
+
+        /* 年视图日期居中显示 */
+        .fc-multimonth .fc-daygrid-day-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1px 0 !important;
+            min-height: 36px;
+        }
+
+        .fc-multimonth .fc-daygrid-day-number {
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            text-align: center;
+            display: block;
+            line-height: 1.2;
+            order: 0;
+        }
+
+        /* 年视图节气在日期下方 */
+        .fc-multimonth .simplified-lunar-marker {
+            font-size: 8px !important;
+            display: block !important;
+            text-align: center;
+            margin: 1px 0 0 0 !important;
+            line-height: 1;
+            order: 1;
+            color: #a08060;
+        }
+
+        /* 年视图日期可点击 */
+        .fc-multimonth .fc-daygrid-day {
+            cursor: pointer;
+        }
+
+        .fc-multimonth .fc-daygrid-day:hover {
+            background-color: #fdfaf3 !important;
+        }
+
+        /* 月份标题交互动画 */
+        .fc-multimonth-title {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .fc-multimonth-title:hover {
+            color: #d85c50;
+            background-color: #fbf5ee;
+            transform: scale(1.08);
+        }
+
+        /* 当前月高亮色 */
+        .fc-multimonth-month:has(.fc-day-today) .fc-multimonth-title {
+            color: #d85c50;
+            font-weight: 800;
+            border-bottom: 2px solid #d85c50;
+        }
+
+        /* ================= 单元格与日期 ================= */
+        .fc-daygrid-day-frame {
+            padding: 4px !important;
+        }
+
+        .fc-daygrid-day-top {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 4px 6px !important;
+            position: relative;
+            z-index: 5;
+        }
+
+        .fc-daygrid-day-number {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            color: #4a453d;
+            padding: 0 !important;
+            margin-bottom: 0 !important;
+            /* 清除底部间距 */
+        }
+
+        .simplified-lunar-marker {
+            font-size: 11px;
+            color: #8d7365;
+            display: inline-block;
+            margin-top: 0 !important;
+            margin-right: 4px !important;
+            margin-left: 0 !important;
+            font-weight: 500;
+            line-height: 1;
+        }
+
+        /* 修复“今天”正圆红点 */
+        .fc-day-today {
+            background-color: transparent !important;
+            position: relative;
+        }
+
+        .fc-day-today::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(216, 92, 80, 0.07);
+            mix-blend-mode: multiply;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .fc-day-today .fc-daygrid-day-number {
+            background-color: #d85c50 !important;
+            color: white !important;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            min-height: 28px;
+            line-height: 28px;
+            border-radius: 50% !important;
+            margin: 0;
+            padding: 0 !important;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            text-align: center;
+            aspect-ratio: 1 / 1;
+            flex-shrink: 0;
+        }
+
+        .fc-day-today .simplified-lunar-marker {
+            color: #d85c50;
+        }
+
+        /* ================= 非当前月淡化 ================= */
+        td.fc-day-other {
+            position: relative;
+        }
+
+        td.fc-day-other::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(253, 250, 243, 0.78);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* 月视图排期色块整体下移 */
+        .fc-daygrid-day-events {
+            margin-top: 4px !important;
+        }
+
+        /* ================= 活动条与交互 ================= */
+        .fc-event {
+            border: none !important;
+            border-radius: 3px;
+            margin: 1px 0 !important;
+            height: 20px;
+            line-height: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 4px !important;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        }
+
+        .fc-event-title {
+            color: #3e3a33 !important;
+            font-weight: 600 !important;
+            font-size: 12px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        /* 鼠标悬浮色块动画：微移提亮、加深阴影 */
+        .fc-event:hover {
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            filter: brightness(0.95);
+        }
+
+        /* ================= 自定义Tooltip ================= */
+        .custom-tooltip {
+            position: fixed;
+            background-color: #3e3a33;
+            color: #fdfaf3;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            white-space: nowrap;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .custom-tooltip.show {
+            opacity: 1;
+        }
+
+        /* ================= 周视图修复 ================= */
+        .fc-timegrid .fc-col-header-cell {
+            padding: 6px 4px !important;
+        }
+
+        .fc-timegrid .fc-col-header-cell-cushion {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: visible !important;
+        }
+
+        .fc-timegrid .fc-daygrid-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        .fc-timegrid .fc-daygrid-day-top {
+            position: relative;
+            z-index: 5;
+        }
+
+        .fc-timegrid .fc-daygrid-day-number {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* 周视图时间标签居中显示 */
+        .fc-timegrid-slot-label {
+            font-size: 12px !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+            vertical-align: middle !important;
+        }
+
+        .fc-timegrid-slot-label-cushion {
+            white-space: nowrap !important;
+            overflow: visible !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 100%;
+        }
+
+        /* 周视图今天红点显示在头部日期列 */
+        .fc-timegrid .fc-col-header-cell.fc-day-today {
+            background-color: transparent !important;
+        }
+
+        .fc-timegrid .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
+            color: #d85c50;
+            font-weight: 800;
+        }
+
+        /* 周视图全天区域的今天标记不显示红点，只在头部显示 */
+        .fc-timegrid .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+            background-color: transparent !important;
+            color: #d85c50 !important;
+            width: auto;
+            height: auto;
+            min-width: unset;
+            min-height: unset;
+            border-radius: 0 !important;
+            aspect-ratio: unset;
+        }
+
+        .fc-timegrid-event-harness {
+            z-index: 1 !important;
+        }
+
+        .fc-daygrid-event-harness {
+            z-index: 1 !important;
+        }
+
+        /* --- 月/周视图框线置顶 --- */
+        /* 仅在月视图和周视图启用置顶边框，排除年视图 */
+        .fc-daygrid-month-view .fc-daygrid-day,
+        .fc-timegrid-week-view .fc-daygrid-day {
+            position: relative;
+            border-color: transparent !important;
+            /* 隐藏原边框以防颜色重复叠加 */
+        }
+
+        .fc-daygrid-month-view .fc-daygrid-day::after,
+        .fc-timegrid-week-view .fc-daygrid-day::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-right: 1px solid var(--fc-border-color);
+            border-bottom: 1px solid var(--fc-border-color);
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        /* 隐藏年视图内框线 */
+        .fc-multimonth-daygrid-table td {
+            border: none !important;
+            visibility: visible !important;
+        }
+
+        /* 周视图时间槽线置顶 */
+        .fc-timegrid-slot {
+            position: relative;
+            z-index: 8 !important;
+        }
+
+        /* 确保背景层不覆盖边框 */
+        .fc-timegrid-bg-harness {
+            z-index: 0;
+        }
+
+        /* 保持时间标签在最前 */
+        .fc-timegrid-slot-label {
+            z-index: 9 !important;
+        }
+
+        /* ================= 悬浮回到顶部按钮 ================= */
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 100px;
+            height: 100px;
+            background-color: #5d4037;
+            color: #fdfaf3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(93, 64, 55, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1000;
+        }
+
+        #backToTop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #backToTop:hover {
+            background-color: #4e342e;
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(93, 64, 55, 0.6);
+        }
+
+        /* ================= 手机端适配 ================= */
+        @media (max-width: 768px) {
+            .header-wrapper {
+                padding: 10px 12px 0;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .header h1 {
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+
+            .filters-container {
+                gap: 6px;
+            }
+
+            .filters {
+                gap: 5px;
+            }
+
+            .filter-tag {
+                padding: 3px 8px;
+                font-size: 11px;
+            }
+
+            .filter-actions {
+                padding-left: 6px;
+            }
+
+            .filter-action-btn {
+                padding: 3px 8px;
+                font-size: 11px;
+            }
+
+            #calendar-wrapper {
+                margin: 10px 8px 30px 8px;
+                border-radius: 6px;
+            }
+
+            #calendar-inner {
+                padding: 10px 6px;
+            }
+
+            .fc .fc-toolbar {
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: center !important;
+            }
+
+            .fc .fc-toolbar-chunk:nth-child(2) {
+                position: static;
+                transform: none;
+            }
+
+            .fc .fc-toolbar-title {
+                font-size: 1.1em;
+            }
+
+            .fc .fc-button-primary {
+                padding: 3px 6px;
+                font-size: 11px;
+            }
+
+            .fc-daygrid-day-number {
+                font-size: 13px !important;
+            }
+
+            .simplified-lunar-marker {
+                font-size: 9px;
+            }
+
+            .fc-event-title {
+                font-size: 10px !important;
+            }
+
+            .fc-event {
+                height: 16px;
+                line-height: 16px;
+            }
+
+            .fc-daygrid-day-events {
+                margin-top: 2px !important;
+            }
+
+            #backToTop {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            /* 年视图手机端改为1列 */
+            .fc-multimonth {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+
+            .version-select {
+                padding: 3px 6px;
+                font-size: 12px;
+            }
+
+            #toggleBtn {
+                font-size: 11px;
+                padding: 2px 6px;
+            }
+
+            .fc-daygrid-day-top {
+                padding: 2px 4px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 14px;
+            }
+
+            .filter-tag {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+
+            .fc .fc-toolbar-title {
+                font-size: 1em;
+            }
+
+            .fc-event {
+                height: 14px;
+                line-height: 14px;
+            }
+
+            .fc-event-title {
+                font-size: 9px !important;
+            }
+
+            .fc-daygrid-day-number {
+                font-size: 12px !important;
+            }
+        }
+
+        /* ================= 新增：Excel 导入按钮样式 ================= */
+        .excel-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .excel-btn {
+            cursor: pointer;
+            font-size: 13px;
+            color: #ffffff;
+            background-color: #d85c50;
+            border: 1px solid #c1483d;
+            border-radius: 4px;
+            padding: 3px 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .excel-btn:hover {
+            background-color: #c1483d;
+            transform: translateY(-1px);
+        }
+
+        /* ================= 广陵资用案 (Modern Ancient Redesign) ================= */
+        .ziyong-wrapper.modern-ancient {
+            max-width: 900px;
+            margin: 30px auto 80px auto;
+            background-color: #fdfaf3;
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+            border: 1px solid #d5c8b2;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(93, 64, 55, 0.08);
+            position: relative;
+        }
+
+        .ziyong-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #5d4037;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ziyong-title-group {
+            width: 100%;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .ziyong-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 0 20px;
+        }
+
+        .ziyong-tab {
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 20px;
+            background: #e8e2d4;
+            color: #8d7365;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 1px solid #d5c8b2;
+        }
+
+        .ziyong-tab.active {
+            background: #5d4037;
+            color: #fdfaf3;
+            border-color: #5d4037;
+        }
+
+        .ziyong-actions-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Tab Content Transitions */
+        .tab-content {
+            display: none;
+            animation: tabFadeIn 0.4s ease-out forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 推荐方案区域 */
+        .recommendation-section {
+            background: rgba(216, 92, 80, 0.05);
+            border: 1px dashed #d85c50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .target-pts-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .recommend-btn {
+            background: #d85c50;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .recommend-btn:hover {
+            background: #c1483d;
+            box-shadow: 0 2px 8px rgba(216, 92, 80, 0.3);
+        }
+
+        .recommendation-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .recommend-card {
+            background: white;
+            border: 1px solid #e8e2d4;
+            border-radius: 6px;
+            padding: 12px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .recommend-card:hover {
+            border-color: #d85c50;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .recommend-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f4eee1;
+            padding-bottom: 5px;
+        }
+
+        .recommend-name {
+            font-weight: 800;
+            color: #5d4037;
+            font-size: 14px;
+        }
+
+        /* 账单表样式 */
+        .records-table-wrapper {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #d5c8b2;
+        }
+
+        .records-table td.simulated-row {
+            color: #a08060;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* 收起展开动画 */
+        .toggle-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .activity-content {
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+            overflow: hidden;
+        }
+
+        .activity-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .shop-summary-title {
+            font-size: 18px;
+            color: #5d4037;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8e2d4;
+            display: flex;
+            align-items: center;
+        }
+
+        .shop-summary-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background: #d85c50;
+            margin-right: 10px;
+        }
+
+        .ziyong-title-group h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #5d4037;
+            letter-spacing: 4px;
+            font-weight: 800;
+        }
+
+        .ziyong-subtitle {
+            font-size: 13px;
+            color: #a08060;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        .total-pts-overview {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .pts-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        .pts-box .label {
+            font-size: 12px;
+            color: #8d7365;
+        }
+
+        .pts-box .value {
+            font-size: 1.4em;
+            font-weight: 800;
+            font-family: 'Georgia', serif;
+        }
+
+        .pts-box.actual .value {
+            color: #d85c50;
+        }
+
+        .pts-box.simulated .value {
+            color: #5d4037;
+        }
+
+        .act-base-input {
+            text-align: center;
+            font-weight: bold;
+            color: #d85c50;
+            background: rgba(253, 250, 243, 0.5);
+            border: 1px solid rgba(216, 92, 80, 0.3);
+            border-radius: 4px;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .act-base-input::-webkit-outer-spin-button,
+        .act-base-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .ziyong-control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #fffdf9;
+            padding: 10px 15px;
+            border-radius: 6px;
+            position: sticky;
+            top: -1px;
+            z-index: 100;
+            border-bottom: 1px solid #e8e2d4;
+            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.05);
+        }
+
+        .ancient-input {
+            background: #fdfaf3;
+            border: 1px solid #d5c8b2;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: #5d4037;
+            font-family: inherit;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #a08060;
+            font-style: italic;
+        }
+
+        .activity-container {
+            margin-bottom: 30px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .activity-item {
+            background: #fffdf9;
+            border: 1px solid #e8e2d4;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .activity-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .activity-title {
+            font-weight: 700;
+            color: #5d4037;
+            font-size: 15px;
+        }
+
+        .activity-pts {
+            font-size: 13px;
+            color: #8d7365;
+        }
+
+        .actual-val {
+            color: #d85c50;
+            font-weight: bold;
+        }
+
+        .sim-val {
+            color: #5d4037;
+            font-weight: bold;
+        }
+
+        .activity-tier {
+            font-size: 11px;
+            color: #a08060;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar.actual {
+            background: #d85c50;
+            z-index: 2;
+        }
+
+        .progress-bar.simulated {
+            background: #5d4037;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .pack-category-section {
+            margin-top: 25px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e8e2d4;
+            padding-bottom: 8px;
+        }
+
+        .category-title {
+            font-size: 16px;
+            color: #5d4037;
+            border-left: 4px solid #d85c50;
+            padding-left: 10px;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cat-btn {
+            font-size: 11px;
+            padding: 2px 8px;
+            background-color: #fdfaf3;
+            border: 1px solid #d5c8b2;
+            border-radius: 4px;
+            color: #8d7365;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .cat-btn:hover {
+            background-color: #5d4037;
+            color: #fdfaf3;
+            border-color: #5d4037;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+
+        .ziyong-card {
+            background: #fffefb;
+            border: 1px solid #e0d5c1;
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            user-select: none;
+        }
+
+        .ziyong-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
+            border-color: #5d4037;
+        }
+
+        .ziyong-card:active {
+            transform: translateY(1px) scale(0.95);
+            background-color: #f7eedf !important;
+            box-shadow: inset 0 2px 8px rgba(93, 64, 55, 0.15);
+            transition: all 0.05s ease;
+        }
+
+        .ziyong-card.simulated {
+            background-color: rgba(216, 92, 80, 0.05);
+            border-color: #d85c50;
+            border-width: 1.5px;
+        }
+
+        .ziyong-card.actual {
+            background-color: #e8e2d4;
+            opacity: 0.95;
+            border-color: #d5c8b2;
+            pointer-events: none;
+        }
+
+
+        .ziyong-card.actual .card-check {
+            pointer-events: auto;
+            /* 允许点击勾选框撤回 */
+        }
+
+        .card-name {
+            font-weight: 700;
+            color: #5d4037;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .card-price {
+            font-size: 12px;
+            color: #8d7365;
+            margin-bottom: 2px;
+        }
+
+        .card-pts {
+            font-size: 12px;
+            color: #d85c50;
+            font-weight: 700;
+        }
+
+        .ziyong-card.disabled {
+            filter: grayscale(1);
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .ziyong-card.disabled .card-check {
+            display: none;
+        }
+
+        /* 礼包限购/已购数量置顶 */
+        .card-limit {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 10px;
+            padding: 2px 4px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 0 4px 0 4px;
+        }
+
+        /* 礼盒统计样式 (重构为卡片式) */
+        .yuanqi-container {
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .yuanqi-card {
+            background: #fffdf9;
+            border: 1px solid #e8e2d4;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            border-left: 4px solid #d85c50;
+        }
+
+        .activity-item {
+            background: #fffdf9;
+            border: 1px solid #e8e2d4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #a08060;
+        }
+        
+        .activity-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #5d4037;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .yuanqi-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #d85c50;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-icon {
+            margin-left: 8px;
+            font-size: 12px;
+            color: #8d7365;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .activity-content-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .activity-content-wrapper.collapsed {
+            grid-template-rows: 0fr;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .activity-content-inner {
+            min-height: 0;
+            padding-top: 10px;
+        }
+
+        .yuanqi-subtitle {
+            font-size: 12px;
+            color: #a08060;
+            margin-bottom: 12px;
+            opacity: 0.8;
+        }
+
+        .yuanqi-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #5d4037;
+            font-weight: 600;
+        }
+
+        .yuanqi-tier-info {
+            font-size: 11px;
+            color: #8d7365;
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .ziyong-footer-actions {
+            margin-top: 40px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .history-btn.mini {
+            font-size: 11px;
+            padding: 4px 10px;
+            background-color: #e8e2d4;
+            border: 1px solid #c7bca7;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #5d4037;
+        }
+
+        /* 右侧悬浮面板 (积分对照表) */
+        .floating-panels {
+            position: fixed;
+            right: 0;
+            top: 150px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-item {
+            position: relative;
+            background-color: #5d4037;
+            color: #fdfaf3;
+            border-radius: 8px 0 0 8px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 40px;
+            display: flex;
+            flex-direction: row;
+            box-shadow: -2px 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .panel-item:hover,
+        .panel-item.expanded {
+            width: 320px;
+        }
+
+        .panel-trigger {
+            writing-mode: vertical-rl;
+            padding: 15px 10px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-align: center;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background-color: #5d4037;
+        }
+
+        .panel-content {
+            flex-grow: 1;
+            background-color: #fdfaf3;
+            color: #3e3a33;
+            padding: 15px;
+            box-sizing: border-box;
+            border-left: 1px solid #d5c8b2;
+            overflow: visible;
+            /* max-height: 480px; 改用visible让下拉不被裁切 */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            min-width: 280px;
+        }
+
+        .panel-item:hover .panel-content,
+        .panel-item.expanded .panel-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ancient-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .ancient-table th {
+            background-color: #e8e2d4;
+            color: #5d4037;
+            padding: 8px;
+            text-align: center;
+            border-bottom: 2px solid #d5c8b2;
+        }
+
+        .ancient-table td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #e8e2d4;
+        }
+
+        /* Custom Select */
+        .custom-select {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            font-weight: 700;
+            color: #5d4037;
+            user-select: none;
+        }
+
+        .select-selected {
+            padding-right: 16px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235d4037"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right center;
+            background-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .select-selected.open {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235d4037"><path d="M7 14l5-5 5 5z"/></svg>');
+            color: #d85c50;
+        }
+
+        .select-items {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background-color: #fdfaf3;
+            border: 1px solid #d5c8b2;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.15);
+            z-index: 100;
+            min-width: 80px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .custom-select.open .select-items {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(8px);
+        }
+
+        .select-items div {
+            padding: 10px 15px;
+            color: #5d4037;
+            font-weight: normal;
+            white-space: nowrap;
+            border-bottom: 1px solid #e8e2d4;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .select-items div:last-child {
+            border-bottom: none;
+        }
+
+        .select-items div:hover {
+            background-color: #e8e2d4;
+            color: #d85c50;
+        }
+
+        .select-items div.active {
+            background-color: #f5eedf;
+            font-weight: 600;
+            color: #d85c50;
+        }
+
+        /* Stagger table anim */
+        @keyframes slideFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-rows tr {
+            animation: slideFadeIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            opacity: 0;
+        }
+
+        .fade-in-rows tr:nth-child(1) {
+            animation-delay: 0.00s;
+        }
+
+        .fade-in-rows tr:nth-child(2) {
+            animation-delay: 0.02s;
+        }
+
+        .fade-in-rows tr:nth-child(3) {
+            animation-delay: 0.04s;
+        }
+
+        .fade-in-rows tr:nth-child(4) {
+            animation-delay: 0.06s;
+        }
+
+        .fade-in-rows tr:nth-child(5) {
+            animation-delay: 0.08s;
+        }
+
+        .fade-in-rows tr:nth-child(6) {
+            animation-delay: 0.10s;
+        }
+
+        .fade-in-rows tr:nth-child(7) {
+            animation-delay: 0.12s;
+        }
+
+        .fade-in-rows tr:nth-child(8) {
+            animation-delay: 0.14s;
+        }
+
+        .fade-in-rows tr:nth-child(9) {
+            animation-delay: 0.16s;
+        }
+
+        .fade-in-rows tr:nth-child(10) {
+            animation-delay: 0.18s;
+        }
+
+        .fade-in-rows tr:nth-child(11) {
+            animation-delay: 0.20s;
+        }
+
+        .fade-in-rows tr:nth-child(12) {
+            animation-delay: 0.22s;
+        }
+
+        .fade-in-rows tr:nth-child(13) {
+            animation-delay: 0.24s;
+        }
+
+        .fade-in-rows tr:nth-child(14) {
+            animation-delay: 0.26s;
+        }
+
+        .fade-in-rows tr:nth-child(15) {
+            animation-delay: 0.28s;
+        }
+
+        .fade-in-rows tr:nth-child(16) {
+            animation-delay: 0.30s;
+        }
+
+        .fade-in-rows tr:nth-child(n+17) {
+            animation-delay: 0.32s;
+        }
+
+        .ziyong-card.limit-reached {
+            background-color: #f0f0f0 !important;
+            border-color: #d85c50 !important;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .card-limit {
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .card-eff {
+            font-size: 11px;
+            color: #d85c50;
+            margin-top: 2px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .ziyong-wrapper.modern-ancient {
+                margin: 15px 8px 40px 8px;
+                padding: 15px;
+            }
+
+            .floating-panels {
+                display: none;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+        }
+/* ========== 新增：左右分栏布局 ========== */
+.plan-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+.pack-panel {
+    min-width: 0;
+}
+
+/* 分类筛选栏 */
+.pack-filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background: rgba(232, 226, 212, 0.3);
+    border-radius: 8px;
+    border: 1px solid #e8e2d4;
+}
+
+.pack-cat-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pack-cat-btn {
+    padding: 3px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    background: #fdfaf3;
+    color: #8d7365;
+    border: 1px solid #d5c8b2;
+    transition: all 0.25s ease;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.pack-cat-btn:hover {
+    border-color: #5d4037;
+    color: #5d4037;
+}
+
+.pack-cat-btn.active {
+    background: #5d4037;
+    color: #fdfaf3;
+    border-color: #5d4037;
+}
+
+.pack-draw-filter {
+    display: flex;
+    gap: 6px;
+}
+
+.draw-filter-btn {
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    cursor: pointer;
+    background: #fdfaf3;
+    color: #8d7365;
+    border: 1px solid #d5c8b2;
+    transition: all 0.25s ease;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.draw-filter-btn.active {
+    background: #d85c50;
+    color: #fff;
+    border-color: #d85c50;
+}
+
+/* 统一收据面板及侧栏包裹 */
+.right-column {
+    position: sticky;
+    top: 15px;
+    align-self: flex-start;
+}
+
+.receipt-panel {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #eaddcf;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.04);
+}
+
+.receipt-header {
+    background: #3e3a33;
+    color: #fdfaf3;
+    padding: 16px;
+    text-align: center;
+    position: relative;
+}
+
+.receipt-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.receipt-header p {
+    margin: 4px 0 0;
+    font-size: 10px;
+    color: #c09d62;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.receipt-clear-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    color: #c09d62;
+    border: 1px solid rgba(192, 157, 98, 0.4);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.receipt-clear-btn:hover {
+    background: rgba(192, 157, 98, 0.1);
+    color: #fff;
+    border-color: #c09d62;
+}
+
+.activity-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.activity-panel-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #3e3a33;
+    display: flex;
+    align-items: center;
+}
+
+.receipt-body {
+    padding: 20px;
+    background: #fffdf8;
+}
+
+.receipt-divider {
+    border-top: 2px dashed #eaddcf;
+    margin: 20px 0;
+}
+
+.cart-item-list {
+    min-height: 50px;
+    margin-bottom: 20px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.cart-empty {
+    text-align: center;
+    color: #a08060;
+    padding: 20px 0;
+    font-size: 13px;
+}
+
+.cart-empty span {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.4;
+}
+
+.cart-empty p {
+    margin: 3px 0;
+    font-weight: 600;
+}
+
+.cart-empty .sub {
+    font-size: 11px;
+    color: #c0a880;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid #f2ede4;
+    font-size: 12px;
+}
+
+.cart-item-name {
+    font-weight: 600;
+    color: #3e3a33;
+    flex: 1;
+    min-width: 0;
+    margin-right: 8px;
+}
+
+.cart-item-sub {
+    font-size: 10px;
+    color: #a08060;
+    margin-top: 1px;
+}
+
+.cart-item-price {
+    font-weight: 700;
+    color: #3e3a33;
+    white-space: nowrap;
+}
+
+/* 统计区 */
+.cart-stats {
+    font-size: 12px;
+    color: #8d7365;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.stat-val-box {
+    background: #f8f6f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #eaddcf;
+    color: #3e3a33;
+    font-weight: 600;
+}
+
+.stat-val-box.highlight {
+    background: #fcf5e5;
+    color: #c09d62;
+    border-color: #f2e6ce;
+}
+
+.stat-row.stat-total {
+    border-top: 1px solid #eaddcf;
+    padding-top: 15px;
+    margin-top: 12px;
+    font-weight: 700;
+    color: #3e3a33;
+    font-size: 14px;
+    align-items: flex-end;
+}
+
+.stat-row.stat-total #statTotalPrice {
+    font-size: 24px;
+    font-weight: 800;
+    color: #b83b3b;
+    line-height: 1;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.price-big {
+    font-size: 20px;
+    font-weight: 800;
+    color: #b83b3b;
+}
+
+/* 购物车操作按钮 */
+.cart-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.cart-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+    border: 1px solid transparent;
+}
+
+.cart-btn.primary {
+    background: #3e3a33;
+    color: #fdfaf3;
+}
+
+.cart-btn.primary:hover {
+    background: #5d4037;
+}
+
+.cart-btn.secondary {
+    background: #f8f6f0;
+    color: #3e3a33;
+    border-color: #d5c8b2;
+}
+
+.cart-btn.secondary:hover {
+    background: #e8e2d4;
+}
+
+.cart-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* 汇率输入 */
+.rate-input-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5d4037;
+    font-weight: 600;
+}
+
+.ancient-input.mini {
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+/* 分类网格调整（礼包面板内更紧凑） */
+.pack-panel .category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+/* 礼包卡片新增字段 */
+.card-per-draw {
+    font-size: 10px;
+    color: #c09d62;
+    background: #fcf5e5;
+    padding: 1px 5px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 3px;
+    border: 1px solid #f2e6ce;
+}
+
+.card-extra {
+    font-size: 10px;
+    color: #7a6f66;
+    margin-top: 2px;
+    background: #f2eee3;
+    padding: 1px 5px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* 礼包选中时购物车计数徽章 */
+.card-qty-badge {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    background: #d85c50;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+/* 购物车+-号组件 */
+.card-qty-ctrl {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.qty-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: #e8e2d4;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5d4037;
+    font-weight: 700;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    pointer-events: auto;
+}
+
+.qty-btn:hover:not(:disabled) {
+    background: #5d4037;
+    color: #fdfaf3;
+}
+
+.qty-btn[disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.qty-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3e3a33;
+    min-width: 16px;
+    text-align: center;
+}
+
+.card-check {
+    background: #fdfaf3;
+    border: 1px solid #d85c50;
+    color: #d85c50;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    cursor: pointer;
+    pointer-events: auto;
+    font-weight: 700;
+    transition: all 0.2s;
+    margin-left: 4px;
+}
+.card-check.active {
+    background: #d85c50;
+    color: #fdfaf3;
+}
+.card-check:hover:not(.active) {
+    background: #fbf5ee;
+}
+
+
+/* ========== 新增：累充奖励悬浮面板 ========== */
+.rewards-panel-content {
+    max-height: 500px;
+}
+
+.rewards-track {
+    margin-bottom: 18px;
+}
+
+.rewards-track-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.rewards-track-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: #5d4037;
+}
+
+.rewards-countdown {
+    font-size: 10px;
+    background: #fcf5e5;
+    color: #c09d62;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #f2e6ce;
+    font-weight: 600;
+}
+
+.rewards-next-gap {
+    font-size: 10px;
+    color: #d85c50;
+    margin-bottom: 6px;
+}
+
+.rewards-unlocked-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reward-milestone {
+    font-size: 10px;
+    background: #f8f6f0;
+    border: 1px solid #e8e2d4;
+    border-radius: 4px;
+    padding: 4px 6px;
+    color: #3e3a33;
+    line-height: 1.4;
+}
+
+.reward-milestone .pts-label {
+    font-weight: 800;
+    color: #d85c50;
+    margin-right: 4px;
+}
+
+.rewards-empty {
+    font-size: 10px;
+    color: #a08060;
+    font-style: italic;
+    background: #f8f6f0;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #e8e2d4;
+}
+
+.rewards-separator {
+    height: 1px;
+    background: #e8e2d4;
+    margin: 12px 0;
+}
+
+/* ========== 自定义礼包弹窗 ========== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-box {
+    background: #fdfaf3;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 440px;
+    border: 1px solid #e8e2d4;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e8e2d4;
+    font-weight: 800;
+    font-size: 16px;
+    color: #3e3a33;
+    background: #f5ede2;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #8d7365;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #e8e2d4;
+    color: #3e3a33;
+}
+
+.modal-form {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-row.full {
+    grid-column: 1 / -1;
+}
+
+.form-row label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8d7365;
+}
+
+.form-row input {
+    border: 1px solid #d5c8b2;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background: #fff;
+    color: #3e3a33;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-row input:focus {
+    border-color: #c09d62;
+    box-shadow: 0 0 0 2px rgba(192, 157, 98, 0.15);
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e8e2d4;
+}
+
+/* 礼包卡片中的+/-修改 */
+.ziyong-card .card-qty-ctrl {
+    transition: opacity 0.2s;
+}
+
+/* 版本对应宽度调整 */
+@media (max-width: 900px) {
+    .plan-layout {
+        grid-template-columns: 1fr;
+    }
+    .cart-panel {
+        position: static;
+    }
+}
+
+/* 汇率/积分对照表 Tabs 样式 */
+.currency-tabs {
+    display: flex;
+    position: relative;
+    background: #e8e2d4;
+    border-radius: 12px;
+    padding: 2px;
+    width: 140px;
+    margin: 0 auto;
+}
+
+.currency-tab {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    z-index: 1;
+    cursor: pointer;
+    padding: 4px 0;
+    color: #8d7365;
+    transition: color 0.3s;
+}
+
+.currency-tab.active {
+    color: #5d4037;
+    font-weight: 700;
+}
+
+.currency-bg {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    width: 68px; /* half of 140 - 4 */
+    background: #fdfaf3;
+    border-radius: 10px;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.currency-tabs[data-active="usd"] .currency-bg {
+    transform: translateX(0);
+}
+
+.currency-tabs[data-active="rmb"] .currency-bg {
+    transform: translateX(68px);
+}
+
+/* Remove sticky classes */

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绣衣日程 - 代号鸢/如鸢</title>
+
+    <!-- Libraries -->
+    <script src="https://unpkg.com/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://unpkg.com/@fullcalendar/core@6.1.11/locales/zh-cn.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css?v=6">
+</head>
+
+<body>
+
+    <!-- 下滑粘性栏 -->
+    <div id="stickyKryptonBar" class="sticky-krypton-bar">
+        <div class="ziyong-control-bar sticky-inner-bar">
+            <div class="date-selector-group">
+                <label>充值日期:</label>
+                <input type="date" id="stickyRechargeDate" class="ancient-input mini">
+            </div>
+            <div class="rate-input-group" id="stickyRateWrap" style="display:none;">
+                <label>汇率:</label>
+                <input type="number" id="stickyExchangeRate" class="ancient-input mini" value="7.2" step="0.01" min="1"
+                    style="width:52px;">
+            </div>
+            <div id="stickyCatTabs" class="pack-cat-tabs"></div>
+        </div>
+    </div>
+
+    <div class="header-wrapper">
+        <div class="header">
+            <div class="header-title-group">
+                <h1>绣衣日程</h1>
+                <button id="toggleBtn">收起 ▲</button>
+            </div>
+            <div class="excel-actions">
+                <div class="custom-select" id="versionToggle" style="margin-right: 15px; font-size: 15px;">
+                    <div class="select-selected">代号鸢</div>
+                    <div class="select-items">
+                        <div data-val="daihao" class="active">代号鸢</div>
+                        <div data-val="ruyuan">如鸢</div>
+                    </div>
+                </div>
+                <label for="excelInput" class="excel-btn">
+                    导入 Excel
+                    <input type="file" id="excelInput" accept=".xlsx, .xls" style="display: none;">
+                </label>
+            </div>
+        </div>
+
+        <div class="filters-container">
+            <div class="filters" id="filters">
+                <div class="filter-tag active" data-type="training">密探特训</div>
+                <div class="filter-tag active" data-type="palace">地宫活动</div>
+                <div class="filter-tag active" data-type="pool">累充池</div>
+                <div class="filter-tag active" data-type="furniture">家具</div>
+                <div class="filter-tag active" data-type="anniversary">周年庆/其他</div>
+            </div>
+            <div class="filter-actions-wrapper">
+                <div class="filter-actions">
+                    <button id="selectAllBtn" class="filter-action-btn">全选</button>
+                    <button id="deselectAllBtn" class="filter-action-btn">全不选</button>
+                </div>
+                <div class="export-actions">
+                    <button id="exportPngBtn" class="filter-action-btn export-btn">导出当前页为PNG</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendar-wrapper">
+        <div id="calendar-container">
+            <div id="calendar-inner">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 广陵资用案 (氪金管理系统) -->
+    <div id="ziyong-wrapper" class="ziyong-wrapper modern-ancient">
+        <div class="ziyong-header">
+            <div class="ziyong-title-group">
+                <div class="title-row">
+                    <h2>广陵资用案</h2>
+                    <div class="ziyong-tabs">
+                        <div class="ziyong-tab active" data-tab="plan">氪金计划</div>
+                        <div class="ziyong-tab" data-tab="records">总记录</div>
+                    </div>
+                    <div class="ziyong-actions-right">
+                        <button id="importCsvBtn" class="history-btn mini">导入记录</button>
+                        <button id="exportCsvBtn" class="history-btn mini">导出记录</button>
+                        <button id="clearAllRecordsBtn" class="history-btn mini"
+                            style="background:#d85c50; color:white; border-color:#c1483d;">清空数据</button>
+                        <input type="file" id="csvInput" accept=".csv" style="display: none;">
+                    </div>
+                </div>
+                <div class="ziyong-subtitle">氪金预排与实际记录</div>
+            </div>
+            <div class="total-pts-overview">
+                <div class="pts-box actual">
+                    <span class="label">实际总氪条</span>
+                    <span class="value" id="totalActualPts">0</span>
+                </div>
+                <div class="pts-box simulated">
+                    <span class="label">模拟总氪条</span>
+                    <span class="value" id="totalSimulatedPts">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="ziyong-plan-content" class="tab-content active">
+            <!-- 控制栏 -->
+            <div class="ziyong-control-bar">
+                <div class="date-selector-group">
+                    <label>充值日期:</label>
+                    <input type="date" id="rechargeDate" class="ancient-input">
+                </div>
+                <!-- 汇率输入框（代号鸢版本显示） -->
+                <div class="rate-input-group" id="rateInputGroup" style="display:none;">
+                    <label>汇率 (USD→CNY):</label>
+                    <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2" step="0.01"
+                        min="1" style="width:60px;">
+                </div>
+                <div class="helper-text">* 点击礼包卡片进行模拟记录，点击右下角"√"确认实际充值。<span id="rateInputGroup2"
+                        style="display:none;">每抽单价以当前汇率换算。</span></div>
+            </div>
+
+            <!-- 累充活动进度区（已移至右栏 activity-panel） -->
+
+            <!-- 礼包+购物清单 左右布局 -->
+            <div class="plan-layout">
+                <!-- 左侧：礼包列表 -->
+                <div class="pack-panel">
+                    <!-- 分类筛选 -->
+                    <div class="pack-filter-bar">
+                        <div class="pack-cat-tabs" id="packCatTabs"></div>
+                        <div class="pack-draw-filter" id="packDrawFilter">
+                            <button class="draw-filter-btn active" data-filter="all">全部</button>
+                            <button class="draw-filter-btn" data-filter="hasDraws">含抽数</button>
+                            <button class="draw-filter-btn" data-filter="noDraws">无抽数</button>
+                        </div>
+                    </div>
+                    <h3 id="shopTitle" class="shop-summary-title">礼包汇总</h3>
+                    <div id="packList" class="pack-list-categorized"></div>
+                </div>
+
+                <!-- 右栏：购物清单 + 累充进度 -->
+                <div class="right-column">
+                    <div class="cart-panel" id="cartPanel">
+                        <div class="cart-panel-header">
+                            <span class="cart-title">📋 购物清单</span>
+                            <button id="clearCartBtn" class="cat-btn">清空</button>
+                        </div>
+                        <div id="cartItemList" class="cart-item-list">
+                            <div class="cart-empty-msg">尚未选购礼包</div>
+                        </div>
+                        <div id="cartStats" class="cart-stats" style="display:none;">
+                            <div class="stat-row"><span>总抽数</span><span id="statDraws">-</span></div>
+                            <div class="stat-row"><span>平摊每抽</span><span id="statPerDraw">-</span></div>
+                            <div class="stat-row" id="usdRow" style="display:none;"><span>总价 (USD)</span><span
+                                    id="statTotalUsd">$0.00</span></div>
+                            <div class="stat-row stat-total"><span>总计 (CNY)</span><span id="statTotalPrice">¥0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-panel" id="activityPanel">
+                        <div class="activity-panel-header">
+                            <span class="activity-panel-title">累充进度</span>
+                        </div>
+                        <div class="activity-panel-body">
+                            <div id="yuanqiContainer"></div>
+                            <div id="activityContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 自定义礼包弹窗 -->
+            <div id="customPkgModal" class="modal-overlay" style="display:none;">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <span>录入自定义礼包</span>
+                        <button id="closeCustomModal" class="modal-close">✕</button>
+                    </div>
+                    <form id="customPkgForm" class="modal-form">
+                        <div class="form-row full">
+                            <label>礼包名称 *</label>
+                            <input type="text" id="cpName" required placeholder="输入名称">
+                        </div>
+                        <div class="form-row">
+                            <label>价格 <span id="cpPriceUnit">(USD)</span> *</label>
+                            <input type="number" id="cpPrice" required step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-row">
+                            <label>分类</label>
+                            <input type="text" id="cpCategory" placeholder="自定义">
+                        </div>
+                        <div class="form-row">
+                            <label>积分</label>
+                            <input type="number" id="cpPoints" min="0" placeholder="0">
+                        </div>
+                        <div class="form-row">
+                            <label>抽数</label>
+                            <input type="number" id="cpDraws" min="0" placeholder="0">
+                        </div>
+                        <div class="form-row">
+                            <label>限购次数</label>
+                            <input type="number" id="cpLimit" min="1" placeholder="999">
+                        </div>
+                        <div class="form-row">
+                            <label>额外物品</label>
+                            <input type="text" id="cpExtra" placeholder="如: 100体力">
+                        </div>
+                        <div class="form-row">
+                            <label>排序 ID</label>
+                            <input type="number" id="cpSortId" placeholder="数字越小越靠前">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelCustomModal" class="cart-btn secondary">取消</button>
+                            <button type="submit" class="cart-btn primary">确认录入</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 推荐方案区 -->
+            <div id="recommendationSection" class="recommendation-section" style="display:none;">
+                <div id="recommendationList" class="recommendation-list"></div>
+            </div>
+        </div>
+
+        <div id="ziyong-records-content" class="tab-content">
+            <div class="records-table-wrapper">
+                <table class="ancient-table records-table">
+                    <thead>
+                        <tr>
+                            <th>充值活动</th>
+                            <th>时间</th>
+                            <th>礼包内容/基础积分</th>
+                            <th>积分</th>
+                            <th>金额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧悬浮面板 -->
+    <div class="floating-panels">
+        <!-- 积分对照表 -->
+        <div class="panel-item" id="panelMapping">
+            <div class="panel-trigger">积分对照表</div>
+            <div class="panel-content">
+                <table class="ancient-table">
+                    <thead>
+                        <tr>
+                            <th style="padding: 8px 4px;">
+                                <div class="currency-tabs" id="currencyToggleWrapper" data-active="usd">
+                                    <div class="currency-bg"></div>
+                                    <div class="currency-tab active" data-val="usd">美元</div>
+                                    <div class="currency-tab" data-val="rmb">人民币</div>
+                                </div>
+                            </th>
+                            <th>对应积分</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mappingBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 累充奖励已整合至主区，此处移除 -->
+    </div>
+
+    <div id="customTooltip" class="custom-tooltip"></div>
+    <div id="backToTop">↑</div>
+
+    <!-- Application Logic -->
+    <script src="js/events.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/krypton.js?v=6"></script>
+</body>
+
+</html>
