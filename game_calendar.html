@@ -103,42 +103,43 @@
                 </div>
                 <div class="ziyong-subtitle">氪金预排与实际记录</div>
             </div>
-            <div class="total-pts-overview">
-                <div class="pts-box actual">
-                    <span class="label">实际总氪条</span>
-                    <span class="value" id="totalActualPts">0</span>
-                </div>
-                <div class="pts-box simulated">
-                    <span class="label">模拟总氪条</span>
-                    <span class="value" id="totalSimulatedPts">0</span>
-                </div>
-            </div>
         </div>
 
         <div id="ziyong-plan-content" class="tab-content active">
             <!-- 控制栏 -->
-            <div class="ziyong-control-bar">
-                <div class="date-selector-group">
-                    <label>充值日期:</label>
-                    <input type="date" id="rechargeDate" class="ancient-input">
+            <div class="ziyong-control-bar flex-wrap-bar">
+                <div class="bar-left">
+                    <div class="date-selector-group">
+                        <label>充值日期:</label>
+                        <input type="date" id="rechargeDate" class="ancient-input mini">
+                    </div>
+                    <!-- 汇率输入框（代号鸢版本显示） -->
+                    <div class="rate-input-group" id="rateInputGroup" style="display:none;">
+                        <label>USD→CNY:</label>
+                        <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2" step="0.01" min="1" style="width:50px;">
+                    </div>
                 </div>
-                <!-- 汇率输入框（代号鸢版本显示） -->
-                <div class="rate-input-group" id="rateInputGroup" style="display:none;">
-                    <label>汇率 (USD→CNY):</label>
-                    <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2" step="0.01"
-                        min="1" style="width:60px;">
+                
+                <!-- 移入原有的积分预览 -->
+                <div class="total-pts-overview">
+                    <div class="pts-box actual">
+                        <span class="label">实际条</span>
+                        <span class="value" id="totalActualPts">0</span>
+                    </div>
+                    <div class="pts-box simulated">
+                        <span class="label">模拟条</span>
+                        <span class="value" id="totalSimulatedPts">0</span>
+                    </div>
                 </div>
-                <div class="helper-text">* 点击礼包卡片进行模拟记录，点击右下角"√"确认实际充值。<span id="rateInputGroup2"
-                        style="display:none;">每抽单价以当前汇率换算。</span></div>
+                
+                <div class="helper-text desktop-only">* 点击卡片选择，在右侧购单结算</div>
             </div>
-
-            <!-- 累充活动进度区（已移至右栏 activity-panel） -->
 
             <!-- 礼包+购物清单 左右布局 -->
             <div class="plan-layout">
                 <!-- 左侧：礼包列表 -->
                 <div class="pack-panel">
-                    <!-- 分类筛选 -->
+                    <!-- 分类筛选（移入统一区域） -->
                     <div class="pack-filter-bar">
                         <div class="pack-cat-tabs" id="packCatTabs"></div>
                         <div class="pack-draw-filter" id="packDrawFilter">
@@ -167,6 +168,9 @@
                             <div class="stat-row" id="usdRow" style="display:none;"><span>总价 (USD)</span><span
                                     id="statTotalUsd">$0.00</span></div>
                             <div class="stat-row stat-total"><span>总计 (CNY)</span><span id="statTotalPrice">¥0.00</span>
+                            </div>
+                            <div class="cart-actions" style="margin-top: 15px;">
+                                <button id="checkoutBtn" class="cart-btn checkout-btn">确认结算</button>
                             </div>
                         </div>
                     </div>
@@ -264,10 +268,12 @@
                     <thead>
                         <tr>
                             <th style="padding: 8px 4px;">
-                                <div class="currency-tabs" id="currencyToggleWrapper" data-active="usd">
-                                    <div class="currency-bg"></div>
-                                    <div class="currency-tab active" data-val="usd">美元</div>
-                                    <div class="currency-tab" data-val="rmb">人民币</div>
+                                <div class="custom-select" id="currencyToggle">
+                                    <div class="select-selected">美元</div>
+                                    <div class="select-items">
+                                        <div data-val="usd" class="active">美元</div>
+                                        <div data-val="rmb">人民币</div>
+                                    </div>
                                 </div>
                             </th>
                             <th>对应积分</th>

@@ -1211,8 +1211,8 @@
 
         .ziyong-control-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
             margin-bottom: 20px;
             background: #fffdf9;
             padding: 10px 15px;
@@ -1222,6 +1222,25 @@
             z-index: 100;
             border-bottom: 1px solid #e8e2d4;
             box-shadow: 0 4px 10px rgba(93, 64, 55, 0.05);
+            transition: all 0.3s;
+        }
+
+        .ziyong-control-bar.flex-wrap-bar {
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .ziyong-control-bar .bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ziyong-control-bar .total-pts-overview {
+            width: auto;
+            margin: 0;
+            gap: 15px;
+            flex-shrink: 0;
         }
 
         .ancient-input {
@@ -1359,6 +1378,22 @@
             border-color: #5d4037;
         }
 
+        .category-content-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .category-content-wrapper.collapsed {
+            grid-template-rows: 0fr;
+        }
+
+        .category-content-inner {
+            min-height: 0;
+            padding-top: 5px;
+        }
+
         .category-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -1390,22 +1425,22 @@
         }
 
         .ziyong-card.simulated {
-            background-color: rgba(216, 92, 80, 0.05);
+            background-color: #faf7f1;
             border-color: #d85c50;
             border-width: 1.5px;
+            box-shadow: inset 0 0 10px rgba(216, 92, 80, 0.05);
         }
 
         .ziyong-card.actual {
-            background-color: #e8e2d4;
-            opacity: 0.95;
-            border-color: #d5c8b2;
+            background-color: #e2d9c5;
+            opacity: 0.9;
+            border-color: #c0b399;
             pointer-events: none;
         }
 
-
-        .ziyong-card.actual .card-check {
-            pointer-events: auto;
-            /* 允许点击勾选框撤回 */
+        /* 隐藏卡片右下角的勾选按钮因为现在统一用结算 */
+        .card-check {
+            display: none !important;
         }
 
         .card-name {
@@ -2014,8 +2049,25 @@
 .cart-item-list {
     min-height: 50px;
     margin-bottom: 20px;
-    max-height: 320px;
+    max-height: 250px;
     overflow-y: auto;
+    padding-right: 5px;
+}
+
+.cart-item-list::-webkit-scrollbar,
+.activity-panel-body::-webkit-scrollbar {
+    width: 4px;
+}
+.cart-item-list::-webkit-scrollbar-thumb,
+.activity-panel-body::-webkit-scrollbar-thumb {
+    background: #eaddcf;
+    border-radius: 4px;
+}
+
+.activity-panel-body {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 .cart-empty {
@@ -2475,13 +2527,33 @@
     transition: opacity 0.2s;
 }
 
-/* 版本对应宽度调整 */
+/* 版本对应宽度调整 & 移动端适配排版 */
 @media (max-width: 900px) {
     .plan-layout {
         grid-template-columns: 1fr;
     }
     .cart-panel {
         position: static;
+    }
+    
+    .ziyong-control-bar {
+        padding: 10px;
+        gap: 8px;
+    }
+    .ziyong-control-bar .bar-left #rateInputGroup {
+        display: none !important;
+    }
+    .ziyong-control-bar .helper-text.desktop-only {
+        display: none;
+    }
+    .ziyong-control-bar .total-pts-overview {
+        gap: 5px;
+    }
+    .ziyong-control-bar .total-pts-overview span.label {
+        display: none;
+    }
+    .total-pts-overview .pts-box {
+        padding: 4px 8px;
     }
 }
 
@@ -2532,3 +2604,36 @@
 }
 
 /* Remove sticky classes */
+
+/* 右侧悬浮面板 (积分对照表) */
+.floating-panels {
+    position: fixed; right: 0; top: 150px; z-index: 1001; display: flex; flex-direction: column; gap: 10px;
+}
+.panel-item {
+    position: relative; background-color: #5d4037; color: #fdfaf3; border-radius: 8px 0 0 8px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; display: flex; flex-direction: row; box-shadow: -2px 4px 12px rgba(0, 0, 0, 0.15); overflow: hidden;
+}
+.panel-item:hover, .panel-item.expanded { width: 320px; }
+.panel-trigger {
+    writing-mode: vertical-rl; padding: 15px 10px; cursor: pointer; font-weight: 600; letter-spacing: 2px; text-align: center; height: 120px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #5d4037;
+}
+.panel-content {
+    flex-grow: 1; background-color: #fdfaf3; color: #3e3a33; padding: 15px; box-sizing: border-box; border-left: 1px solid #d5c8b2; overflow-y: auto; max-height: 480px; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; min-width: 280px;
+}
+.panel-item:hover .panel-content, .panel-item.expanded .panel-content { opacity: 1; visibility: visible; }
+.custom-select { position: relative; display: inline-block; cursor: pointer; font-weight: 700; color: #5d4037; user-select: none; }
+.select-selected { padding-right: 16px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235d4037"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right center; background-size: 16px; transition: color 0.2s; }
+.select-selected.open { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235d4037"><path d="M7 14l5-5 5 5z"/></svg>'); color: #d85c50; }
+.select-items { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(5px); background-color: #fdfaf3; border: 1px solid #d5c8b2; border-radius: 6px; box-shadow: 0 4px 12px rgba(93, 64, 55, 0.15); z-index: 100; min-width: 80px; overflow: hidden; opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); }
+.custom-select.open .select-items { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(8px); }
+.select-items div { padding: 10px 15px; color: #5d4037; font-weight: normal; white-space: nowrap; border-bottom: 1px solid #e8e2d4; transition: background-color 0.2s, color 0.2s; }
+.select-items div:last-child { border-bottom: none; }
+.select-items div:hover { background-color: #e8e2d4; color: #d85c50; }
+.select-items div.active { background-color: #f5eedf; font-weight: 600; color: #d85c50; }
+@keyframes slideFadeIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+.fade-in-rows tr { animation: slideFadeIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; opacity: 0; }
+.fade-in-rows tr:nth-child(1) { animation-delay: 0.00s; }
+.fade-in-rows tr:nth-child(2) { animation-delay: 0.02s; }
+.fade-in-rows tr:nth-child(3) { animation-delay: 0.04s; }
+.fade-in-rows tr:nth-child(4) { animation-delay: 0.06s; }
+.fade-in-rows tr:nth-child(5) { animation-delay: 0.08s; }
+.fade-in-rows tr:nth-child(6) { animation-delay: 0.10s; }
