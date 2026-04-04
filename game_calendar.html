@@ -18,21 +18,7 @@
 
 <body>
 
-    <!-- 下滑粘性栏 -->
-    <div id="stickyKryptonBar" class="sticky-krypton-bar">
-        <div class="ziyong-control-bar sticky-inner-bar">
-            <div class="date-selector-group">
-                <label>充值日期:</label>
-                <input type="date" id="stickyRechargeDate" class="ancient-input mini">
-            </div>
-            <div class="rate-input-group" id="stickyRateWrap" style="display:none;">
-                <label>汇率:</label>
-                <input type="number" id="stickyExchangeRate" class="ancient-input mini" value="7.2" step="0.01" min="1"
-                    style="width:52px;">
-            </div>
-            <div id="stickyCatTabs" class="pack-cat-tabs"></div>
-        </div>
-    </div>
+
 
     <div class="header-wrapper">
         <div class="header">
@@ -107,48 +93,53 @@
 
         <div id="ziyong-plan-content" class="tab-content active">
             <!-- 控制栏 -->
-            <div class="ziyong-control-bar flex-wrap-bar">
-                <div class="bar-left">
-                    <div class="date-selector-group">
-                        <label>充值日期:</label>
-                        <input type="date" id="rechargeDate" class="ancient-input mini">
+            <div class="ziyong-control-bar sticky-main-bar">
+                <!-- 第一行：主控制项 (日期、汇率、统计点数) -->
+                <div class="bar-row bar-top-row">
+                    <div class="bar-left">
+                        <div class="date-selector-group">
+                            <label>充值日期:</label>
+                            <input type="date" id="rechargeDate" class="ancient-input mini">
+                        </div>
+                        <div class="rate-input-group" id="rateInputGroup" style="display:none;">
+                            <label>当前汇率 (USD to CNY):</label>
+                            <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2" step="0.01"
+                                min="1" style="width:50px;">
+                        </div>
                     </div>
-                    <!-- 汇率输入框（代号鸢版本显示） -->
-                    <div class="rate-input-group" id="rateInputGroup" style="display:none;">
-                        <label>当前汇率 (USD to CNY):</label>
-                        <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2" step="0.01"
-                            min="1" style="width:50px;">
+
+                    <div class="total-pts-overview">
+                        <div class="pts-box actual">
+                            <span class="label">实际氪条</span>
+                            <span class="value" id="totalActualPts">0</span>
+                        </div>
+                        <div class="pts-box simulated">
+                            <span class="label">模拟氪条</span>
+                            <span class="value" id="totalSimulatedPts">0</span>
+                        </div>
                     </div>
+
+                    <div class="helper-text desktop-only">* 点击卡片选择，在右侧购单结算</div>
                 </div>
 
-                <!-- 移入原有的积分预览 -->
-                <div class="total-pts-overview">
-                    <div class="pts-box actual">
-                        <span class="label">实际氪条</span>
-                        <span class="value" id="totalActualPts">0</span>
-                    </div>
-                    <div class="pts-box simulated">
-                        <span class="label">模拟氪条</span>
-                        <span class="value" id="totalSimulatedPts">0</span>
+                <!-- 第二行：筛选控制项 (商品类型、抽数筛选) -->
+                <div class="bar-row bar-bottom-row">
+                    <div class="pack-filter-bar compact-filter-bar">
+                        <div id="packCatTabs" class="pack-cat-tabs"></div>
+                        <div id="packDrawFilter" class="pack-draw-filter">
+                            <button class="draw-filter-btn active" data-filter="all">全部</button>
+                            <button class="draw-filter-btn" data-filter="hasDraws">含抽数</button>
+                            <button class="draw-filter-btn" data-filter="noDraws">无抽数</button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="helper-text desktop-only">* 点击卡片选择，在右侧购单结算</div>
             </div>
 
             <!-- 礼包+购物清单 左右布局 -->
             <div class="plan-layout">
                 <!-- 左侧：礼包列表 -->
                 <div class="pack-panel">
-                    <!-- 分类筛选（移入统一区域） -->
-                    <div class="pack-filter-bar">
-                        <div class="pack-cat-tabs" id="packCatTabs"></div>
-                        <div class="pack-draw-filter" id="packDrawFilter">
-                            <button class="draw-filter-btn active" data-filter="all">全部</button>
-                            <button class="draw-filter-btn" data-filter="hasDraws">含抽数</button>
-                            <button class="draw-filter-btn" data-filter="noDraws">无抽数</button>
-                        </div>
-                    </div>
+
                     <h3 id="shopTitle" class="shop-summary-title">礼包汇总</h3>
                     <div id="packList" class="pack-list-categorized"></div>
                 </div>

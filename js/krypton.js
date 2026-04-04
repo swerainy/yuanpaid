@@ -346,16 +346,12 @@ function initKrypton() {
         var todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
         rechargeDateInput.value = todayStr;
 
-        rechargeDateInput.addEventListener('change', function(){ loadEvents(); });
-
-        // ── 汇率 ──
-        function syncRate(src) {
-            src.addEventListener('input', function() {
-                exchangeRate = parseFloat(src.value)||7.2;
-                renderPacks(); renderCart();
-            });
+        function updateRate(val) {
+            exchangeRate = parseFloat(val)||7.2;
+            if (exchangeRateInput) exchangeRateInput.value = val;
+            renderPacks(); renderCart();
         }
-        if (exchangeRateInput) syncRate(exchangeRateInput);
+        if (exchangeRateInput) exchangeRateInput.addEventListener('input', function(e){ updateRate(e.target.value); });
 
         function syncVersion(ver) {
             currentVersion = ver;
@@ -412,7 +408,7 @@ function initKrypton() {
                 container.innerHTML='';
                 cats.forEach(function(cat) {
                     var btn=document.createElement('button');
-                    btn.className='draw-filter-btn'+(cat===activeCategory?' active':'');
+                    btn.className='pack-cat-btn'+(cat===activeCategory?' active':'');
                     btn.textContent=cat;
                     btn.onclick=function(){
                         if (activeCategory===cat) return;
