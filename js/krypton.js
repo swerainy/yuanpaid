@@ -248,7 +248,6 @@ function initKrypton() {
         // ── 状态 ──
         var currentVersion = 'daihao';
         var exchangeRate = parseFloat(localStorage.getItem('ziyong_exchangeRate')) || 7.2;
-        var forceRateMode = localStorage.getItem('ziyong_forceRateMode') === 'true';
         var eventsData = [];
         var animStates = {};
         var activeCategory = '全部';
@@ -308,12 +307,7 @@ function initKrypton() {
         }
         function getPackCny(pack) {
             if (currentVersion !== 'daihao') return (pack.priceCny || 0);
-            var usd = pack.priceUsd || 0;
-            if (forceRateMode) return usd * exchangeRate;
-            // 默认模式：优先查找官方映射表
-            var map = KRYPTON_DATA.usdMapping.find(function (m) { return Math.abs(m.price - usd) < 0.001; });
-            if (map) return map.pts / 10;
-            return usd * exchangeRate;
+            return (pack.priceUsd || 0) * exchangeRate;
         }
         function qKey(name, date) { return name + '|' + date; }
         function getSQ(name, date) { return simQtyMap[qKey(name, date)] || 0; }
@@ -453,16 +447,6 @@ function initKrypton() {
         var syncRateBtn = document.getElementById('syncRateBtn');
         if (syncRateBtn) syncRateBtn.onclick = function (e) { e.stopPropagation(); fetchExchangeRate(); };
         if (exchangeRateInput) exchangeRateInput.addEventListener('input', function (e) { updateRate(e.target.value); });
-
-        var forceRateToggle = document.getElementById('forceRateToggle');
-        if (forceRateToggle) {
-            forceRateToggle.checked = forceRateMode;
-            forceRateToggle.onchange = function () {
-                forceRateMode = forceRateToggle.checked;
-                localStorage.setItem('ziyong_forceRateMode', forceRateMode);
-                updateAll();
-            };
-        }
 
         function syncVersion(ver) {
             currentVersion = ver;
