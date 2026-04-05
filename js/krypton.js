@@ -514,15 +514,18 @@ function initKrypton() {
                         '  </div>'+
                         '</div>';
 
-                    // 点击卡片主体 = addSim
+                    // 点击卡片主体 = addSim (已购状态 Actual 锁定点击)
                     card.querySelector('.card-body').addEventListener('click', function(e){
-                        if (!isPackInAct||maxed) return;
+                        if (!isPackInAct || maxed || aq > 0) return;
                         addSim(pack,date);
                     });
                     var minusBtn=card.querySelector('.qty-minus');
-                    if(sq>0) minusBtn.onclick=function(e){ e.stopPropagation(); removeSim(pack,date); };
+                    if(sq>0 && aq<=0) minusBtn.onclick=function(e){ e.stopPropagation(); removeSim(pack,date); };
+                    if(aq>0) minusBtn.setAttribute('disabled','true');
+
                     var plusBtn=card.querySelector('.qty-plus');
-                    if(sq<lim) plusBtn.onclick=function(e){ e.stopPropagation(); addSim(pack,date); };
+                    if(sq<lim && aq<=0) plusBtn.onclick=function(e){ e.stopPropagation(); addSim(pack,date); };
+                    if(aq>0) plusBtn.setAttribute('disabled','true');
                     grid.appendChild(card);
                 });
 
@@ -908,10 +911,10 @@ function initKrypton() {
         '.stat-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#7a6f66;}',
         '.stat-total{font-weight:700;color:#3e3a33;font-size:13px;border-top:1px solid #e8e2d4;padding-top:5px;margin-top:3px;padding-bottom:4px;}',
         // 原版卡片
-        '.ziyong-card{background:#fdfaf3;border:1.5px solid #d5c8b2;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
+        '.ziyong-card{background:#fffefb;border:1.5px solid #e0d5c1;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
         '.ziyong-card:hover:not(.disabled){border-color:#c09d62;box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-2px);}',
-        '.ziyong-card.simulated{background:#fffbe6;border-color:#d4a847;}',
-        '.ziyong-card.actual{background:#f0f7ef;border-color:#8dc48d;}',
+        '.ziyong-card.simulated{background:#faf7f1;border-color:#d85c50;}',
+        '.ziyong-card.actual{background:#e2d9c5;border-color:#e0d5c1;cursor:default;}',
         '.ziyong-card.limit-reached{opacity:.6;}',
         '.ziyong-card.disabled{opacity:.38;cursor:not-allowed;}',
         '.card-body{cursor:pointer;flex:1;}',
