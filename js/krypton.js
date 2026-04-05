@@ -285,15 +285,14 @@ function initKrypton() {
 
         // ── qty操作 ──
         function addSim(pack, date) {
-            var k = qKey(pack.name, date), lim = pack.limit||1, cur = simQtyMap[k]||0;
-            if (cur < lim) { simQtyMap[k]=cur+1; updateAll(); }
+            var k = qKey(pack.name, date), lim = pack.limit||1;
+            var sq = simQtyMap[k]||0, aq = actQtyMap[k]||0;
+            if ((sq + aq) < lim) { simQtyMap[k] = sq + 1; updateAll(); }
         }
         function removeSim(pack, date) {
             var k = qKey(pack.name, date), cur = simQtyMap[k]||0;
             if (cur > 0) {
                 simQtyMap[k] = cur-1; if (!simQtyMap[k]) delete simQtyMap[k];
-                var ac = actQtyMap[k]||0;
-                if (ac > (simQtyMap[k]||0)) { actQtyMap[k]=simQtyMap[k]||0; if (!actQtyMap[k]) delete actQtyMap[k]; }
                 updateAll();
             }
         }
@@ -492,16 +491,17 @@ function initKrypton() {
                 catPacks.forEach(function(pack) {
                     var cid=pack.category+'-'+pack.id;
                     var sq=getSQ(pack.name,date), aq=getAQ(pack.name,date), lim=pack.limit||1;
-                    var maxed=aq>=lim, cny=getPackCny(pack);
+                    var maxed=(aq + sq)>=lim, cny=getPackCny(pack);
                     var perDraw=pack.draws>0?(cny/pack.draws).toFixed(2):null;
                     var currency=currentVersion==='daihao'&&pack.priceUsd?'$'+pack.priceUsd:'¥'+cny.toFixed(2);
 
                     var isPackInAct=!pack.boundActivity||activeActTitles.some(function(t){ return t.toLowerCase().includes((pack.boundActivity||'').toLowerCase()); });
+                    var fullyBought = aq >= lim;
                     var card=document.createElement('div');
                     card.className='ziyong-card'; card.dataset.cid=cid;
-                    if (aq>0&&aq>=sq)    card.classList.add('actual');
-                    else if (sq>0)        card.classList.add('simulated');
-                    if (maxed)            card.classList.add('limit-reached');
+                    if (fullyBought)      card.classList.add('actual'); // 彻底买光变灰
+                    else if (sq>0)        card.classList.add('simulated'); // 在购物车变深
+                    if (fullyBought)      card.classList.add('limit-reached');
                     if (!isPackInAct)     card.classList.add('disabled');
 
                     var effStr=perDraw?'<div class="card-eff">'+perDraw+' 元/抽</div>':'';
@@ -515,7 +515,7 @@ function initKrypton() {
                         effStr+
                         '</div>'+
                         '<div class="card-bottom">'+
-                        '  <span class="card-limit-txt" style="color:'+(maxed?'#d85c50':'#a08060')+'">'+aq+'/'+lim+'</span>'+
+                        '  <span class="card-limit-txt" style="color:'+(maxed?'#d85c50':'#a08060')+'">'+(aq + sq)+'/'+lim+'</span>'+
                         '  <div class="card-qty-ctrl">'+
                         '    <span class="qty-btn qty-minus" '+(sq<=0?'disabled':'')+'>−</span>'+
                         '    <span class="qty-num">'+sq+'</span>'+
@@ -523,18 +523,18 @@ function initKrypton() {
                         '  </div>'+
                         '</div>';
 
-                    // 点击卡片主体 = addSim (已购状态 Actual 锁定点击)
+                    // 点击卡片主体 = addSim (仅在完全达到限购上限时锁定)
                     card.querySelector('.card-body').addEventListener('click', function(e){
-                        if (!isPackInAct || maxed || aq > 0) return;
+                        if (!isPackInAct || maxed) return;
                         addSim(pack,date);
                     });
                     var minusBtn=card.querySelector('.qty-minus');
-                    if(sq>0 && aq<=0) minusBtn.onclick=function(e){ e.stopPropagation(); removeSim(pack,date); };
-                    if(aq>0) minusBtn.setAttribute('disabled','true');
+                    if(sq>0) minusBtn.onclick=function(e){ e.stopPropagation(); removeSim(pack,date); };
+                    if(sq<=0) minusBtn.setAttribute('disabled','true');
 
                     var plusBtn=card.querySelector('.qty-plus');
-                    if(sq<lim && aq<=0) plusBtn.onclick=function(e){ e.stopPropagation(); addSim(pack,date); };
-                    if(aq>0) plusBtn.setAttribute('disabled','true');
+                    if(!maxed) plusBtn.onclick=function(e){ e.stopPropagation(); addSim(pack,date); };
+                    if(maxed) plusBtn.setAttribute('disabled','true');
                     grid.appendChild(card);
                 });
 
@@ -628,21 +628,6 @@ function initKrypton() {
             updateAll();
         };
 
-        var checkoutBtn=document.getElementById('checkoutBtn');
-        if (checkoutBtn) checkoutBtn.onclick=function(){
-            var date=normDate(rechargeDateInput.value), packs=getActivePacks(currentVersion);
-            var hadItems = false;
-            packs.forEach(function(p){
-                var k=qKey(p.name,date);
-                var sq=simQtyMap[k]||0;
-                if (sq > 0) {
-                    actQtyMap[k] = Math.max((actQtyMap[k]||0), sq);
-                    delete simQtyMap[k];
-                    hadItems = true;
-                }
-            });
-            if (hadItems) updateAll();
-        };
 
         // ── 累充进度（右栏上方） ──
         function getCovBasePts(title, s, e) {
@@ -806,6 +791,28 @@ function initKrypton() {
             var lk=document.createElement('a');lk.href='data:text/csv;charset=utf-8,'+encodeURI(csv);lk.download='ziyong.csv';document.body.appendChild(lk);lk.click();
         };
         if (importCsvBtn&&csvInput){ importCsvBtn.onclick=function(){csvInput.click();}; }
+        
+        // ── 确认结算按钮 ──
+        var checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn) {
+            checkoutBtn.onclick = function() {
+                var simCount = Object.keys(simQtyMap).filter(function(k){ return simQtyMap[k]>0; }).length;
+                if (simCount === 0) {
+                    alert('购物车为空，无需结算'); return;
+                }
+                
+                // 遍历模拟表，合并到实际表中
+                Object.keys(simQtyMap).forEach(function(k) {
+                    var sq = simQtyMap[k] || 0;
+                    if (sq > 0) {
+                        actQtyMap[k] = (actQtyMap[k] || 0) + sq;
+                        delete simQtyMap[k];
+                    }
+                });
+                
+                updateAll();
+            };
+        }
 
         var clearAllBtn=document.getElementById('clearAllRecordsBtn');
         if (clearAllBtn) clearAllBtn.onclick=function(){
@@ -836,8 +843,8 @@ function initKrypton() {
         // ── 总更新 ──
         function updateAll() {
             var base=getBasePts();
-            var simPts=base+calcMapPts(simQtyMap);
             var actPts=base+calcMapPts(actQtyMap);
+            var simPts=actPts+calcMapPts(simQtyMap);
             setAnimVal(totalActualPtsEl,    actPts);
             setAnimVal(totalSimulatedPtsEl, simPts);
             var stickyA=document.getElementById('stickyActualPts');
