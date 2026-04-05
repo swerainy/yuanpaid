@@ -558,32 +558,32 @@ function initKrypton() {
                 inner.appendChild(grid);
                 wrapper.appendChild(inner);
 
-                catPacks.forEach(function (pack) {
-                    var cid = pack.category + '-' + pack.id;
-                    var sq = getSQ(pack.name, date), aq = getAQ(pack.name, date), lim = pack.limit || 1;
-                    var maxed = (aq + sq) >= lim, cny = getPackCny(pack);
-                    var perDraw = pack.draws > 0 ? (cny / pack.draws).toFixed(2) : null;
-                    var currency = currentVersion === 'daihao' && pack.priceUsd ? '$' + pack.priceUsd : '¥' + cny.toFixed(2);
+                // 渲染卡片 (提取为内部函数)
+                function renderCard(p, targetGrid) {
+                    var cid = p.category + '-' + p.id;
+                    var sq = getSQ(p.name, date), aq = getAQ(p.name, date), lim = p.limit || 1;
+                    var maxed = (aq + sq) >= lim, cny = getPackCny(p);
+                    var perDraw = p.draws > 0 ? (cny / p.draws).toFixed(2) : null;
 
-                    var isPackInAct = !pack.boundActivity || activeActTitles.some(function (t) { return t.toLowerCase().includes((pack.boundActivity || '').toLowerCase()); });
+                    var isPackInAct = !p.boundActivity || activeActTitles.some(function (t) { return t.toLowerCase().includes((p.boundActivity || '').toLowerCase()); });
                     var fullyBought = aq >= lim;
                     var card = document.createElement('div');
                     card.className = 'ziyong-card'; card.dataset.cid = cid;
-                    if (fullyBought) card.classList.add('actual'); // 彻底买光变灰
-                    else if (sq > 0) card.classList.add('simulated'); // 在购物车变深
+                    if (fullyBought) card.classList.add('actual');
+                    else if (sq > 0) card.classList.add('simulated');
                     if (fullyBought) card.classList.add('limit-reached');
                     if (!isPackInAct) card.classList.add('disabled');
 
-                    var cnySmallStr = currentVersion === 'daihao' && pack.priceUsd ? ' <span class="cny-small-val"></span>' : '';
+                    var cnySmallStr = currentVersion === 'daihao' && p.priceUsd ? ' <span class="cny-small-val"></span>' : '';
 
                     card.innerHTML =
                         '<div class="card-body">' +
-                        '  <div class="card-name">' + pack.name + '</div>' +
+                        '  <div class="card-name">' + p.name + '</div>' +
                         '  <div class="card-price"><span class="price-val"></span>' + cnySmallStr + '</div>' +
-                        '  <div class="card-pts">' + pack.pts + ' 积分</div>' +
+                        '  <div class="card-pts">' + p.pts + ' 积分</div>' +
                         '<div class="card-detail-row">' +
-                        (pack.draws > 0 ? '<div class="card-extra">' + pack.draws + ' 抽</div>' : '') +
-                        (pack.extra ? '<div class="card-extra">' + pack.extra + '</div>' : '') +
+                        (p.draws > 0 ? '<div class="card-extra">' + p.draws + ' 抽</div>' : '') +
+                        (p.extra ? '<div class="card-extra">' + p.extra + '</div>' : '') +
                         '</div>' +
                         (perDraw ? '<div class="card-eff"></div>' : '') +
                         '</div>' +
@@ -601,42 +601,57 @@ function initKrypton() {
                     var pval = card.querySelector('.price-val');
                     if (pval) { 
                         pval.id = 'p-' + cid; 
-                        var isUsd = currentVersion === 'daihao' && pack.priceUsd;
-                        setAnimFloat(pval, isUsd ? pack.priceUsd : cny, (isUsd ? '$' : '¥'), '', 2); 
+                        var isUsd = currentVersion === 'daihao' && p.priceUsd;
+                        setAnimFloat(pval, isUsd ? p.priceUsd : cny, (isUsd ? '$' : '¥'), '', 2); 
                     }
                     var csval = card.querySelector('.cny-small-val');
                     if (csval) { csval.id = 'cs-' + cid; setAnimFloat(csval, cny, '≈¥', '', 0); }
                     var eval_ = card.querySelector('.card-eff');
                     if (eval_) { eval_.id = 'e-' + cid; setAnimFloat(eval_, parseFloat(perDraw), '', ' 元/抽', 2); }
 
-                    // 点击卡片主体 = addSim 或 循环归零 (满额后再次点击归零)
                     card.querySelector('.card-body').addEventListener('click', function (e) {
                         if (!isPackInAct) return;
                         if (aq + sq >= lim) {
-                            delete simQtyMap[qKey(pack.name, date)];
+                            delete simQtyMap[qKey(p.name, date)];
                             updateAll();
                         } else {
-                            addSim(pack, date);
-                            showFloatingPts(e.pageX, e.pageY - 20, pack.pts);
+                            addSim(p, date);
+                            showFloatingPts(e.pageX, e.pageY - 20, p.pts);
                         }
                     });
                     var minusBtn = card.querySelector('.qty-minus');
-                    if (sq > 0) minusBtn.onclick = function (e) { e.stopPropagation(); removeSim(pack, date); showFloatingPts(e.pageX, e.pageY - 20, -pack.pts); };
-                    if (sq <= 0) minusBtn.setAttribute('disabled', 'true');
-
+                    if (sq > 0) minusBtn.onclick = function (e) { e.stopPropagation(); removeSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, -p.pts); };
                     var plusBtn = card.querySelector('.qty-plus');
-                    if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(pack, date); showFloatingPts(e.pageX, e.pageY - 20, pack.pts); };
-                    else plusBtn.setAttribute('disabled', 'true');
-
+                    if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, p.pts); };
                     var minBtn = card.querySelector('.qty-min');
-                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); var pts = -sq*pack.pts; delete simQtyMap[qKey(pack.name, date)]; updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
-                    else minBtn.setAttribute('disabled', 'true');
-
+                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); var pts = -sq*p.pts; delete simQtyMap[qKey(p.name, date)]; updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
                     var maxBtn = card.querySelector('.qty-max');
-                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim-aq-sq)*pack.pts; simQtyMap[qKey(pack.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
-                    else maxBtn.setAttribute('disabled', 'true');
-                    grid.appendChild(card);
-                });
+                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim-aq-sq)*p.pts; simQtyMap[qKey(p.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
+                    targetGrid.appendChild(card);
+                }
+
+                if (cat === '贤士') {
+                    // 贤士分类内部分组逻辑
+                    var subGroups = {}, subOrder = [];
+                    var subNames = { '30': '天机符传', '31': '善恶簿', '32': '功过格', '33': '体力' };
+                    catPacks.forEach(function (p) {
+                        var sid = String(p.sortId || 30);
+                        if (!subGroups[sid]) { subGroups[sid] = []; subOrder.push(sid); }
+                        subGroups[sid].push(p);
+                    });
+                    subOrder.sort();
+                    subOrder.forEach(function (sid) {
+                        var subName = subNames[sid] || '其他';
+                        var subHdr = document.createElement('div');
+                        subHdr.className = 'sub-category-header';
+                        subHdr.textContent = subName;
+                        grid.appendChild(subHdr);
+                        subGroups[sid].forEach(function (p) { renderCard(p, grid); });
+                    });
+                } else {
+                    catPacks.forEach(function (p) { renderCard(p, grid); });
+                }
+
 
                 // 分类头事件
                 // 分类栏整体点击折叠

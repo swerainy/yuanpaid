@@ -1438,6 +1438,35 @@
             gap: 15px;
         }
 
+        /* ================= 贤士二级分组样式 ================= */
+        .sub-category-header {
+            width: 100%;
+            margin: 15px 0 10px 0;
+            padding: 6px 12px;
+            background: rgba(232, 226, 212, 0.3);
+            border-left: 3px solid #a08060;
+            font-size: 14px;
+            font-weight: 700;
+            color: #5d4037;
+            grid-column: 1 / -1; /* 跨越所有网格列 */
+            display: flex;
+            align-items: center;
+            border-radius: 0 4px 4px 0;
+            box-sizing: border-box;
+        }
+
+        .sub-category-header:first-child {
+            margin-top: 5px;
+        }
+
+        .sub-category-header::before {
+            content: "◆";
+            margin-right: 8px;
+            font-size: 10px;
+            color: #a08060;
+        }
+
+
         .ziyong-card {
             background: #fffefb;
             border: 1px solid #e0d5c1;
