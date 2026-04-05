@@ -478,8 +478,8 @@ function initKrypton() {
                 });
                 var sec=document.createElement('div'); sec.className='pack-category-section';
                 var hdr=document.createElement('div'); hdr.className='category-header';
-                hdr.innerHTML='<div class="cat-title-row"><h3 class="category-title">'+cat+'</h3></div>'+
-                    '<div class="category-actions"><button class="cat-btn cat-selall" data-cat="'+cat+'">全选</button><button class="cat-btn cat-clr" data-cat="'+cat+'">清空</button><span class="cat-toggle-icon" style="cursor:pointer; padding: 0 4px; user-select:none; color:#a08060; font-size:12px;">'+(isCollapsed?'展开 ▼':'收起 ▲')+'</span></div>';
+                hdr.innerHTML='<div class="cat-title-row"><h3 class="category-title">'+cat+'</h3><span class="cat-toggle-icon">'+(isCollapsed?'展开 ▼':'收起 ▲')+'</span></div>'+
+                    '<div class="category-actions"><button class="cat-btn cat-selall">全选</button><button class="cat-btn cat-clr">清空</button></div>';
                 
                 var wrapper=document.createElement('div'); wrapper.className='category-content-wrapper' + (isCollapsed?' collapsed':'');
                 var inner=document.createElement('div'); inner.className='category-content-inner';
@@ -505,7 +505,7 @@ function initKrypton() {
                     if (!isPackInAct)     card.classList.add('disabled');
 
                     var effStr=perDraw?'<div class="card-eff">'+perDraw+' 元/抽</div>':'';
-                    var cnySmall=currentVersion==='daihao'&&pack.priceUsd?' <small>≈¥'+cny.toFixed(0)+'</small>':'';
+                    var cnySmall=currentVersion==='daihao'&&pack.priceUsd?' ≈¥'+cny.toFixed(0):'';
 
                     card.innerHTML=
                         '<div class="card-body">'+
@@ -525,10 +525,15 @@ function initKrypton() {
                         '  </div>'+
                         '</div>';
 
-                    // 点击卡片主体 = addSim (仅在完全达到限购上限时锁定)
+                    // 点击卡片主体 = addSim 或 循环归零 (满额后再次点击归零)
                     card.querySelector('.card-body').addEventListener('click', function(e){
-                        if (!isPackInAct || maxed) return;
-                        addSim(pack,date);
+                        if (!isPackInAct) return;
+                        if (aq+sq >= lim) {
+                            delete simQtyMap[qKey(pack.name,date)];
+                            updateAll();
+                        } else {
+                            addSim(pack,date);
+                        }
                     });
                     var minusBtn=card.querySelector('.qty-minus');
                     if(sq>0) minusBtn.onclick=function(e){ e.stopPropagation(); removeSim(pack,date); };
@@ -549,7 +554,8 @@ function initKrypton() {
                 });
 
                 // 分类头事件
-                hdr.querySelector('.cat-toggle-icon').onclick=function(){
+                // 分类栏整体点击折叠
+                hdr.onclick=function(){
                     collapsedCats[cat]=!collapsedCats[cat];
                     wrapper.classList.toggle('collapsed', collapsedCats[cat]);
                     hdr.querySelector('.cat-toggle-icon').textContent=collapsedCats[cat]?'展开 ▼':'收起 ▲';
@@ -946,7 +952,6 @@ function initKrypton() {
         '.card-body{cursor:pointer;flex:1;}',
         '.card-name{font-size:13px;font-weight:700;color:#3e3a33;line-height:1.3;margin-bottom:3px;}',
         '.card-price{font-size:14px;font-weight:700;color:#c0392b;}',
-        '.card-price small{font-size:10px;color:#8d7365;font-weight:400;margin-left:4px;}',
         '.card-pts{font-size:11px;color:#8d7365;}',
         '.card-eff{font-size:10px;color:#a08060;font-style:italic;}',
         // 卡片底部 qty控件
@@ -962,8 +967,8 @@ function initKrypton() {
         '.card-check.active{background:#5d8a50;border-color:#5d8a50;color:#fff;}',
         // 分类标题行
         '.cat-title-row{display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;}',
-        '.cat-toggle-icon{font-size:10px;color:#a08060;transition:transform .25s;}',
-        '.category-header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f0e8;border-radius:6px 6px 0 0;border-bottom:1px solid #e8e2d4;user-select:none;}',
+        '.cat-toggle-icon{font-size:10px;color:#a08060;transition:transform .25s;margin-left:8px;user-select:none;}',
+        '.category-header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f0e8;border-radius:6px 6px 0 0;border-bottom:1px solid #e8e2d4;user-select:none;cursor:pointer;}',
         '.cat-btn{padding:2px 8px;border:1px solid #d5c8b2;border-radius:4px;background:#fff;color:#7a6f66;font-size:11px;cursor:pointer;transition:all .15s;}',
         '.cat-btn:hover{background:#f2e6ce;border-color:#c09d62;}',
         // 活动进度
