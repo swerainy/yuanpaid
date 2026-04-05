@@ -271,11 +271,29 @@ function initKrypton() {
             requestAnimationFrame(step);
         }
         function setAnimVal(el, v) {
-            if (!el) return; var k = el.id || el.className, old = animStates[k] || v;
-            animStates[k] = v; if (old !== v) animateValue(el, old, v, 600); else el.innerText = v.toLocaleString();
+            if (!el) return;
+            var k = el.id || el.className;
+            var old = (animStates[k] !== undefined) ? animStates[k] : 0;
+            animStates[k] = v;
+            if (old !== v) {
+                animateValue(el, old, v, 600);
+                // 弹动效果 (Scale Pop)
+                el.classList.remove('pts-pop'); void el.offsetWidth; el.classList.add('pts-pop');
+            } else {
+                el.innerText = v.toLocaleString();
+            }
+        }
+        function showFloatingPts(x, y, val) {
+            var f = document.createElement('div'); f.className = 'floating-pts';
+            f.style.left = x + 'px'; f.style.top = y + 'px';
+            f.innerText = (val >= 0 ? '+' : '') + val;
+            document.body.appendChild(f);
+            setTimeout(function(){ f.remove(); }, 800);
         }
         function setAnimFloat(el, v, prefix, suffix, fix) {
-            if (!el) return; var k = el.id || el.className, old = animStates[k] || v;
+            if (!el) return;
+            var k = el.id || el.className;
+            var old = (animStates[k] !== undefined) ? animStates[k] : 0;
             animStates[k] = v; fix = fix || 0;
             if (Math.abs(old - v) < 0.001) { el.innerText = (prefix || '') + v.toFixed(fix) + (suffix || ''); return; }
             var t0 = null;
@@ -595,22 +613,23 @@ function initKrypton() {
                             updateAll();
                         } else {
                             addSim(pack, date);
+                            showFloatingPts(e.pageX, e.pageY - 20, pack.pts);
                         }
                     });
                     var minusBtn = card.querySelector('.qty-minus');
-                    if (sq > 0) minusBtn.onclick = function (e) { e.stopPropagation(); removeSim(pack, date); };
+                    if (sq > 0) minusBtn.onclick = function (e) { e.stopPropagation(); removeSim(pack, date); showFloatingPts(e.pageX, e.pageY - 20, -pack.pts); };
                     if (sq <= 0) minusBtn.setAttribute('disabled', 'true');
 
                     var plusBtn = card.querySelector('.qty-plus');
-                    if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(pack, date); };
+                    if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(pack, date); showFloatingPts(e.pageX, e.pageY - 20, pack.pts); };
                     else plusBtn.setAttribute('disabled', 'true');
 
                     var minBtn = card.querySelector('.qty-min');
-                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); delete simQtyMap[qKey(pack.name, date)]; updateAll(); };
+                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); var pts = -sq*pack.pts; delete simQtyMap[qKey(pack.name, date)]; updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
                     else minBtn.setAttribute('disabled', 'true');
 
                     var maxBtn = card.querySelector('.qty-max');
-                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); simQtyMap[qKey(pack.name, date)] = (lim - aq); updateAll(); };
+                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim-aq-sq)*pack.pts; simQtyMap[qKey(pack.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
                     else maxBtn.setAttribute('disabled', 'true');
                     grid.appendChild(card);
                 });
@@ -1154,6 +1173,10 @@ function initKrypton() {
         '.sync-rate-btn.syncing .sync-icon{animation:spinRate 1s linear infinite;}',
         '.sync-rate-btn.success{background:#edf8ee;border-color:#5d8a50;color:#5d8a50;}',
         '.sync-time-msg{font-size:11px;color:#8d7365;font-weight:500;white-space:nowrap;opacity:0.8;font-family:serif;}',
+        '.pts-pop{animation:ptsPop .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:inline-block;}',
+        '@keyframes ptsPop{0%{transform:scale(1);}50%{transform:scale(1.25);color:#d85c50;}100%{transform:scale(1);}}',
+        '.floating-pts{position:absolute;pointer-events:none;color:#d85c50;font-weight:800;font-size:18px;z-index:9999;animation:floatPts .8s ease-out forwards;text-shadow:0 2px 4px rgba(0,0,0,0.1);}',
+        '@keyframes floatPts{0%{opacity:0;transform:translateY(0);}20%{opacity:1;transform:translateY(-15px);}100%{opacity:0;transform:translateY(-50px);}}',
         '@keyframes spinRate{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}'
     ].join('');
     document.head.appendChild(s);
