@@ -567,7 +567,7 @@ function initKrypton() {
                 hdr.querySelector('.cat-clr').onclick=function(e){
                     e.stopPropagation();
                     catPacks.forEach(function(p){
-                        var k=qKey(p.name,date); delete simQtyMap[k]; delete actQtyMap[k];
+                        var k=qKey(p.name,date); delete simQtyMap[k];
                     }); updateAll();
                 };
 
@@ -640,7 +640,7 @@ function initKrypton() {
         var clearCartBtn=document.getElementById('clearCartBtn');
         if (clearCartBtn) clearCartBtn.onclick=function(){
             var date=normDate(rechargeDateInput.value), packs=getActivePacks(currentVersion);
-            packs.forEach(function(p){ var k=qKey(p.name,date); delete simQtyMap[k]; delete actQtyMap[k]; });
+            packs.forEach(function(p){ var k=qKey(p.name,date); delete simQtyMap[k]; });
             updateAll();
         };
 
@@ -830,14 +830,33 @@ function initKrypton() {
             };
         }
 
-        var clearAllBtn=document.getElementById('clearAllRecordsBtn');
-        if (clearAllBtn) clearAllBtn.onclick=function(){
-            if(!confirm('确定清空所有记录？')) return;
-            simQtyMap={}; actQtyMap={};
-            localStorage.removeItem('ziyong_simQty'); localStorage.removeItem('ziyong_actQty');
-            localStorage.removeItem('ziyong_events_base'); localStorage.removeItem('ziyong_simulated'); localStorage.removeItem('ziyong_actual');
-            animStates={}; updateAll(); alert('已重置');
-        };
+        // ── 综合清空按钮 (全局) ──
+        function performGlobalClear() {
+            if(!confirm('确定要清空所有充值记录吗？（包括购物车和确认结算的记录）')) return;
+            console.log('[Krypton] 执行全局数据清空...');
+            simQtyMap = {}; 
+            actQtyMap = {};
+            // 清理所有已知的存储键
+            [
+                'ziyong_simQty', 'ziyong_actQty', 'ziyong_events_base', 
+                'ziyong_simulated', 'ziyong_actual', 'krypton_records'
+            ].forEach(function(k){ localStorage.removeItem(k); });
+            
+            animStates={};
+            updateAll();
+            alert('所有记录已清空');
+        }
+
+        var btnClearGlobal = document.getElementById('clearAllRecordsBtn') || document.getElementById('clearDataBtn');
+        if (btnClearGlobal) {
+            btnClearGlobal.addEventListener('click', function(e){
+                e.preventDefault();
+                performGlobalClear();
+            });
+            console.log('[Krypton] 全局清空按钮已绑定:', btnClearGlobal.id);
+        } else {
+            console.warn('[Krypton] 未找到全局清空按钮 (clearAllRecordsBtn / clearDataBtn)');
+        }
 
         // ── 总记录表 ──
         function updateRecordsTable() {
