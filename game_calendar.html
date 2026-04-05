@@ -154,12 +154,14 @@
                             <div class="cart-empty-msg">尚未选购礼包</div>
                         </div>
                         <div id="cartStats" class="cart-stats" style="display:none;">
-                            <div class="stat-row"><span>总抽数</span><span id="statDraws">-</span></div>
-                            <div class="stat-row"><span>平摊每抽</span><span id="statPerDraw">-</span></div>
-                            <div class="stat-row" id="usdRow" style="display:none;"><span>总价 (USD)</span><span
-                                    id="statTotalUsd">$0.00</span></div>
-                            <div class="stat-row stat-total"><span>总计 (CNY)</span><span id="statTotalPrice">¥0.00</span>
-                            </div>
+                            <div class="stat-divider dashed"></div>
+                            <div class="stat-row"><span>总抽数</span><span id="statDraws" class="stat-badge">-</span></div>
+                            <div class="stat-row"><span>平均每抽</span><span id="statPerDraw" class="stat-badge highlight">-</span></div>
+                            <div class="stat-row"><span>购物车积分</span><span id="statCartPts">-</span></div>
+                            <div class="stat-row stat-bold"><span>总积分 (含初始)</span><span id="statTotalPts" class="stat-badge highlight">-</span></div>
+                            <div class="stat-row" id="usdRow" style="display:none;"><span>总价 (USD)</span><span id="statTotalUsd">$0.00</span></div>
+                            <div class="stat-divider solid"></div>
+                            <div class="stat-row stat-total"><span>总计 (CNY)</span><span id="statTotalPrice">¥0.00</span></div>
                             <div class="cart-actions" style="margin-top: 15px;">
                                 <button id="checkoutBtn" class="cart-btn checkout-btn">确认结算</button>
                             </div>

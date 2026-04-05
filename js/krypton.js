@@ -610,9 +610,15 @@ function initKrypton() {
                 if (div) div.style.display='none';
             } else {
                 cartItemList.innerHTML=items.map(function(ci){
-                    return '<div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px; border-bottom:1px solid #e8e2d4; padding-bottom:4px;">'+
-                        '<span style="color:#5d4037; font-weight:600;">'+ci.p.name+'</span>'+
-                        '<span style="color:#8d7365;">×'+ci.sq+' ￥'+ci.cny.toFixed(2)+'</span></div>';
+                    var priceStr = currentVersion==='daihao'?(ci.p.priceUsd?'$'+(ci.p.priceUsd*ci.sq).toFixed(2):'¥'+ci.cny.toFixed(2)):'¥'+ci.cny.toFixed(2);
+                    var unitPrice = currentVersion==='daihao'?(ci.p.priceUsd?'$'+ci.p.priceUsd:'¥'+getPackCny(ci.p).toFixed(2)):'¥'+getPackCny(ci.p).toFixed(2);
+                    return '<div class="cart-row">'+
+                        '<div class="cart-row-top">'+
+                        '  <span class="cart-row-name">'+ci.p.name+'</span>'+
+                        '  <span class="cart-row-price">'+priceStr+'</span>'+
+                        '</div>'+
+                        '<div class="cart-row-sub">'+unitPrice+' × '+ci.sq+'</div>'+
+                        '</div>';
                 }).join('');
                 if (cartStats) {
                     cartStats.style.display='';
@@ -621,18 +627,24 @@ function initKrypton() {
                     
                     var sdEl=document.getElementById('statDraws');
                     var spEl=document.getElementById('statPerDraw');
+                    var scpEl=document.getElementById('statCartPts');
                     var sptEl=document.getElementById('statTotalPts');
                     var scEl=document.getElementById('statTotalPrice');
                     var usdRow=document.getElementById('usdRow');
                     var suEl=document.getElementById('statTotalUsd');
-                    if(sdEl) sdEl.textContent=totalDraws?(totalDraws % 1 === 0 ? totalDraws : totalDraws.toFixed(1))+'抽':'-';
-                    if(spEl) spEl.textContent=totalDraws?'￥'+(totalCny/totalDraws).toFixed(2):'-';
-                    if(sptEl) sptEl.textContent=totalPts+' 分';
+                    
+                    var base = getBasePts();
+                    var actPts = base + calcMapPts(actQtyMap);
+
+                    if(sdEl) sdEl.textContent=totalDraws?(totalDraws % 1 === 0 ? totalDraws : totalDraws.toFixed(1))+' 抽':'-';
+                    if(spEl) spEl.textContent=totalDraws?'¥'+(totalCny/totalDraws).toFixed(2):'-';
+                    if(scpEl) scpEl.textContent=totalPts+' 分';
+                    if(sptEl) sptEl.textContent=(actPts + totalPts).toLocaleString() + ' 分';
                     if(usdRow) {
                         usdRow.style.display=(currentVersion==='daihao' && totalUsd>0)?'flex':'none';
                         if(suEl) suEl.textContent='$'+totalUsd.toFixed(2);
                     }
-                    if(scEl) scEl.textContent='￥'+totalCny.toFixed(2);
+                    if(scEl) scEl.textContent='¥'+totalCny.toFixed(2);
                 }
             }
         }
@@ -950,17 +962,27 @@ function initKrypton() {
         '.activity-panel-title{font-size:14px;font-weight:700;color:#5d4037;letter-spacing:1px;}',
         '.activity-panel-body{padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;padding-bottom:30px;}',
         // 购物清单
-        '.cart-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:220px;}',
+        '.cart-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:none;width:100%;}',
         '.cart-panel-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
         '.cart-title{font-size:13px;font-weight:700;color:#5d4037;}',
-        '.cart-item-list{flex:1;overflow-y:auto;padding:8px 12px;padding-bottom:30px;}',
-        '.cart-empty-msg{font-size:12px;color:#aaa;text-align:center;padding:12px 0;}',
-        '.cart-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f0e8;}',
-        '.cart-row-name{color:#5d4037;font-weight:600;flex:1;}',
-        '.cart-row-info{color:#8d7365;margin-left:8px;}',
-        '.cart-stats{padding:8px 12px 15px 12px;border-top:1px solid #f0ebe0;}',
-        '.stat-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#7a6f66;}',
-        '.stat-total{font-weight:700;color:#3e3a33;font-size:13px;border-top:1px solid #e8e2d4;padding-top:5px;margin-top:3px;padding-bottom:4px;}',
+        '.cart-item-list{flex:none;padding:12px 12px 0;}',
+        '.cart-empty-msg{font-size:12px;color:#aaa;text-align:center;padding:20px 0;}',
+        '.cart-row{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid #f8f5f0;}',
+        '.cart-row:last-child{border-bottom:none;}',
+        '.cart-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}',
+        '.cart-row-name{font-size:14px;color:#3e3a33;font-weight:600;}',
+        '.cart-row-price{font-size:14px;color:#3e3a33;font-weight:700;}',
+        '.cart-row-sub{font-size:12px;color:#8d7365;}',
+        '.cart-stats{padding:0 12px 15px 12px;}',
+        '.stat-divider{margin:15px 0;}',
+        '.stat-divider.dashed{border-top:1.5px dashed #eee!important; border-bottom:none!important; border-left:none!important; border-right:none!important; height:0;}',
+        '.stat-divider.solid{display:none;}',
+        '.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin:12px 0;color:#555;}',
+        '.stat-bold{font-weight:700; color:#333;}',
+        '.stat-badge{background:#f8f9fa;color:#444;padding:3px 10px;border-radius:6px;font-weight:600;min-width:65px;text-align:center;font-size:13px;}',
+        '.stat-badge.highlight{background:#fff9e6;color:#a67c52;border:1px solid #ffeeba;}',
+        '.stat-total{margin-top:20px;padding-top:15px; border-top:1.2px solid #eee; align-items:center;color:#333;font-weight:700; display:flex; justify-content:space-between;}',
+        '.stat-total #statTotalPrice{font-size:32px;color:#a82e2e;font-weight:800;line-height:1;}',
         // 原版卡片
         '.ziyong-card{background:#fffefb;border:1.5px solid #e0d5c1;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
         '.ziyong-card:hover:not(.disabled){border-color:#c09d62;box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-2px);}',
