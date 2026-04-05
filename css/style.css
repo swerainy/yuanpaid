@@ -1438,32 +1438,105 @@
             gap: 15px;
         }
 
-        /* ================= 贤士二级分组样式 ================= */
+        /* ================= 贤士二级分组样式 (增强版) ================= */
+        .sub-category-section {
+            grid-column: 1 / -1; /* 跨越整个网格列 */
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
         .sub-category-header {
             width: 100%;
             margin: 15px 0 10px 0;
-            padding: 6px 12px;
-            background: rgba(232, 226, 212, 0.3);
-            border-left: 3px solid #a08060;
+            padding: 6px 15px;
+            background: linear-gradient(to right, rgba(232, 226, 212, 0.4), transparent);
+            border-left: 4px solid #a08060;
             font-size: 14px;
             font-weight: 700;
             color: #5d4037;
-            grid-column: 1 / -1; /* 跨越所有网格列 */
             display: flex;
             align-items: center;
-            border-radius: 0 4px 4px 0;
+            justify-content: space-between;
+            border-radius: 0 6px 6px 0;
             box-sizing: border-box;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .sub-category-header:hover {
+            background: linear-gradient(to right, rgba(232, 226, 212, 0.6), transparent);
         }
 
         .sub-category-header:first-child {
             margin-top: 5px;
         }
 
-        .sub-category-header::before {
+        .sub-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sub-title-row::before {
             content: "◆";
-            margin-right: 8px;
             font-size: 10px;
             color: #a08060;
+        }
+
+        .sub-toggle-icon {
+            font-size: 11px;
+            color: #8d7365;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        .sub-category-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .sub-cat-btn {
+            font-size: 10px;
+            padding: 1px 6px;
+            background-color: #fdfaf3;
+            border: 1px solid #d5c8b2;
+            border-radius: 3px;
+            color: #8d7365;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .sub-cat-btn:hover {
+            background-color: #a08060;
+            color: #fdfaf3;
+            border-color: #a08060;
+        }
+
+        /* 二级分类内容平滑动画 */
+        .sub-category-content-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .sub-category-content-wrapper.collapsed {
+            grid-template-rows: 0fr;
+        }
+
+        .sub-category-content-inner {
+            min-height: 0;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        /* 覆盖二级内部网格，由于已经在 grid-column: 1/-1 的 section 内，正常显示即可 */
+        .sub-category-content-inner .category-grid {
+            padding-top: 0;
         }
 
 

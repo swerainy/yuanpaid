@@ -253,6 +253,7 @@ function initKrypton() {
         var activeCategory = '全部';
         var drawFilter = 'all';
         var collapsedCats = {};
+        var collapsedSubCats = {}; // key = "category|subCategory" → bool
         // qty-map: key = "packName|YYYY-MM-DD" → count
         var simQtyMap = {};
         var actQtyMap = {};
@@ -642,11 +643,49 @@ function initKrypton() {
                     subOrder.sort();
                     subOrder.forEach(function (sid) {
                         var subName = subNames[sid] || '其他';
+                        var skey = cat + '|' + subName;
+                        var subIsCollapsed = !!collapsedSubCats[skey];
+                        var subGroupPacks = subGroups[sid];
+
+                        var subSec = document.createElement('div');
+                        subSec.className = 'sub-category-section';
+
                         var subHdr = document.createElement('div');
                         subHdr.className = 'sub-category-header';
-                        subHdr.textContent = subName;
-                        grid.appendChild(subHdr);
-                        subGroups[sid].forEach(function (p) { renderCard(p, grid); });
+                        subHdr.innerHTML = '<div class="sub-title-row"><span class="sub-title-text">' + subName + '</span><span class="sub-toggle-icon">' + (subIsCollapsed ? '展开 ▼' : '收起 ▲') + '</span></div>' +
+                                           '<div class="sub-category-actions"><button class="sub-cat-btn sub-selall">全选</button><button class="sub-cat-btn sub-clr">清空</button></div>';
+
+                        var subWrapper = document.createElement('div');
+                        subWrapper.className = 'sub-category-content-wrapper' + (subIsCollapsed ? ' collapsed' : '');
+                        var subInner = document.createElement('div');
+                        subInner.className = 'sub-category-content-inner';
+                        var subGrid = document.createElement('div');
+                        subGrid.className = 'category-grid';
+
+                        subInner.appendChild(subGrid);
+                        subWrapper.appendChild(subInner);
+                        
+                        subGroupPacks.forEach(function (p) { renderCard(p, subGrid); });
+
+                        // 子分类头点击折叠逻辑
+                        subHdr.onclick = function() {
+                            collapsedSubCats[skey] = !collapsedSubCats[skey];
+                            subWrapper.classList.toggle('collapsed', collapsedSubCats[skey]);
+                            subHdr.querySelector('.sub-toggle-icon').textContent = collapsedSubCats[skey] ? '展开 ▼' : '收起 ▲';
+                        };
+                        subHdr.querySelector('.sub-selall').onclick = function(e) {
+                            e.stopPropagation();
+                            subGroupPacks.forEach(function(p) { if (getSQ(p.name, date) < (p.limit || 1)) addSim(p, date); });
+                        };
+                        subHdr.querySelector('.sub-clr').onclick = function(e) {
+                            e.stopPropagation();
+                            subGroupPacks.forEach(function(p) { delete simQtyMap[qKey(p.name, date)]; });
+                            updateAll();
+                        };
+
+                        subSec.appendChild(subHdr);
+                        subSec.appendChild(subWrapper);
+                        grid.appendChild(subSec);
                     });
                 } else {
                     catPacks.forEach(function (p) { renderCard(p, grid); });
