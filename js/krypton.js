@@ -247,7 +247,7 @@ function initKrypton() {
 
         // ── 状态 ──
         var currentVersion = 'daihao';
-        var exchangeRate = 7.2;
+        var exchangeRate = parseFloat(localStorage.getItem('ziyong_exchangeRate')) || 7.2;
         var eventsData = [];
         var animStates = {};
         var activeCategory = '全部';
@@ -358,7 +358,13 @@ function initKrypton() {
         function updateRate(val) {
             exchangeRate = parseFloat(val) || 7.2;
             if (exchangeRateInput) exchangeRateInput.value = val;
+            localStorage.setItem('ziyong_exchangeRate', val);
             renderPacks(); renderCart();
+        }
+        function fetchExchangeRate() {
+            fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json();}).then(function(d){
+                if(d&&d.rates&&d.rates.CNY){ var r=d.rates.CNY; console.log('[Krypton] 汇率同步成功:',r); updateRate(r.toFixed(4)); }
+            }).catch(function(e){ console.warn('[Krypton] 自动汇率同步失败,使用现有值',e); });
         }
         if (exchangeRateInput) exchangeRateInput.addEventListener('input', function (e) { updateRate(e.target.value); });
 
@@ -949,6 +955,7 @@ function initKrypton() {
         setTimeout(function () {
             loadEvents();
             if (!eventsData.length && window.calendar) setTimeout(loadEvents, 1000);
+            fetchExchangeRate();
             syncStickyOffset();
             console.log('[Krypton] v3 完成');
         }, 800);
