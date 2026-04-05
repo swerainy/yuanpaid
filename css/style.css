@@ -1419,17 +1419,27 @@
         .category-content-wrapper {
             display: grid;
             grid-template-rows: 1fr;
-            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
+            opacity: 1;
+            visibility: visible;
         }
 
         .category-content-wrapper.collapsed {
             grid-template-rows: 0fr;
+            opacity: 0;
+            visibility: hidden;
         }
 
         .category-content-inner {
             min-height: 0;
             padding-top: 5px;
+            transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .category-content-wrapper.collapsed .category-content-inner {
+            padding-top: 0;
         }
 
         .category-grid {
@@ -1519,19 +1529,30 @@
         .sub-category-content-wrapper {
             display: grid;
             grid-template-rows: 1fr;
-            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             width: 100%;
+            opacity: 1;
+            visibility: visible;
         }
 
         .sub-category-content-wrapper.collapsed {
             grid-template-rows: 0fr;
+            opacity: 0;
+            visibility: hidden;
         }
 
         .sub-category-content-inner {
             min-height: 0;
             padding-top: 5px;
             padding-bottom: 5px;
+            transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sub-category-content-wrapper.collapsed .sub-category-content-inner {
+            padding-top: 0;
+            padding-bottom: 0;
         }
 
         /* 覆盖二级内部网格，由于已经在 grid-column: 1/-1 的 section 内，正常显示即可 */

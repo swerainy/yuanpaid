@@ -226,10 +226,10 @@ function getActivePacks(version) {
 
 
 // ==============================================================
-//  initKrypton v3 — qty-map状态 + 原版卡片 + 购物车 + 粘性栏
+//  initKrypton v4 — qty-map状态 + 原版卡片 + 购物车 + 粘性栏 + 二级分类修复
 // ==============================================================
 function initKrypton() {
-    console.log('[Krypton] v3 初始化中...');
+    console.log('[Krypton] v4 初始化中...');
     try {
         var rechargeDateInput = document.getElementById('rechargeDate');
         var totalActualPtsEl = document.getElementById('totalActualPts');
@@ -289,7 +289,7 @@ function initKrypton() {
             f.style.left = x + 'px'; f.style.top = y + 'px';
             f.innerText = (val >= 0 ? '+' : '') + val;
             document.body.appendChild(f);
-            setTimeout(function(){ f.remove(); }, 800);
+            setTimeout(function () { f.remove(); }, 800);
         }
         function setAnimFloat(el, v, prefix, suffix, fix) {
             if (!el) return;
@@ -395,12 +395,12 @@ function initKrypton() {
                         var r = d.rates.CNY;
                         console.log('[Krypton] 汇率同步成功:', r);
                         updateRate(r.toFixed(4));
-                        if(btn) {
+                        if (btn) {
                             btn.classList.remove('syncing');
                             btn.classList.add('success');
-                            setTimeout(function(){ btn.classList.remove('success'); }, 1000);
+                            setTimeout(function () { btn.classList.remove('success'); }, 1000);
                         }
-                        if(timeMsg) {
+                        if (timeMsg) {
                             var now = new Date();
                             var mon = (now.getMonth() + 1).toString();
                             var day = now.getDate().toString();
@@ -420,7 +420,7 @@ function initKrypton() {
                 });
         }
         var syncRateBtn = document.getElementById('syncRateBtn');
-        if (syncRateBtn) syncRateBtn.onclick = function(e){ e.stopPropagation(); fetchExchangeRate(); };
+        if (syncRateBtn) syncRateBtn.onclick = function (e) { e.stopPropagation(); fetchExchangeRate(); };
         if (exchangeRateInput) exchangeRateInput.addEventListener('input', function (e) { updateRate(e.target.value); });
 
         function syncVersion(ver) {
@@ -600,10 +600,10 @@ function initKrypton() {
                         '</div>';
 
                     var pval = card.querySelector('.price-val');
-                    if (pval) { 
-                        pval.id = 'p-' + cid; 
+                    if (pval) {
+                        pval.id = 'p-' + cid;
                         var isUsd = currentVersion === 'daihao' && p.priceUsd;
-                        setAnimFloat(pval, isUsd ? p.priceUsd : cny, (isUsd ? '$' : '¥'), '', 2); 
+                        setAnimFloat(pval, isUsd ? p.priceUsd : cny, (isUsd ? '$' : '¥'), '', 2);
                     }
                     var csval = card.querySelector('.cny-small-val');
                     if (csval) { csval.id = 'cs-' + cid; setAnimFloat(csval, cny, '≈¥', '', 0); }
@@ -625,9 +625,9 @@ function initKrypton() {
                     var plusBtn = card.querySelector('.qty-plus');
                     if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, p.pts); };
                     var minBtn = card.querySelector('.qty-min');
-                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); var pts = -sq*p.pts; delete simQtyMap[qKey(p.name, date)]; updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
+                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); var pts = -sq * p.pts; delete simQtyMap[qKey(p.name, date)]; updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
                     var maxBtn = card.querySelector('.qty-max');
-                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim-aq-sq)*p.pts; simQtyMap[qKey(p.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
+                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim - aq - sq) * p.pts; simQtyMap[qKey(p.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
                     targetGrid.appendChild(card);
                 }
 
@@ -653,7 +653,7 @@ function initKrypton() {
                         var subHdr = document.createElement('div');
                         subHdr.className = 'sub-category-header';
                         subHdr.innerHTML = '<div class="sub-title-row"><span class="sub-title-text">' + subName + '</span><span class="sub-toggle-icon">' + (subIsCollapsed ? '展开 ▼' : '收起 ▲') + '</span></div>' +
-                                           '<div class="sub-category-actions"><button class="sub-cat-btn sub-selall">全选</button><button class="sub-cat-btn sub-clr">清空</button></div>';
+                            '<div class="sub-category-actions"><button class="sub-cat-btn sub-selall">全选</button><button class="sub-cat-btn sub-clr">清空</button></div>';
 
                         var subWrapper = document.createElement('div');
                         subWrapper.className = 'sub-category-content-wrapper' + (subIsCollapsed ? ' collapsed' : '');
@@ -664,22 +664,22 @@ function initKrypton() {
 
                         subInner.appendChild(subGrid);
                         subWrapper.appendChild(subInner);
-                        
+
                         subGroupPacks.forEach(function (p) { renderCard(p, subGrid); });
 
                         // 子分类头点击折叠逻辑
-                        subHdr.onclick = function() {
+                        subHdr.onclick = function () {
                             collapsedSubCats[skey] = !collapsedSubCats[skey];
                             subWrapper.classList.toggle('collapsed', collapsedSubCats[skey]);
                             subHdr.querySelector('.sub-toggle-icon').textContent = collapsedSubCats[skey] ? '展开 ▼' : '收起 ▲';
                         };
-                        subHdr.querySelector('.sub-selall').onclick = function(e) {
+                        subHdr.querySelector('.sub-selall').onclick = function (e) {
                             e.stopPropagation();
-                            subGroupPacks.forEach(function(p) { if (getSQ(p.name, date) < (p.limit || 1)) addSim(p, date); });
+                            subGroupPacks.forEach(function (p) { if (getSQ(p.name, date) < (p.limit || 1)) addSim(p, date); });
                         };
-                        subHdr.querySelector('.sub-clr').onclick = function(e) {
+                        subHdr.querySelector('.sub-clr').onclick = function (e) {
                             e.stopPropagation();
-                            subGroupPacks.forEach(function(p) { delete simQtyMap[qKey(p.name, date)]; });
+                            subGroupPacks.forEach(function (p) { delete simQtyMap[qKey(p.name, date)]; });
                             updateAll();
                         };
 
@@ -1108,7 +1108,7 @@ function initKrypton() {
             if (!eventsData.length && window.calendar) setTimeout(loadEvents, 1000);
             fetchExchangeRate();
             syncStickyOffset();
-            console.log('[Krypton] v3 完成');
+            console.log('[Krypton] v4 完成');
         }, 800);
         // 也可额外在 updateAll() 中同步（防止内容折行引起高度变化）
         var oldUpdateAll = updateAll;
