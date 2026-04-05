@@ -1163,7 +1163,7 @@
             display: flex;
             gap: 20px;
             justify-content: flex-end;
-            width: 100%;
+            width: auto;
         }
 
         .pts-box {
@@ -1231,10 +1231,13 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            flex-wrap: wrap;
+            row-gap: 12px;
+            column-gap: 15px;
         }
-
+        
         .bar-top-row {
-            padding-bottom: 8px;
+            padding-bottom: 10px;
             border-bottom: 1px solid rgba(232, 226, 212, 0.4);
         }
 
@@ -1265,7 +1268,10 @@
         .ziyong-control-bar .bar-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 280px;
         }
 
         .ziyong-control-bar .total-pts-overview {
@@ -2577,34 +2583,28 @@
 }
 
 /* 版本对应宽度调整 & 移动端适配排版 */
-@media (max-width: 900px) {
-    .plan-layout {
-        grid-template-columns: 1fr;
+    @media (max-width: 900px) {
+        .plan-layout {
+            grid-template-columns: 1fr;
+        }
+        .cart-panel {
+            position: static;
+        }
+        
+        .ziyong-control-bar {
+            padding: 10px;
+            gap: 8px;
+        }
+        .ziyong-control-bar .helper-text.desktop-only {
+            display: none;
+        }
+        .ziyong-control-bar .total-pts-overview {
+            gap: 15px;
+        }
+        .total-pts-overview .pts-box {
+            padding: 4px 8px;
+        }
     }
-    .cart-panel {
-        position: static;
-    }
-    
-    .ziyong-control-bar {
-        padding: 10px;
-        gap: 8px;
-    }
-    .ziyong-control-bar .bar-left #rateInputGroup {
-        display: none !important;
-    }
-    .ziyong-control-bar .helper-text.desktop-only {
-        display: none;
-    }
-    .ziyong-control-bar .total-pts-overview {
-        gap: 5px;
-    }
-    .ziyong-control-bar .total-pts-overview span.label {
-        display: none;
-    }
-    .total-pts-overview .pts-box {
-        padding: 4px 8px;
-    }
-}
 
 /* 汇率/积分对照表 Tabs 样式 */
 .currency-tabs {
