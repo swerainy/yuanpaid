@@ -362,10 +362,46 @@ function initKrypton() {
             renderPacks(); renderCart();
         }
         function fetchExchangeRate() {
-            fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json();}).then(function(d){
-                if(d&&d.rates&&d.rates.CNY){ var r=d.rates.CNY; console.log('[Krypton] 汇率同步成功:',r); updateRate(r.toFixed(4)); }
-            }).catch(function(e){ console.warn('[Krypton] 自动汇率同步失败,使用现有值',e); });
+            var btn = document.getElementById('syncRateBtn');
+            var timeMsg = document.getElementById('syncTimeMsg');
+            if (btn) btn.classList.add('syncing');
+
+            fetch('https://open.er-api.com/v6/latest/USD')
+                .then(function (r) {
+                    if (!r.ok) throw new Error('Network response was not ok');
+                    return r.json();
+                })
+                .then(function (d) {
+                    if (d && d.rates && d.rates.CNY) {
+                        var r = d.rates.CNY;
+                        console.log('[Krypton] 汇率同步成功:', r);
+                        updateRate(r.toFixed(4));
+                        if(btn) {
+                            btn.classList.remove('syncing');
+                            btn.classList.add('success');
+                            setTimeout(function(){ btn.classList.remove('success'); }, 1000);
+                        }
+                        if(timeMsg) {
+                            var now = new Date();
+                            var mon = (now.getMonth() + 1).toString();
+                            var day = now.getDate().toString();
+                            var hh = now.getHours().toString().padStart(2, '0');
+                            var mm = now.getMinutes().toString().padStart(2, '0');
+                            var ss = now.getSeconds().toString().padStart(2, '0');
+                            timeMsg.innerText = '最新同步时间: ' + mon + '月' + day + '日 ' + hh + ':' + mm + ':' + ss;
+                        }
+                    } else {
+                        throw new Error('Invalid data format');
+                    }
+                })
+                .catch(function (e) {
+                    console.warn('[Krypton] 自动汇率同步失败,使用现有值', e);
+                    if (btn) btn.classList.remove('syncing');
+                    alert('⚠️ 汇率实时更新失败：' + e.message + '\n请检查网络或稍后重试。');
+                });
         }
+        var syncRateBtn = document.getElementById('syncRateBtn');
+        if (syncRateBtn) syncRateBtn.onclick = function(e){ e.stopPropagation(); fetchExchangeRate(); };
         if (exchangeRateInput) exchangeRateInput.addEventListener('input', function (e) { updateRate(e.target.value); });
 
         function syncVersion(ver) {
@@ -705,7 +741,20 @@ function initKrypton() {
             localStorage.setItem('ziyong_events_base', JSON.stringify(sb)); updateAll();
         }
         if (activityContainer) activityContainer.addEventListener('change', handleBaseChange);
-        if (yuanqiContainer) yuanqiContainer.addEventListener('change', handleBaseChange);
+        if (yuanqiContainer) {
+            yuanqiContainer.addEventListener('change', handleBaseChange);
+            yuanqiContainer.addEventListener('click', function (e) {
+                if (e.target.classList.contains('yuanqi-calc-btn')) {
+                    var inp = yuanqiContainer.querySelector('.yuanqi-target-input');
+                    if (inp) { localStorage.setItem('ziyong_yuanqi_target', inp.value); updateAll(); }
+                }
+            });
+            yuanqiContainer.addEventListener('input', function (e) {
+                if (e.target.classList.contains('yuanqi-target-input')) {
+                    localStorage.setItem('ziyong_yuanqi_target', e.target.value);
+                }
+            });
+        }
 
         function mkBar(act, sim, max) {
             var pA = Math.min(act / (max || 1) * 100, 100).toFixed(1), pS = Math.min(sim / (max || 1) * 100, 100).toFixed(1);
@@ -718,31 +767,50 @@ function initKrypton() {
         function renderYuanqi(date) {
             if (!yuanqiContainer) return;
             var c1s = '2025-05-01', c1e = '2026-04-30', c2s = '2023-03-30', c2e = '2026-04-30';
-            var c1b = getCovBasePts('鸢起年度', c1s, c1e);
-            var c1a = c1b + calcRangePts(actQtyMap, c1s, c1e);
-            var c1si = c1b + calcRangePts(simQtyMap, c1s, c1e);
-            var c2b = getCovBasePts('鸢起长期', c2s, c2e);
-            var c2a = c2b + calcRangePts(actQtyMap, c2s, c2e);
-            var c2si = c2b + calcRangePts(simQtyMap, c2s, c2e);
-            var tiers = KRYPTON_DATA.rewardTiers, boxes = 0, next = tiers[0];
-            for (var i = 0; i < tiers.length; i++) { if (c2a >= tiers[i]) { boxes++; next = tiers[i + 1] || tiers[tiers.length - 1]; } }
+            var c1b = getCovBasePts('鸢起年度', c1s, c1e), c1a = c1b + calcRangePts(actQtyMap, c1s, c1e), c1si = c1b + calcRangePts(simQtyMap, c1s, c1e);
+            var c2b = getCovBasePts('鸢起长期', c2s, c2e), c2a = c2b + calcRangePts(actQtyMap, c2s, c2e), c2si = c2b + calcRangePts(simQtyMap, c2s, c2e);
+            var tiers = KRYPTON_DATA.rewardTiers, boxes = 0, next = tiers[tiers.length - 1];
+            for (var i = 0; i < tiers.length; i++) { if (c2a >= tiers[i]) boxes++; if (c2si < tiers[i] && next === tiers[tiers.length - 1]) next = tiers[i]; }
+
+            var targetVal = localStorage.getItem('ziyong_yuanqi_target') || '60000';
+            var remaining = Math.max(0, parseInt(targetVal) - c1si);
+
             yuanqiContainer.innerHTML =
-                '<div class="activity-item"><div class="activity-header"><div class="activity-info">' +
-                '<span class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></span>' +
-                '<div class="activity-pts">年度 <span class="actual-val">' + c1a.toLocaleString() + '</span>/60,000' +
-                (c1si > c1a ? ' <span class="sim-val">(模拟' + c1si.toLocaleString() + ')</span>' : '') + '</div></div>' +
-                mkBaseInput('鸢起年度', c1b) + '</div>' +
-                '<div class="activity-content-wrapper"><div class="activity-content-inner">' +
-                '<div class="activity-subtitle">条件一：年度累充60,000 (25/05~26/04)</div>' +
-                mkBar(c1a, c1si, 60000) +
-                '<div class="activity-tier">' + (c1a >= 60000 ? '<span class="tier-done">✓ 已达成</span>' : '差 <b>' + (60000 - c1a).toLocaleString() + '</b>') + '</div>' +
-                '<div class="activity-subtitle" style="margin-top:8px">条件二：长期兑换礼盒 (23/03~26/04) ' + mkBaseInput('鸢起长期', c2b) + '</div>' +
-                '<div class="activity-pts">长期 <span class="actual-val">' + c2a.toLocaleString() + '</span>' +
-                (c2si > c2a ? ' <span class="sim-val">(模拟' + c2si.toLocaleString() + ')</span>' : '') +
-                ' · 可领 <b style="color:#d85c50;font-size:1.1em">' + boxes + '</b> 个</div>' +
-                mkBar(c2a, c2si, next) +
-                '<div class="activity-tier">' + (c2a >= 750000 ? '<span class="tier-done">✓ 满档</span>' : '距下一礼盒(' + next.toLocaleString() + '): <b>' + (next - c2a).toLocaleString() + '</b>') + '</div>' +
-                '</div></div></div>';
+                '<div class="activity-item">' +
+                '  <div class="activity-header">' +
+                '    <div class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></div>' +
+                '    <div class="target-calc-group">' +
+                '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
+                '    </div>' +
+                '  </div>' +
+                '  <div class="activity-content-wrapper">' +
+                '    <div class="act-segment">' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-small">条件一: 年度累充满 60,000 积分 (25/05/01-26/04/30)</div>' +
+                '        <div class="target-calc-group">基础 ' + mkBaseInput('鸢起年度', c1b) + '</div>' +
+                '      </div>' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-med">年度累充进度</div>' +
+                '        <div class="act-val-row">实际: <span class="act-val-actual">' + c1a.toLocaleString() + '</span> (模拟: ' + c1si.toLocaleString() + ') / 60,000</div>' +
+                '      </div>' +
+                '      ' + mkBar(c1a, c1si, 60000) +
+                '      <div class="act-footer-right">距目的地还差: ' + remaining.toLocaleString() + '</div>' +
+                '    </div>' +
+                '    <div class="dashed-divider"></div>' +
+                '    <div class="act-segment">' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-small">条件二: 长期充值兑换礼盒 (23/03/30-26/04/30)</div>' +
+                '        <div class="target-calc-group">基础 ' + mkBaseInput('鸢起长期', c2b) + '</div>' +
+                '      </div>' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-med">当前可领: <span class="act-val-actual">' + boxes + '</span> 个</div>' +
+                '        <div class="act-val-row">实际: <span class="act-val-actual">' + c2a.toLocaleString() + '</span> (模拟: ' + c2si.toLocaleString() + ') / ' + next.toLocaleString() + '</div>' +
+                '      </div>' +
+                '      ' + mkBar(c2a, c2si, next) +
+                '      <div class="act-footer-right">距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString() + '</div>' +
+                '    </div>' +
+                '  </div>' +
+                '</div>';
             attachCollapse(yuanqiContainer);
         }
 
@@ -750,31 +818,37 @@ function initKrypton() {
             if (!activityContainer) return;
             activityContainer.innerHTML = '';
             var active = eventsData.filter(function (e) {
-                if (e.title.includes('鸢起礼盒')) return false;
-                if (['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
-                return date >= e.start && date <= e.end && (e.title.includes('累充') || e.type === 'pool' || e.type === 'anniversary' || e.type === 'palace');
+                if (e.title.includes('鸢起礼盒') || ['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
+                return date >= e.start && date <= e.end && (e.title.includes('累充') || ['pool', 'anniversary', 'palace'].includes(e.type));
             });
             if (!active.length) {
                 if (!(date >= '2023-03-30' && date <= '2026-04-30')) activityContainer.innerHTML = '<div class="no-activity">当前日期无累充活动</div>';
                 return;
             }
             active.forEach(function (act) {
-                var base = getCovBasePts(act.title, act.start, act.end);
-                var actA = base + calcRangePts(actQtyMap, act.start, act.end);
-                var actS = base + calcRangePts(simQtyMap, act.start, act.end);
-                var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000];
-                var maxT = Math.max.apply(null, T), nextT = null;
-                for (var i = 0; i < T.length; i++) { if (actA < T[i]) { nextT = T[i]; break; } } if (!nextT) nextT = maxT;
+                var base = getCovBasePts(act.title, act.start, act.end), actA = base + calcRangePts(actQtyMap, act.start, act.end), actS = base + calcRangePts(simQtyMap, act.start, act.end);
+                var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000], maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
+                for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
                 var fD = function (d) { return d.split('-').slice(1).join('/'); };
                 var div = document.createElement('div'); div.className = 'activity-item';
-                div.innerHTML = '<div class="activity-header"><div class="activity-info">' +
-                    '<span class="activity-title">' + act.title + ' <span style="font-size:10px;opacity:.7">(' + fD(act.start) + '~' + fD(act.end) + ')</span> <span class="toggle-icon">▼</span></span>' +
-                    '<div class="activity-pts">实际: <span class="actual-val">' + actA.toLocaleString() + '</span>' + (actS > actA ? ' <span class="sim-val">(模拟' + actS.toLocaleString() + ')</span>' : '') + '</div>' +
-                    '</div>' + mkBaseInput(act.title, base) + '</div>' +
-                    '<div class="activity-content-wrapper"><div class="activity-content-inner">' +
-                    mkBar(actA, actS, nextT) +
-                    '<div class="activity-tier">' + (actA >= maxT ? '<span class="tier-done">✓ 满档</span>' : '距下档(' + nextT.toLocaleString() + '): <b>' + (nextT - actA).toLocaleString() + '</b>') + '</div>' +
-                    '</div></div>';
+                div.innerHTML =
+                    '<div class="activity-header">' +
+                    '  <div class="activity-title">' + act.title + ' <span style="font-size:10px;opacity:.7">(' + fD(act.start) + '~' + fD(act.end) + ')</span> <span class="toggle-icon">▼</span></div>' +
+                    '</div>' +
+                    '<div class="activity-content-wrapper">' +
+                    '  <div class="act-segment">' +
+                    '    <div class="act-row">' +
+                    '      <div class="act-label-small">累充计算中 (包含基础值)</div>' +
+                    '      <div class="target-calc-group">基础 ' + mkBaseInput(act.title, base) + '</div>' +
+                    '    </div>' +
+                    '    <div class="act-row">' +
+                    '      <div class="act-label-med">当前累充进度</div>' +
+                    '      <div class="act-val-row">实际: <span class="act-val-actual">' + actA.toLocaleString() + '</span> (模拟: ' + actS.toLocaleString() + ') / ' + nextT.toLocaleString() + '</div>' +
+                    '    </div>' +
+                    '    ' + mkBar(actA, actS, nextT) +
+                    '    <div class="act-footer-right">' + (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString()) + '</div>' +
+                    '  </div>' +
+                    '</div>';
                 activityContainer.appendChild(div);
             });
             attachCollapse(activityContainer);
@@ -1042,35 +1116,45 @@ function initKrypton() {
         '.cat-btn{padding:2px 8px;border:1px solid #d5c8b2;border-radius:4px;background:#fff;color:#7a6f66;font-size:11px;cursor:pointer;transition:all .15s;}',
         '.cat-btn:hover{background:#f2e6ce;border-color:#c09d62;}',
         // 活动进度
-        '.activity-item{background:#fdfaf3;border:1px solid #e8e2d4;border-radius:8px;padding:10px 12px;margin-bottom:15px;}',
-        '.activity-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;}',
-        '.activity-info{flex:1;min-width:0;}',
-        '.activity-title{font-size:12px;font-weight:700;color:#5d4037;cursor:pointer;user-select:none;line-height:1.4;display:block;}',
-        '.activity-subtitle{font-size:10px;color:#8d7365;margin:3px 0;}',
-        '.activity-pts{font-size:10px;color:#7a6f66;margin-top:2px;}',
-        '.actual-val{font-weight:700;color:#d85c50;}',
-        '.sim-val{color:#a08060;}',
-        '.base-input-group{display:inline-flex;align-items:center;gap:2px;flex-shrink:0;}',
-        '.base-input-group label{font-size:9px;color:#a08060;}',
-        '.activity-tier{font-size:10px;color:#7a6f66;margin-top:4px;}',
-        '.tier-done{color:#5d8a50;font-weight:700;}',
-        '.activity-content-wrapper{overflow:hidden;transition:max-height .3s ease,opacity .25s;max-height:300px;opacity:1;}',
+        '.activity-item{background:#fffefb;border:1.2px solid #edebd8;border-radius:10px;padding:12px 15px;margin-bottom:18px;}',
+        '.activity-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid rgba(237,235,216,0.5);padding-bottom:8px;}',
+        '.activity-title{font-size:14px;font-weight:700;color:#c05b4d;cursor:pointer;user-select:none;}',
+        '.target-calc-group{display:flex;align-items:center;gap:5px;font-size:11px;color:#a08060;margin-left:auto;}',
+        '.target-input-box{width:65px;border:1px solid #e8e2d4;border-radius:6px;padding:2px 6px;font-size:11px;text-align:center;}',
+        '.calc-btn{background:#d85c50;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-weight:700;}',
+        '.act-segment{margin:10px 0;}',
+        '.act-row{display:flex;justify-content:space-between;align-items:center;margin:4px 0;}',
+        '.act-label-small{font-size:11px;color:#b8a598;}',
+        '.act-label-med{font-size:12px;color:#5d4037;font-weight:600;}',
+        '.act-val-row{font-size:11px;color:#4a3b32;font-weight:500;}',
+        '.act-val-actual{color:#d85c50;font-weight:700;}',
+        '.act-footer-right{text-align:right;font-size:10px;color:#b0998f;margin-top:2px;}',
+        '.dashed-divider{border-top:1px dashed #e8e2d4;margin:12px 0;}',
+        '.activity-content-wrapper{overflow:hidden;transition:max-height .3s ease,opacity .25s;max-height:600px;opacity:1;}',
         '.activity-content-wrapper.collapsed{max-height:0!important;opacity:0;}',
-        '.activity-content-inner{padding-top:4px;}',
         '.toggle-icon{font-size:9px;margin-left:3px;vertical-align:middle;transition:transform .25s;display:inline-block;}',
         '.toggle-icon.collapsed{transform:rotate(-90deg);}',
-        // 进度条
-        '.progress-bar-bg{height:5px;background:#ede8dc;border-radius:3px;position:relative;overflow:hidden;margin:4px 0;}',
-        '.progress-bar{height:100%;border-radius:3px;position:absolute;top:0;left:0;transition:width .5s ease;}',
-        '.progress-bar.simulated{background:rgba(212,168,71,.45);}',
-        '.progress-bar.actual{background:#d85c50;}',
+        '.progress-bar-bg{height:5px;background:#efede8;border-radius:3px;overflow:hidden;position:relative;margin:6px 0;}',
+        '.progress-bar{height:100%;position:absolute;left:0;top:0;transition:width .4s ease;}',
+        '.progress-bar.actual{background:#b0998f;}',
+        '.progress-bar.simulated{background:#d0c4ba;}',
         // 货币下拉
         '.custom-select{position:relative;display:inline-block;min-width:60px;}',
         '.select-selected{cursor:pointer;padding:2px 6px;border-radius:4px;border:1px solid #d5c8b2;background:#fff;font-size:12px;}',
         '.select-items{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #d5c8b2;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:100;min-width:80px;}',
         '.custom-select.open .select-items{display:block;}',
         '.select-items div{padding:5px 10px;cursor:pointer;font-size:12px;color:#5d4037;}',
-        '.select-items div:hover,.select-items div.active{background:#f2e6ce;color:#c09d62;}'
+        '.select-items div:hover,.select-items div.active{background:#f2e6ce;color:#c09d62;}',
+        // 汇率按钮与时间提示 (自定义 SVG 版)
+        '.rate-input-wrapper{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;}',
+        '.sync-rate-btn{padding:3px;background:#fdfaf3;border:1px solid #d5c8b2;border-radius:4px;cursor:pointer;line-height:1;transition:all .2s ease;display:flex;align-items:center;justify-content:center;color:#a08060;box-shadow:0 1px 2px rgba(0,0,0,0.05);}',
+        '.sync-rate-btn:hover{background:#f2e6ce;border-color:#c09d62;color:#5d4037;}',
+        '.sync-rate-btn:active{transform:translateY(1px);box-shadow:none;}',
+        '.sync-icon{width:14px;height:14px;stroke:currentColor;stroke-width:3;transition:transform .5s ease;}',
+        '.sync-rate-btn.syncing .sync-icon{animation:spinRate 1s linear infinite;}',
+        '.sync-rate-btn.success{background:#edf8ee;border-color:#5d8a50;color:#5d8a50;}',
+        '.sync-time-msg{font-size:11px;color:#8d7365;font-weight:500;white-space:nowrap;opacity:0.8;font-family:serif;}',
+        '@keyframes spinRate{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}'
     ].join('');
     document.head.appendChild(s);
 })();
