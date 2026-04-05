@@ -1018,7 +1018,7 @@
 
         @keyframes tabFadeIn {
             from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; transform: none; }
         }
 
         /* Êé®ËçêÊñπÊ°àÂå∫Âüü */
@@ -1250,7 +1250,16 @@
             flex-direction: row !important;
             align-items: center !important;
             gap: 20px !important;
-            width: 100%;
+            width: auto !important;
+        }
+        
+        .ziyong-control-bar .helper-text {
+            font-size: 11px;
+            color: #8d7365;
+            font-style: italic;
+            opacity: 0.8;
+            margin: 0;
+            white-space: nowrap;
         }
         
         .ziyong-control-bar .bar-left {
@@ -1991,44 +2000,52 @@
 /* Áªü‰∏ÄÊî∂ÊçÆÈù¢ÊùøÂèä‰æßÊ†èÂåÖË£π */
 .right-column {
     position: sticky;
-    top: 15px;
+    top: 220px;
     align-self: flex-start;
-    max-height: calc(100vh - 30px);
+    max-height: calc(100vh - 240px);
     display: flex;
     flex-direction: column;
     gap: 15px;
-    overflow-y: auto;
+    overflow-y: auto !important;
+    overflow-x: visible !important;
     padding-right: 5px;
 }
 
 /* Á≤òÊÄßÊ†èÊ†∑Âºè‰ºòÂåñ */
 
 
-.receipt-panel {
-    background: #fff;
-    border-radius: 16px;
-    border: 1px solid #eaddcf;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.04);
+#cartPanel, #activityPanel, .cart-panel, .activity-panel, .receipt-panel {
+    background: #fff !important;
+    border-radius: 16px !important;
+    border: 1px solid #eaddcf !important;
+    overflow: visible !important;
+    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.04) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: none !important;
+    height: auto !important;
+    min-height: 100px !important;
 }
 
-.receipt-header {
-    background: #3e3a33;
-    color: #fdfaf3;
-    padding: 16px;
-    text-align: center;
-    position: relative;
+#cartPanel .cart-panel-header, #activityPanel .activity-panel-header, .cart-panel-header, .activity-panel-header, .receipt-header {
+    background: #fffcf5 !important;
+    color: #3e3a33 !important;
+    padding: 12px 16px !important;
+    text-align: center !important;
+    position: relative !important;
+    border-bottom: 1px solid #eaddcf !important;
 }
 
-.receipt-header h2 {
+.cart-panel-header .cart-title, .activity-panel-header .activity-panel-title, .receipt-header h2 {
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
+    width: 100%;
 }
 
 .receipt-header p {
@@ -2039,7 +2056,7 @@
     letter-spacing: 2px;
 }
 
-.receipt-clear-btn {
+#clearCartBtn, .receipt-clear-btn {
     position: absolute;
     right: 15px;
     top: 50%;
@@ -2060,20 +2077,7 @@
     border-color: #c09d62;
 }
 
-.activity-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.activity-panel-title {
-    font-size: 13px;
-    font-weight: 800;
-    color: #3e3a33;
-    display: flex;
-    align-items: center;
-}
+/* activity-panel-header styles are now unified with receipt-header below */
 
 .receipt-body {
     padding: 20px;
@@ -2087,10 +2091,10 @@
 
 .cart-item-list {
     min-height: 50px;
-    margin-bottom: 20px;
-    max-height: 250px;
-    overflow-y: auto;
-    padding-right: 5px;
+    margin-bottom: 10px;
+    flex: none !important;
+    overflow: visible !important;
+    padding-bottom: 20px;
 }
 
 .cart-item-list::-webkit-scrollbar,
@@ -2104,9 +2108,13 @@
 }
 
 .activity-panel-body {
-    max-height: 400px;
-    overflow-y: auto;
-    padding-right: 5px;
+    padding-top: 10px;
+    flex: none !important;
+    overflow: visible !important;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .cart-empty {
@@ -2166,6 +2174,7 @@
 .cart-stats {
     font-size: 12px;
     color: #8d7365;
+    padding-bottom: 12px;
 }
 
 .stat-row {
@@ -2194,6 +2203,7 @@
     border-top: 1px solid #eaddcf;
     padding-top: 15px;
     margin-top: 12px;
+    padding-bottom: 4px;
     font-weight: 700;
     color: #3e3a33;
     font-size: 14px;
@@ -2676,15 +2686,3 @@
 .fade-in-rows tr:nth-child(4) { animation-delay: 0.06s; }
 .fade-in-rows tr:nth-child(5) { animation-delay: 0.08s; }
 .fade-in-rows tr:nth-child(6) { animation-delay: 0.10s; }
-
-
-/* ==========  ÷∂Ø«ø÷∆ªπ‘≠£∫∫À–ƒ 4 …´”Î±ÍÃ‚æ”÷– ========== */
-.ziyong-card { background: #fffefb !important; border: 1px solid #e0d5c1 !important; }
-.ziyong-card.simulated { background: #faf7f1 !important; border: 1.5px solid #d85c50 !important; }
-.ziyong-card.actual { background: #e2d9c5 !important; border-color: #c0b399 !important; }
-.card-check { display: none !important; }
-
-#cartPanel .cart-panel-header, #activityPanel .activity-panel-header { text-align: center !important; position: relative !important; }
-.cart-panel-header .cart-title, .activity-panel-header .activity-panel-title { width: 100% !important; display: flex !important; justify-content: center !important; }
-#clearCartBtn { position: absolute !important; right: 15px !important; top: 50% !important; transform: translateY(-50%) !important; }
-
