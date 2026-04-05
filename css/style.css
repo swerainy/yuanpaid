@@ -1507,6 +1507,24 @@
             font-weight: 700;
         }
 
+        .card-detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .card-extra {
+            font-size: 11px;
+            color: #c09d62;
+            font-weight: 600;
+            background: rgba(252, 245, 229, 0.6);
+            padding: 1px 5px;
+            border-radius: 3px;
+            border: 1px solid rgba(192, 157, 98, 0.2);
+            line-height: 1.4;
+        }
+
         .ziyong-card.disabled {
             filter: grayscale(1);
             opacity: 0.5;
