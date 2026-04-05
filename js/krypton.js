@@ -517,9 +517,11 @@ function initKrypton() {
                         '<div class="card-bottom">'+
                         '  <span class="card-limit-txt" style="color:'+(maxed?'#d85c50':'#a08060')+'">'+(aq + sq)+'/'+lim+'</span>'+
                         '  <div class="card-qty-ctrl">'+
+                        '    <span class="qty-btn qty-min" '+(sq<=0?'disabled':'')+'>少</span>'+
                         '    <span class="qty-btn qty-minus" '+(sq<=0?'disabled':'')+'>−</span>'+
                         '    <span class="qty-num">'+sq+'</span>'+
-                        '    <span class="qty-btn qty-plus"  '+(sq>=lim?'disabled':'')+'>＋</span>'+
+                        '    <span class="qty-btn qty-plus"  '+(maxed?'disabled':'')+'>＋</span>'+
+                        '    <span class="qty-btn qty-max" '+(maxed?'disabled':'')+'>多</span>'+
                         '  </div>'+
                         '</div>';
 
@@ -534,7 +536,15 @@ function initKrypton() {
 
                     var plusBtn=card.querySelector('.qty-plus');
                     if(!maxed) plusBtn.onclick=function(e){ e.stopPropagation(); addSim(pack,date); };
-                    if(maxed) plusBtn.setAttribute('disabled','true');
+                    else plusBtn.setAttribute('disabled','true');
+
+                    var minBtn=card.querySelector('.qty-min');
+                    if(sq>0) minBtn.onclick=function(e){ e.stopPropagation(); delete simQtyMap[qKey(pack.name,date)]; updateAll(); };
+                    else minBtn.setAttribute('disabled','true');
+
+                    var maxBtn=card.querySelector('.qty-max');
+                    if(!maxed) maxBtn.onclick=function(e){ e.stopPropagation(); simQtyMap[qKey(pack.name,date)]=(lim-aq); updateAll(); };
+                    else maxBtn.setAttribute('disabled','true');
                     grid.appendChild(card);
                 });
 
@@ -943,9 +953,9 @@ function initKrypton() {
         '.card-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:6px;border-top:1px solid #ede8dc;padding-top:5px;}',
         '.card-limit-txt{font-size:10px;color:#a08060;}',
         '.card-qty-ctrl{display:flex;align-items:center;gap:2px;}',
-        '.qty-minus,.qty-plus{width:20px;height:20px;border-radius:50%;border:1px solid #d5c8b2;background:#fff;color:#5d4037;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .15s;}',
-        '.qty-minus:hover:not([disabled]),.qty-plus:hover:not([disabled]){background:#f2e6ce;border-color:#c09d62;}',
-        '.qty-minus[disabled],.qty-plus[disabled]{opacity:.3;cursor:default;}',
+        '.qty-btn{width:20px;height:20px;border-radius:50%;border:1px solid #d5c8b2;background:#fff;color:#5d4037;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .15s;}',
+        '.qty-btn:hover:not([disabled]){background:#f2e6ce;border-color:#c09d62;}',
+        '.qty-btn[disabled]{opacity:.3;cursor:default;}',
         '.qty-num{min-width:18px;text-align:center;font-size:12px;font-weight:600;color:#3e3a33;}',
         '.card-check{width:22px;height:22px;border-radius:50%;border:1.5px solid #d5c8b2;background:#fff;color:#b8a88a;cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-left:3px;}',
         '.card-check:hover{border-color:#5d8a50;color:#5d8a50;}',
