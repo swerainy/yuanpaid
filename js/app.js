@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize FullCalendar
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        initialDate: '2026-03-26',
         locale: 'zh-cn',
         firstDay: 1,
         contentHeight: 'auto',
