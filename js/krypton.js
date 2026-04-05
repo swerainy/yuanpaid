@@ -415,9 +415,18 @@ function initKrypton() {
                         activeCategory=cat;
                         packList.style.transition='opacity .18s ease, transform .18s ease';
                         packList.style.opacity='0.3'; packList.style.transform='translateY(5px)';
+                        
                         setTimeout(function(){
                             renderPackCatTabs(); renderPacks();
-                            requestAnimationFrame(function(){ packList.style.opacity='1'; packList.style.transform='translateY(0)'; });
+                            requestAnimationFrame(function(){ 
+                                packList.style.opacity='1'; 
+                                packList.style.transform='translateY(0)'; 
+                                // 丝滑滚动到列表顶部或分类标题
+                                var target = packList.querySelector('.category-header') || packList;
+                                var offset = 180; // 考虑粘贴栏高度的偏移量
+                                var topPos = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                                window.scrollTo({ top: topPos, behavior: 'smooth' });
+                            });
                         },180);
                     };
                     container.appendChild(btn);
