@@ -2419,10 +2419,120 @@
 .rate-input-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     font-size: 12px;
     color: #5d4037;
     font-weight: 600;
+}
+
+.rate-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sync-rate-btn {
+    width: 20px;
+    height: 20px;
+    background: #f2e6ce;
+    border: 1px solid #dcd0b8;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5d4037;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.sync-rate-btn:hover {
+    background: #e8dbbc;
+    transform: rotate(30deg);
+}
+
+.sync-rate-btn.syncing .sync-icon {
+    animation: spinRate 1s linear infinite;
+}
+
+.sync-rate-btn.success {
+    background: #8fb17d;
+    color: #fff;
+    border-color: #7a9c68;
+}
+
+.sync-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.sync-time-msg {
+    font-size: 10px;
+    color: #a08060;
+    margin-left: 2px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+/* 强制汇率开关 */
+.force-rate-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left: 1px solid #e0d8c8;
+}
+
+.force-rate-label {
+    font-size: 11px;
+    color: #8c6e5e;
+    cursor: pointer;
+}
+
+.mini-switch {
+    position: relative;
+    display: inline-block;
+    width: 26px;
+    height: 14px;
+}
+
+.mini-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 14px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 10px;
+    width: 10px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #d4a373;
+}
+
+input:checked + .slider:before {
+    transform: translateX(12px);
 }
 
 .ancient-input.mini {

@@ -229,7 +229,7 @@ function getActivePacks(version) {
 //  initKrypton v4 — qty-map状态 + 原版卡片 + 购物车 + 粘性栏 + 二级分类修复
 // ==============================================================
 function initKrypton() {
-    console.log('[Krypton] v4 初始化中...');
+    console.log('[Krypton] v5 初始化中...');
     try {
         var rechargeDateInput = document.getElementById('rechargeDate');
         var totalActualPtsEl = document.getElementById('totalActualPts');
@@ -248,6 +248,7 @@ function initKrypton() {
         // ── 状态 ──
         var currentVersion = 'daihao';
         var exchangeRate = parseFloat(localStorage.getItem('ziyong_exchangeRate')) || 7.2;
+        var forceRateMode = localStorage.getItem('ziyong_forceRateMode') === 'true';
         var eventsData = [];
         var animStates = {};
         var activeCategory = '全部';
@@ -306,7 +307,13 @@ function initKrypton() {
             requestAnimationFrame(step);
         }
         function getPackCny(pack) {
-            return currentVersion === 'daihao' ? (pack.priceUsd || 0) * exchangeRate : (pack.priceCny || 0);
+            if (currentVersion !== 'daihao') return (pack.priceCny || 0);
+            var usd = pack.priceUsd || 0;
+            if (forceRateMode) return usd * exchangeRate;
+            // 默认模式：优先查找官方映射表
+            var map = KRYPTON_DATA.usdMapping.find(function (m) { return Math.abs(m.price - usd) < 0.001; });
+            if (map) return map.pts / 10;
+            return usd * exchangeRate;
         }
         function qKey(name, date) { return name + '|' + date; }
         function getSQ(name, date) { return simQtyMap[qKey(name, date)] || 0; }
@@ -383,45 +390,79 @@ function initKrypton() {
         function fetchExchangeRate() {
             var btn = document.getElementById('syncRateBtn');
             var timeMsg = document.getElementById('syncTimeMsg');
+            var dataDateEl = document.getElementById('syncDataDate');
             if (btn) btn.classList.add('syncing');
 
-            fetch('https://open.er-api.com/v6/latest/USD')
-                .then(function (r) {
-                    if (!r.ok) throw new Error('Network response was not ok');
-                    return r.json();
-                })
-                .then(function (d) {
-                    if (d && d.rates && d.rates.CNY) {
-                        var r = d.rates.CNY;
-                        console.log('[Krypton] 汇率同步成功:', r);
-                        updateRate(r.toFixed(4));
-                        if (btn) {
-                            btn.classList.remove('syncing');
-                            btn.classList.add('success');
-                            setTimeout(function () { btn.classList.remove('success'); }, 1000);
-                        }
-                        if (timeMsg) {
-                            var now = new Date();
-                            var mon = (now.getMonth() + 1).toString();
-                            var day = now.getDate().toString();
-                            var hh = now.getHours().toString().padStart(2, '0');
-                            var mm = now.getMinutes().toString().padStart(2, '0');
-                            var ss = now.getSeconds().toString().padStart(2, '0');
-                            timeMsg.innerText = '最新同步时间: ' + mon + '月' + day + '日 ' + hh + ':' + mm + ':' + ss;
-                        }
-                    } else {
-                        throw new Error('Invalid data format');
-                    }
-                })
-                .catch(function (e) {
-                    console.warn('[Krypton] 自动汇率同步失败,使用现有值', e);
+            // 备选 API 列表
+            var apis = [
+                { url: 'https://api.coinbase.com/v2/exchange-rates?currency=USD', type: 'coinbase' },
+                { url: 'https://api.exchangerate-api.com/v4/latest/USD', type: 'exchangerate' },
+                { url: 'https://api.frankfurter.app/latest?from=USD&to=CNY', type: 'frankfurter' }
+            ];
+
+            function tryFetch(index) {
+                if (index >= apis.length) {
                     if (btn) btn.classList.remove('syncing');
-                    alert('⚠️ 汇率实时更新失败：' + e.message + '\n请检查网络或稍后重试。');
-                });
+                    alert('⚠️ 汇率实时更新失败：所有备选接口均无法连接。\n请检查网络或稍后重试。');
+                    return;
+                }
+
+                var api = apis[index];
+                fetch(api.url)
+                    .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+                    .then(function (d) {
+                        var r, dateStr = '';
+                        if (api.type === 'coinbase') {
+                            r = parseFloat(d.data.rates.CNY);
+                        } else if (api.type === 'exchangerate') {
+                            r = d.rates.CNY;
+                            dateStr = d.date;
+                        } else if (api.type === 'frankfurter') {
+                            r = d.rates.CNY;
+                            dateStr = d.date;
+                        }
+
+                        if (r) {
+                            console.log('[Krypton] 汇率同步成功(' + api.type + '):', r);
+                            updateRate(r.toFixed(4));
+                            if (btn) {
+                                btn.classList.remove('syncing');
+                                btn.classList.add('success');
+                                setTimeout(function () { btn.classList.remove('success'); }, 1000);
+                            }
+                            if (timeMsg) {
+                                var now = new Date();
+                                timeMsg.innerText = '同步于: ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                            }
+                            if (dataDateEl) {
+                                dataDateEl.innerText = dateStr ? '(数据日期: ' + dateStr + ')' : '';
+                            }
+                        } else {
+                            throw new Error();
+                        }
+                    })
+                    .catch(function () {
+                        console.warn('[Krypton] API 失败, 尝试下一个...', api.type);
+                        tryFetch(index + 1);
+                    });
+            }
+
+            tryFetch(0);
         }
+
         var syncRateBtn = document.getElementById('syncRateBtn');
         if (syncRateBtn) syncRateBtn.onclick = function (e) { e.stopPropagation(); fetchExchangeRate(); };
         if (exchangeRateInput) exchangeRateInput.addEventListener('input', function (e) { updateRate(e.target.value); });
+
+        var forceRateToggle = document.getElementById('forceRateToggle');
+        if (forceRateToggle) {
+            forceRateToggle.checked = forceRateMode;
+            forceRateToggle.onchange = function () {
+                forceRateMode = forceRateToggle.checked;
+                localStorage.setItem('ziyong_forceRateMode', forceRateMode);
+                updateAll();
+            };
+        }
 
         function syncVersion(ver) {
             currentVersion = ver;
