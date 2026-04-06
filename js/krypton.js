@@ -387,38 +387,50 @@ function initKrypton() {
             var dataDateEl = document.getElementById('syncDataDate');
             if (btn) btn.classList.add('syncing');
 
-            // 备选 API 列表
+            // 再次优化 API 列表：Coinbase 拥有最高精度(5位)与实时性，优先使用
             var apis = [
                 { url: 'https://api.coinbase.com/v2/exchange-rates?currency=USD', type: 'coinbase' },
-                { url: 'https://api.exchangerate-api.com/v4/latest/USD', type: 'exchangerate' },
-                { url: 'https://api.frankfurter.app/latest?from=USD&to=CNY', type: 'frankfurter' }
+                { url: 'https://api.pearktrue.cn/api/exchangerate/?type=get&before=USD&after=CNY&price=1', type: 'pearktrue' },
+                { url: 'https://open.er-api.com/v6/latest/USD', type: 'er-v6' },
+                { url: 'https://api.exchangerate-api.com/v4/latest/USD', type: 'er-v4' }
             ];
 
             function tryFetch(index) {
                 if (index >= apis.length) {
                     if (btn) btn.classList.remove('syncing');
-                    alert('⚠️ 汇率实时更新失败：所有备选接口均无法连接。\n请检查网络或稍后重试。');
+                    alert('⚠️ 汇率同步失败：所有接口均暂时无法连接。\n提示：如果是本地打开（file://），请检查网络或更换浏览器。');
                     return;
                 }
 
                 var api = apis[index];
-                fetch(api.url)
+                console.log('[Krypton] 正在尝试从 ' + api.type + ' 获取高精度汇率...');
+
+                // 添加随机数防止缓存
+                var fetchUrl = api.url + (api.url.indexOf('?') > -1 ? '&' : '?') + '_t=' + Date.now();
+
+                fetch(fetchUrl, { cache: 'no-cache' })
                     .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
                     .then(function (d) {
                         var r, dateStr = '';
+                        // 针对不同 API 格式的动态适配
                         if (api.type === 'coinbase') {
                             r = parseFloat(d.data.rates.CNY);
-                        } else if (api.type === 'exchangerate') {
+                            dateStr = '实时市场价'; 
+                        } else if (api.type === 'pearktrue') {
+                            r = parseFloat(d.resultprice);
+                            dateStr = '国内镜像'; 
+                        } else if (api.type === 'er-v6') {
                             r = d.rates.CNY;
-                            dateStr = d.date;
-                        } else if (api.type === 'frankfurter') {
+                            dateStr = d.time_last_update_utc ? d.time_last_update_utc.substring(5, 16) : '';
+                        } else if (api.type === 'er-v4') {
                             r = d.rates.CNY;
                             dateStr = d.date;
                         }
 
-                        if (r) {
+                        if (r && !isNaN(r)) {
                             console.log('[Krypton] 汇率同步成功(' + api.type + '):', r);
                             updateRate(r.toFixed(4));
+                            
                             if (btn) {
                                 btn.classList.remove('syncing');
                                 btn.classList.add('success');
@@ -429,14 +441,19 @@ function initKrypton() {
                                 timeMsg.innerText = '同步于: ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
                             }
                             if (dataDateEl) {
-                                dataDateEl.innerText = dateStr ? '(数据日期: ' + dateStr + ')' : '';
+                                // 检查是否有明显的节假日延迟（针对 2026-04-03 这种周末/休市情况）
+                                if (dateStr && dateStr.includes('2026-04-03')) {
+                                    dataDateEl.innerHTML = '<span style="color:#d85c50">(数据日期: ' + dateStr + ', 银行休市中)</span>';
+                                } else {
+                                    dataDateEl.innerText = dateStr ? '(数据日期: ' + dateStr + ')' : '';
+                                }
                             }
                         } else {
                             throw new Error();
                         }
                     })
-                    .catch(function () {
-                        console.warn('[Krypton] API 失败, 尝试下一个...', api.type);
+                    .catch(function (err) {
+                        console.warn('[Krypton] ' + api.type + ' 接口失败，尝试切换下一个...', err);
                         tryFetch(index + 1);
                     });
             }
@@ -572,7 +589,7 @@ function initKrypton() {
                     var al = getAQ(a.name, date) >= (a.limit || 1), bl = getAQ(b.name, date) >= (b.limit || 1);
                     return al && !bl ? 1 : !al && bl ? -1 : 0;
                 });
-                var sec = document.createElement('div'); sec.className = 'pack-category-section';
+                var sec = document.createElement('div'); sec.className = 'pack-category-section' + (isCollapsed ? ' collapsed' : '');
                 var hdr = document.createElement('div'); hdr.className = 'category-header';
                 hdr.innerHTML = '<div class="cat-title-row"><h3 class="category-title">' + cat + '</h3><span class="cat-toggle-icon">' + (isCollapsed ? '展开 ▼' : '收起 ▲') + '</span></div>' +
                     '<div class="category-actions"><button class="cat-btn cat-selall">全选</button><button class="cat-btn cat-clr">清空</button></div>';
@@ -673,7 +690,7 @@ function initKrypton() {
                         var subGroupPacks = subGroups[sid];
 
                         var subSec = document.createElement('div');
-                        subSec.className = 'sub-category-section';
+                        subSec.className = 'sub-category-section' + (subIsCollapsed ? ' collapsed' : '');
 
                         var subHdr = document.createElement('div');
                         subHdr.className = 'sub-category-header';
@@ -695,8 +712,10 @@ function initKrypton() {
                         // 子分类头点击折叠逻辑
                         subHdr.onclick = function () {
                             collapsedSubCats[skey] = !collapsedSubCats[skey];
-                            subWrapper.classList.toggle('collapsed', collapsedSubCats[skey]);
-                            subHdr.querySelector('.sub-toggle-icon').textContent = collapsedSubCats[skey] ? '展开 ▼' : '收起 ▲';
+                            var cur = collapsedSubCats[skey];
+                            subSec.classList.toggle('collapsed', cur);
+                            subWrapper.classList.toggle('collapsed', cur);
+                            subHdr.querySelector('.sub-toggle-icon').textContent = cur ? '展开 ▼' : '收起 ▲';
                         };
                         subHdr.querySelector('.sub-selall').onclick = function (e) {
                             e.stopPropagation();
@@ -721,8 +740,10 @@ function initKrypton() {
                 // 分类栏整体点击折叠
                 hdr.onclick = function () {
                     collapsedCats[cat] = !collapsedCats[cat];
-                    wrapper.classList.toggle('collapsed', collapsedCats[cat]);
-                    hdr.querySelector('.cat-toggle-icon').textContent = collapsedCats[cat] ? '展开 ▼' : '收起 ▲';
+                    var cur = collapsedCats[cat];
+                    sec.classList.toggle('collapsed', cur);
+                    wrapper.classList.toggle('collapsed', cur);
+                    hdr.querySelector('.cat-toggle-icon').textContent = cur ? '展开 ▼' : '收起 ▲';
                 };
                 hdr.querySelector('.cat-selall').onclick = function (e) {
                     e.stopPropagation();
