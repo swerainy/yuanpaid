@@ -1105,7 +1105,7 @@
         /* 收起展开动画 */
         .toggle-icon {
             display: inline-block;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s ease;
             cursor: pointer;
             margin-left: 8px;
         }
@@ -1115,25 +1115,20 @@
         }
 
         .activity-content {
-            display: grid;
-            grid-template-rows: 1fr;
-            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-                        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
             overflow: hidden;
-            opacity: 1;
         }
 
         .activity-content.collapsed {
-            grid-template-rows: 0fr;
+            max-height: 0;
             opacity: 0;
             margin-bottom: 0;
         }
 
-        .activity-content-inner {
-            min-height: 0;
-        }
-
         .shop-summary-title {
+            font-size: 18px;
+            color: #5d4037;
+            margin: 25px 0 15px 0;
             padding-bottom: 8px;
             border-bottom: 2px solid #e8e2d4;
             display: flex;
@@ -1362,7 +1357,7 @@
             left: 0;
             top: 0;
             height: 100%;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.5s ease;
         }
 
         .progress-bar.actual {
@@ -1401,16 +1396,13 @@
         .category-actions {
             display: flex;
             gap: 8px;
-            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        /* 折叠时让按钮立即消失 (或加速消失) */
         .pack-category-section.collapsed .category-actions {
             opacity: 0;
             pointer-events: none;
-            transform: translateX(15px);
-            transition-duration: 0.1s;
+            transform: translateX(10px);
         }
 
         .cat-btn {
@@ -1421,7 +1413,7 @@
             border-radius: 4px;
             color: #8d7365;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             font-weight: 600;
         }
 
@@ -1486,7 +1478,7 @@
             border-radius: 0 6px 6px 0;
             box-sizing: border-box;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             user-select: none;
         }
 
@@ -1515,21 +1507,18 @@
             color: #8d7365;
             font-weight: normal;
             opacity: 0.8;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sub-category-actions {
             display: flex;
             gap: 6px;
-            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .sub-category-section.collapsed .sub-category-actions {
             opacity: 0;
             pointer-events: none;
-            transform: translateX(10px);
-            transition-duration: 0.1s;
+            transform: translateX(5px);
         }
 
         .sub-cat-btn {
@@ -1540,7 +1529,7 @@
             border-radius: 3px;
             color: #8d7365;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             font-weight: 600;
         }
 
