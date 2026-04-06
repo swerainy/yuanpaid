@@ -44,7 +44,7 @@
         <div class="filters-container">
             <div class="filters" id="filters">
                 <div class="filter-tag active" data-type="training">密探特训</div>
-                <div class="filter-tag active" data-type="palace">地宫活动</div>
+                <div class="filter-tag active" data-type="palace">地宫</div>
                 <div class="filter-tag active" data-type="pool">累充池</div>
                 <div class="filter-tag active" data-type="furniture">家具</div>
                 <div class="filter-tag active" data-type="anniversary">周年庆/其他</div>
@@ -107,13 +107,15 @@
                                 <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2"
                                     step="0.01" min="1" style="width:55px;">
                                 <button id="syncRateBtn" class="sync-rate-btn" title="从 API 同步实时汇率">
-                                    <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="23 4 23 10 17 10"></polyline>
                                         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                                     </svg>
                                 </button>
                                 <span id="syncTimeMsg" class="sync-time-msg"></span>
-                                <span id="syncDataDate" class="sync-time-msg" style="color:#8c6e5e; margin-left:5px;"></span>
+                                <span id="syncDataDate" class="sync-time-msg"
+                                    style="color:#8c6e5e; margin-left:5px;"></span>
                             </div>
                         </div>
                     </div>
@@ -166,12 +168,16 @@
                         <div id="cartStats" class="cart-stats" style="display:none;">
                             <div class="stat-divider dashed"></div>
                             <div class="stat-row"><span>总抽数</span><span id="statDraws" class="stat-badge">-</span></div>
-                            <div class="stat-row"><span>平均每抽</span><span id="statPerDraw" class="stat-badge highlight">-</span></div>
+                            <div class="stat-row"><span>平均每抽</span><span id="statPerDraw"
+                                    class="stat-badge highlight">-</span></div>
                             <div class="stat-row"><span>购物车积分</span><span id="statCartPts">-</span></div>
-                            <div class="stat-row stat-bold"><span>总积分 (含初始)</span><span id="statTotalPts" class="stat-badge highlight">-</span></div>
-                            <div class="stat-row" id="usdRow" style="display:none;"><span>总价 (USD)</span><span id="statTotalUsd">$0.00</span></div>
+                            <div class="stat-row stat-bold"><span>总积分 (含初始)</span><span id="statTotalPts"
+                                    class="stat-badge highlight">-</span></div>
+                            <div class="stat-row" id="usdRow" style="display:none;"><span>总价 (USD)</span><span
+                                    id="statTotalUsd">$0.00</span></div>
                             <div class="stat-divider solid"></div>
-                            <div class="stat-row stat-total"><span>总计 (CNY)</span><span id="statTotalPrice">¥0.00</span></div>
+                            <div class="stat-row stat-total"><span>总计 (CNY)</span><span id="statTotalPrice">¥0.00</span>
+                            </div>
                             <div class="cart-actions" style="margin-top: 15px;">
                                 <button id="checkoutBtn" class="cart-btn checkout-btn">确认结算</button>
                             </div>

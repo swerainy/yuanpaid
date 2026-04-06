@@ -91,21 +91,21 @@ function generateMonthlyEvents(startYear, startMonth, count) {
 function createPalaceEvent(start, end, name) {
     let poolEnd = addDays(end, 2);
     return [
-        { title: `地宫: ${name}`, start: start, end: addDays(end, 1), backgroundColor: COLORS.palace, type: 'palace' },
-        { title: `限定池: ${name}`, start: start, end: addDays(poolEnd, 1), backgroundColor: COLORS.pool, type: 'pool' }
+        { title: `【地宫】${name}`, start: start, end: addDays(end, 1), backgroundColor: COLORS.palace, type: 'palace' },
+        { title: `【地宫伴生池＆累充】${name}`, start: start, end: addDays(poolEnd, 1), backgroundColor: COLORS.pool, type: 'pool' }
     ];
 }
 
 // Initial Core Events (Static)
 let daihaoEvents = [
-    { title: '三周年一阶段、年卡', start: '2026-03-30', end: addDays('2026-04-12', 1), backgroundColor: COLORS.anniversary, type: 'anniversary' },
-    { title: '三周年累充＆300井池', start: '2026-03-30', end: addDays('2026-04-29', 1), backgroundColor: COLORS.anniversary, type: 'anniversary' },
+    { title: '三周年一阶段', start: '2026-03-30', end: addDays('2026-04-15', 1), backgroundColor: COLORS.anniversary, type: 'anniversary' },
+    { title: '三周年累充＆300井池', start: '2026-03-30', end: addDays('2026-04-28', 1), backgroundColor: COLORS.anniversary, type: 'anniversary' },
     { title: '三周年签到', start: '2026-03-30', end: addDays('2026-04-15', 1), backgroundColor: COLORS.anniversary, type: 'anniversary' },
     { title: '鸢起礼盒·三', start: '2025-05-01', end: addDays('2026-04-30', 1), backgroundColor: COLORS.anniversary, type: 'anniversary' },
-    { title: '密探特训第34期', start: '2025-12-18', end: addDays('2026-01-14', 1), backgroundColor: COLORS.training, type: 'training' },
-    { title: '密探特训第35期', start: '2026-01-15', end: addDays('2026-02-11', 1), backgroundColor: COLORS.training, type: 'training' },
-    { title: '密探特训第36期', start: '2026-02-12', end: addDays('2026-03-11', 1), backgroundColor: COLORS.training, type: 'training' },
-    { title: '密探特训第37期', start: '2026-03-12', end: addDays('2026-04-08', 1), backgroundColor: COLORS.training, type: 'training' },
+    { title: '【密探特训】第34期', start: '2025-12-18', end: addDays('2026-01-14', 1), backgroundColor: COLORS.training, type: 'training' },
+    { title: '【密探特训】第35期', start: '2026-01-15', end: addDays('2026-02-11', 1), backgroundColor: COLORS.training, type: 'training' },
+    { title: '【密探特训】第36期', start: '2026-02-12', end: addDays('2026-03-11', 1), backgroundColor: COLORS.training, type: 'training' },
+    { title: '【密探特训】第37期', start: '2026-03-12', end: addDays('2026-04-08', 1), backgroundColor: COLORS.training, type: 'training' },
     ...createPalaceEvent('2023-04-06', '2023-05-22', '孙策 金窗'),
     ...createPalaceEvent('2024-11-15', '2024-12-27', '孙策 师子'),
     ...createPalaceEvent('2025-01-09', '2025-02-17', '左慈 璃魂'),
@@ -116,9 +116,9 @@ let daihaoEvents = [
     ...createPalaceEvent('2025-10-16', '2025-11-24', '左慈 欲追'),
     ...createPalaceEvent('2025-12-11', '2026-01-19', '傅融 梦中雪'),
     ...createPalaceEvent('2026-02-05', '2026-03-16', '刘辩 魇'),
-    ...createPalaceEvent('2026-04-02', '2026-05-11', '袁基 欲影'),
-    { title: '家具：爱拼才会赢', start: '2025-11-01', end: addDays('2026-01-31', 1), backgroundColor: COLORS.furniture, type: 'furniture' },
-    { title: '家具：回乡路', start: '2026-02-01', end: addDays('2026-04-30', 1), backgroundColor: COLORS.furniture, type: 'furniture' },
+    ...createPalaceEvent('2026-04-02', '2026-05-11', '袁基 欲影·谍影'),
+    { title: '【家具】爱拼才会赢', start: '2025-11-01', end: addDays('2026-01-31', 1), backgroundColor: COLORS.furniture, type: 'furniture' },
+    { title: '【家具】回乡路', start: '2026-02-01', end: addDays('2026-04-30', 1), backgroundColor: COLORS.furniture, type: 'furniture' },
     // 密探特训"新一期"单日标记
     { title: '新一期密探特训', start: '2025-12-18', end: addDays('2025-12-18', 1), backgroundColor: COLORS.newperiod, extendedProps: { noFilter: true } },
     { title: '新一期密探特训', start: '2026-01-15', end: addDays('2026-01-15', 1), backgroundColor: COLORS.newperiod, extendedProps: { noFilter: true } },
@@ -138,7 +138,7 @@ function generateTraining(lastStart, lastPeriodNum, count) {
     for (let i = 0; i < count; i++) {
         let curEnd = addDays(curStart, 27);
         daihaoEvents.push({
-            title: `密探特训第${lastPeriodNum + i + 1}期${new Date(curStart) > CURRENT_DATE ? '(预)' : ''}`,
+            title: `【密探特训】第${lastPeriodNum + i + 1}期${new Date(curStart) > CURRENT_DATE ? '(预)' : ''}`,
             start: curStart, end: addDays(curEnd, 1), backgroundColor: COLORS.training, type: 'training'
         });
         daihaoEvents.push({
@@ -157,8 +157,8 @@ function generatePalace(lastStart, count) {
         let pEnd = addDays(curStart, 39);
         let pPoolEnd = addDays(curStart, 41);
         let tag = new Date(curStart) > CURRENT_DATE ? '(预)' : '';
-        daihaoEvents.push({ title: `地宫${tag}`, start: curStart, end: addDays(pEnd, 1), backgroundColor: COLORS.palace, type: 'palace' });
-        daihaoEvents.push({ title: `累充池${tag}`, start: curStart, end: addDays(pPoolEnd, 1), backgroundColor: COLORS.pool, type: 'pool' });
+        daihaoEvents.push({ title: `【地宫】${tag}`, start: curStart, end: addDays(pEnd, 1), backgroundColor: COLORS.palace, type: 'palace' });
+        daihaoEvents.push({ title: `【地宫伴生池＆累充】${tag}`, start: curStart, end: addDays(pPoolEnd, 1), backgroundColor: COLORS.pool, type: 'pool' });
         curStart = addDays(curStart, 56);
     }
 }
@@ -169,7 +169,7 @@ function generateFurniture(lastStart, count) {
         let nextStart = addMonths(curStart, 3);
         let curEnd = addDays(nextStart, -1);
         let tag = new Date(curStart) > CURRENT_DATE ? '(预)' : '';
-        daihaoEvents.push({ title: `家具${tag}`, start: curStart, end: addDays(curEnd, 1), backgroundColor: COLORS.furniture, type: 'furniture' });
+        daihaoEvents.push({ title: `【家具】${tag}`, start: curStart, end: addDays(curEnd, 1), backgroundColor: COLORS.furniture, type: 'furniture' });
         daihaoEvents.push({
             title: '新一期家具主题',
             start: curStart, end: addDays(curStart, 1),
