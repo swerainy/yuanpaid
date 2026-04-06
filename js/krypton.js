@@ -1,8 +1,16 @@
 // ============================================================
 //  广陵资用案 · krypton.js  (merged 版本)
 //  数据来源：yuanpaid/src/data.ts + rewards.ts
-//  功能：礼包购物车、汇率换算、每抽单价、累充里程碑悬浮面板
+//  功能：礼包购物车、汇率换算、每抽单价、累充里程碑悬浮面板、导出图片
 // ============================================================
+
+(function injectHtml2Canvas() {
+    if (document.getElementById('html2canvas-lib')) return;
+    var s = document.createElement('script');
+    s.id = 'html2canvas-lib';
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    document.head.appendChild(s);
+})();
 
 var KRYPTON_DATA = {
     // ---------- 积分/金额映射表 ----------
@@ -234,12 +242,8 @@ function initKrypton() {
         var rechargeDateInput = document.getElementById('rechargeDate');
         var totalActualPtsEl = document.getElementById('totalActualPts');
         var totalSimulatedPtsEl = document.getElementById('totalSimulatedPts');
-        var activityContainer = document.getElementById('activityContainer');
-        var packList = document.getElementById('packList');
-        var yuanqiContainer = document.getElementById('yuanqiContainer');
-        var recordsBody = document.getElementById('recordsBody');
-        var packCatTabs = document.getElementById('packCatTabs');
-        var shopTitle = document.getElementById('shopTitle');
+        var packsSummaryTitle = document.getElementById('packsSummaryTitle');
+        var cartPanelTitle = document.getElementById('cartPanelTitle');
         var exchangeRateInput = document.getElementById('exchangeRateInput');
         var cartItemList = document.getElementById('cartItemList');
         var cartStats = document.getElementById('cartStats');
@@ -610,7 +614,7 @@ function initKrypton() {
                 var drawOk = drawFilter === 'all' || (drawFilter === 'hasDraws' && p.draws > 0) || (drawFilter === 'noDraws' && (!p.draws || p.draws <= 0));
                 return catOk && drawOk;
             });
-            if (shopTitle) shopTitle.textContent = '礼包汇总 (' + filtered.length + ')';
+            if (packsSummaryTitle) packsSummaryTitle.textContent = '礼包汇总 (' + filtered.length + ')';
 
             // FLIP记录
             var initPos = {};
@@ -1062,6 +1066,7 @@ function initKrypton() {
                 var item = existingMap[act.title];
                 var iA = 'actVal' + act.title.replace(/[^\w]/g, ''), iS = 'simVal' + act.title.replace(/[^\w]/g, '');
 
+                var displayTitle = act.title.replace('【地宫伴生池＆累充】', '【地宫伴生累充】');
                 if (!item) {
                     var fD = function (d) { return d.split('-').slice(1).join('/'); };
                     item = document.createElement('div');
@@ -1070,7 +1075,7 @@ function initKrypton() {
                     item.innerHTML =
                         '<div class="activity-header" style="position:relative; display:block; padding-bottom:6px;">' +
                         '  <div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
-                        '    <div class="activity-title" style="flex:1;">' + act.title + ' <span class="toggle-icon">▼</span></div>' +
+                        '    <div class="activity-title" style="flex:1;">' + displayTitle + ' <span class="toggle-icon">▼</span></div>' +
                         (trackDataKey ? '<div class="reward-badge-container"><span class="reward-badge" data-track="' + trackDataKey + '" data-name="' + trackName + '">🎁 奖励</span></div>' : '') +
                         '  </div>' +
                         '  <div class="activity-date-row" style="font-size:10px; color:#a08060; margin-top:2px; display:flex; justify-content:space-between;">' +
@@ -1092,19 +1097,33 @@ function initKrypton() {
                         '  </div>' +
                         '</div>';
                     activityContainer.appendChild(item);
+                } else {
+                    var tEl = item.querySelector('.activity-title');
+                    if (tEl) tEl.innerHTML = displayTitle + ' <span class="toggle-icon">▼</span>';
                 }
+
+                // 统一更新属性 (无论新旧)
+                var badge = item.querySelector('.reward-badge');
+                if (badge) { badge.dataset.acta = actA; badge.dataset.acts = actS; }
                 
-                // 更新现有或新创建的项
-                item.querySelector('.reward-badge').dataset.acta = actA;
-                item.querySelector('.reward-badge').dataset.acts = actS;
-                item.querySelector('.next-t-val').innerText = nextT.toLocaleString();
-                item.querySelector('.act-footer-right').innerText = (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString());
+                var ntv = item.querySelector('.next-t-val'); if (ntv) ntv.innerText = nextT.toLocaleString();
+                var afr = item.querySelector('.act-footer-right'); if (afr) afr.innerText = (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString());
                 
                 // 更新进度条
                 var pA = Math.min(actA / (nextT || 1) * 100, 100).toFixed(1);
                 var pS = Math.min(actS / (nextT || 1) * 100, 100).toFixed(1);
-                item.querySelector('.progress-bar.actual').style.width = pA + '%';
-                item.querySelector('.progress-bar.simulated').style.width = pS + '%';
+                var barA = item.querySelector('.progress-bar.actual'), barS = item.querySelector('.progress-bar.simulated');
+                
+                if (existingMap[act.title]) {
+                    if (barA) barA.style.width = pA + '%';
+                    if (barS) barS.style.width = pS + '%';
+                } else {
+                    // 新建项需要微小延迟触发动画
+                    setTimeout(function() {
+                        if (barA) barA.style.width = pA + '%';
+                        if (barS) barS.style.width = pS + '%';
+                    }, 50);
+                }
                 
                 // 动画数字
                 setAnimVal(document.getElementById(iA), actA);
@@ -1229,14 +1248,70 @@ function initKrypton() {
         var exportCsvBtn = document.getElementById('exportCsvBtn');
         var importCsvBtn = document.getElementById('importCsvBtn');
         var csvInput = document.getElementById('csvInput');
-        if (exportCsvBtn) exportCsvBtn.onclick = function () {
-            var packs = getActivePacks(currentVersion), csv = '名称,日期,积分,qty,类型\n';
-            Object.keys(simQtyMap).forEach(function (k) {
-                var parts = k.split('|'), nm = parts[0], d = parts[1], sq = simQtyMap[k] || 0, aq = actQtyMap[k] || 0;
-                if (sq) csv += nm + ',' + d + ',' + (function () { for (var i = 0; i < packs.length; i++)if (packs[i].name === nm) return packs[i].pts; return 0; }()) + ',' + sq + ',' + (aq ? '实际' : '模拟') + '\n';
-            });
-            var lk = document.createElement('a'); lk.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); lk.download = 'ziyong.csv'; document.body.appendChild(lk); lk.click();
-        };
+        if (exportCsvBtn) {
+            exportCsvBtn.onclick = function () {
+                var packs = getActivePacks(currentVersion), csv = '名称,日期,积分,qty,类型\n';
+                Object.keys(simQtyMap).forEach(function (k) {
+                    var parts = k.split('|'), nm = parts[0], d = parts[1], sq = simQtyMap[k] || 0, aq = actQtyMap[k] || 0;
+                    if (sq) csv += nm + ',' + d + ',' + (function () { for (var i = 0; i < packs.length; i++)if (packs[i].name === nm) return packs[i].pts; return 0; }()) + ',' + sq + ',' + (aq ? '实际' : '模拟') + '\n';
+                });
+                var lk = document.createElement('a'); lk.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); lk.download = 'ziyong.csv'; document.body.appendChild(lk); lk.click();
+            };
+
+            // 动态加入“导出图片”按钮
+            var exportImgBtn = document.createElement('button');
+            exportImgBtn.id = 'exportImgBtn';
+            exportImgBtn.className = 'cat-btn';
+            exportImgBtn.style.padding = '2px 6px';
+            exportImgBtn.style.fontSize = '11px';
+            exportImgBtn.style.height = '22px';
+            exportImgBtn.style.lineHeight = '18px';
+            exportImgBtn.style.whiteSpace = 'nowrap';
+            exportImgBtn.style.flexShrink = '0';
+            exportImgBtn.innerHTML = '<span style="vertical-align:middle;margin-right:2px;">🖼️</span>导出';
+            // 初始插入位置：精准挂载到购物清单头部的左侧容器中
+            var headerLeft = document.querySelector('.cart-header-left');
+            if (headerLeft) {
+                headerLeft.appendChild(exportImgBtn);
+            } else {
+                exportCsvBtn.parentNode.insertBefore(exportImgBtn, exportCsvBtn.nextSibling);
+            }
+
+            exportImgBtn.onclick = function () {
+                if (typeof html2canvas === 'undefined') { alert('图库尚未加载，请稍候...'); return; }
+                // 聚焦截取：仅截取清单统计面板
+                var target = document.querySelector('.cart-panel') || document.querySelector('.shopping-list-panel') || document.querySelector('.right-column');
+                if (!target) return;
+
+                // 临时优化样式以适应导出
+                var originalMaxH = target.style.maxHeight;
+                var originalOverflow = target.style.overflow;
+                target.style.maxHeight = 'none';
+                target.style.overflow = 'visible';
+
+                html2canvas(target, {
+                    scale: 2.5, // 极高清晰度
+                    useCORS: true,
+                    backgroundColor: '#fffcf5', 
+                    onclone: function (clonedDoc) {
+                        var c = clonedDoc.querySelector('.cart-panel') || clonedDoc.querySelector('.shopping-list-panel');
+                        if (c) {
+                            c.style.maxHeight = 'none';
+                            c.style.overflow = 'visible';
+                            c.style.padding = '20px';
+                            c.style.borderRadius = '0';
+                        }
+                    }
+                }).then(function (canvas) {
+                    target.style.maxHeight = originalMaxH;
+                    target.style.overflow = originalOverflow;
+                    var link = document.createElement('a');
+                    link.download = '广陵资用案_结算清单_' + new Date().toLocaleDateString() + '.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            };
+        }
         if (importCsvBtn && csvInput) { importCsvBtn.onclick = function () { csvInput.click(); }; }
 
         // ── 确认结算按钮 ──
@@ -1284,26 +1359,71 @@ function initKrypton() {
                 e.preventDefault();
                 performGlobalClear();
             });
-            console.log('[Krypton] 全局清空按钮已绑定:', btnClearGlobal.id);
+            
+            // 按钮物理位置已在创建时锁定，此处仅确保功能绑定
+            var eBtn = document.getElementById('exportImgBtn');
+            if (eBtn) {
+                eBtn.style.margin = '0';
+                eBtn.style.fontSize = '11px';
+            }
         } else {
             console.warn('[Krypton] 未找到全局清空按钮 (clearAllRecordsBtn / clearDataBtn)');
         }
 
-        // ── 总记录表 ──
+        // ── 总记录表 (正式结算记录) ──
         function updateRecordsTable() {
             if (!recordsBody) return;
-            recordsBody.innerHTML = '';
             var packs = getActivePacks(currentVersion);
-            Object.keys(simQtyMap).forEach(function (k) {
-                var parts = k.split('|'), nm = parts[0], d = parts[1], sq = simQtyMap[k] || 0, aq = actQtyMap[k] || 0;
-                if (!sq) return;
-                var pack = null; for (var i = 0; i < packs.length; i++) { if (packs[i].name === nm) { pack = packs[i]; break; } }
-                var act = eventsData.filter(function (e) { return d >= e.start && d <= e.end && e.title.includes('累充'); })[0];
-                var cny = pack ? getPackCny(pack) * sq : 0;
-                var tr = document.createElement('tr'); if (aq < sq) tr.classList.add('simulated-row');
-                tr.innerHTML = '<td>' + (act ? act.title : '日常') + '</td><td>' + d + '</td><td>' + nm + '</td><td>' + (pack ? pack.pts * sq : 0) + '</td><td>¥' + cny.toFixed(2) + '(×' + sq + ')</td>';
+            
+            // 更新表头 (增加美金和人民币列)
+            var thead = recordsBody.previousElementSibling;
+            if (thead && thead.tagName === 'THEAD') {
+                thead.innerHTML = '<tr><th>活动</th><th>时间</th><th>名称</th><th>积分</th><th>USD</th><th>RMB</th></tr>';
+            }
+
+            recordsBody.innerHTML = '';
+            var totalPts = 0, totalUsd = 0, totalCny = 0;
+
+            Object.keys(actQtyMap).sort().forEach(function (k) {
+                var parts = k.split('|'), nm = parts[0], d = parts[1], aq = actQtyMap[k] || 0;
+                if (!aq) return;
+
+                var pack = null; 
+                for (var i = 0; i < packs.length; i++) { if (packs[i].name === nm) { pack = packs[i]; break; } }
+                
+                var act = eventsData.filter(function (e) { 
+                    var dn = d.replace(/-/g, '/');
+                    return d >= e.start && d <= normDate(getInclusiveEnd(actQtyMap[k] ? e.end : '')); 
+                })[0];
+                // 更加精确的活动匹配
+                if (!act) {
+                    act = eventsData.filter(function(e){ return d >= e.start && d <= e.end && (e.title.includes('累充') || e.type === 'pool'); })[0];
+                }
+
+                var pts = pack ? pack.pts * aq : 0;
+                var usd = pack ? (pack.priceUsd || 0) * aq : 0;
+                var cny = pack ? getPackCny(pack) * aq : 0;
+                
+                totalPts += pts; totalUsd += usd; totalCny += cny;
+
+                var tr = document.createElement('tr');
+                var actName = act ? act.title.replace('【地宫伴生池＆累充】', '【地宫伴生累充】') : '日常';
+                tr.innerHTML = '<td>' + actName + '</td><td>' + d.split('-').slice(1).join('/') + '</td><td>' + nm + '</td><td>' + pts + '</td><td>$' + usd.toFixed(2) + '</td><td>¥' + cny.toFixed(2) + '</td>';
                 recordsBody.appendChild(tr);
             });
+
+            // 添加统计行 (Summary Row)
+            if (Object.keys(actQtyMap).length > 0) {
+                var footTr = document.createElement('tr');
+                footTr.style.background = '#f2e6ce';
+                footTr.style.fontWeight = '800';
+                footTr.style.color = '#5d4037';
+                footTr.innerHTML = '<td colspan="3" style="text-align:right;padding-right:15px;">总计：</td>' +
+                                   '<td>' + totalPts + '</td>' +
+                                   '<td>$' + totalUsd.toFixed(2) + '</td>' +
+                                   '<td>¥' + totalCny.toFixed(2) + '</td>';
+                recordsBody.appendChild(footTr);
+            }
         }
 
         // ── 总更新 ──
@@ -1383,8 +1503,10 @@ function initKrypton() {
         '.activity-panel-body{padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;padding-bottom:30px;}',
         // 购物清单
         '.cart-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:none;width:100%;}',
-        '.cart-panel-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
-        '.cart-title{font-size:13px;font-weight:700;color:#5d4037;}',
+        '.cart-panel-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:8px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
+        '.cart-header-left{display:flex;justify-content:flex-start;}',
+        '.cart-header-right{display:flex;justify-content:flex-end;}',
+        '.cart-title{font-size:13px;font-weight:700;color:#5d4037;white-space:nowrap;grid-column:2;}',
         '.cart-item-list{flex:none;padding:12px 12px 0;}',
         '.cart-empty-msg{font-size:12px;color:#aaa;text-align:center;padding:20px 0;}',
         '.cart-row{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid #f8f5f0;}',

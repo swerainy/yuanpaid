@@ -151,7 +151,7 @@
                 <!-- 左侧：礼包列表 -->
                 <div class="pack-panel">
 
-                    <h3 id="shopTitle" class="shop-summary-title">礼包汇总</h3>
+                    <h3 id="packsSummaryTitle" class="shop-summary-title">礼包汇总</h3>
                     <div id="packList" class="pack-list-categorized"></div>
                 </div>
 
@@ -159,8 +159,11 @@
                 <div class="right-column">
                     <div class="cart-panel" id="cartPanel">
                         <div class="cart-panel-header">
-                            <span class="cart-title">📋 购物清单</span>
-                            <button id="clearCartBtn" class="cat-btn">清空</button>
+                            <div class="cart-header-left"></div>
+                            <span class="cart-title" id="cartPanelTitle">📋 购物清单</span>
+                            <div class="cart-header-right">
+                                <button id="clearCartBtn" class="clear-cart-btn">清空</button>
+                            </div>
                         </div>
                         <div id="cartItemList" class="cart-item-list">
                             <div class="cart-empty-msg">尚未选购礼包</div>
