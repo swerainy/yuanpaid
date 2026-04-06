@@ -799,14 +799,20 @@ function initKrypton() {
                 if (div) div.style.display = 'none';
             } else {
                 cartItemList.innerHTML = items.map(function (ci) {
-                    var priceStr = currentVersion === 'daihao' ? (ci.p.priceUsd ? '$' + (ci.p.priceUsd * ci.sq).toFixed(2) : '¥' + ci.cny.toFixed(2)) : '¥' + ci.cny.toFixed(2);
-                    var unitPrice = currentVersion === 'daihao' ? (ci.p.priceUsd ? '$' + ci.p.priceUsd : '¥' + getPackCny(ci.p).toFixed(2)) : '¥' + getPackCny(ci.p).toFixed(2);
-                    return '<div class="cart-row">' +
-                        '<div class="cart-row-top">' +
+                    var isDaihaoUsd = currentVersion === 'daihao' && ci.p.priceUsd;
+                    var priceStr = isDaihaoUsd ? '$' + (ci.p.priceUsd * ci.sq).toFixed(2) : '¥' + ci.cny.toFixed(2);
+                    var secondaryPriceHtml = isDaihaoUsd ? '<div class="cart-row-price-cny" style="font-size:14px; color:#a82e2e; font-weight:700;">¥' + ci.cny.toFixed(2) + '</div>' : '';
+                    var unitPrice = isDaihaoUsd ? '$' + ci.p.priceUsd : '¥' + getPackCny(ci.p).toFixed(2);
+                    
+                    return '<div class="cart-row" style="gap:4px;">' +
+                        '<div class="cart-row-top" style="display:flex; justify-content:space-between; align-items:baseline;">' +
                         '  <span class="cart-row-name">' + ci.p.name + '</span>' +
-                        '  <span class="cart-row-price">' + priceStr + '</span>' +
+                        '  <span class="cart-row-price" style="font-size:14px; font-weight:700;">' + priceStr + '</span>' +
                         '</div>' +
-                        '<div class="cart-row-sub">' + unitPrice + ' × ' + ci.sq + '</div>' +
+                        '<div class="cart-row-bottom" style="display:flex; justify-content:space-between; align-items:baseline;">' +
+                        '  <span class="cart-row-sub" style="font-size:12px; color:#8d7365;">' + unitPrice + ' × ' + ci.sq + '</span>' +
+                        '  ' + secondaryPriceHtml +
+                        '</div>' +
                         '</div>';
                 }).join('');
                 if (cartStats) {
