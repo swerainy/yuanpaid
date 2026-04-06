@@ -359,16 +359,20 @@ function initKrypton() {
         function getAQ(name, date) { return actQtyMap[qKey(name, date)] || 0; }
 
         // ── qty操作 ──
-        function addSim(pack, date) {
+        function addSim(pack, date, silent) {
             var k = qKey(pack.name, date), lim = pack.limit || 1;
             var sq = simQtyMap[k] || 0, aq = actQtyMap[k] || 0;
-            if ((sq + aq) < lim) { simQtyMap[k] = sq + 1; updateAll(); }
+            if ((sq + aq) < lim) {
+                simQtyMap[k] = sq + 1;
+                if (!silent) updateAll();
+            }
         }
-        function removeSim(pack, date) {
+        function removeSim(pack, date, silent) {
             var k = qKey(pack.name, date), cur = simQtyMap[k] || 0;
             if (cur > 0) {
-                simQtyMap[k] = cur - 1; if (!simQtyMap[k]) delete simQtyMap[k];
-                updateAll();
+                simQtyMap[k] = cur - 1;
+                if (!simQtyMap[k]) delete simQtyMap[k];
+                if (!silent) updateAll();
             }
         }
         // toggleActual function removed as card-check has been removed and bulk checkout is used
@@ -711,11 +715,26 @@ function initKrypton() {
                         }
                     });
                     var minusBtn = card.querySelector('.qty-minus');
-                    if (sq > 0) minusBtn.onclick = function (e) { e.stopPropagation(); removeSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, -p.pts); };
+                    if (sq > 0) minusBtn.onclick = function (e) {
+                        e.stopPropagation();
+                        if (sq === 1) {
+                            animateCartRowsExit([p.name], function () { removeSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, -p.pts); });
+                        } else {
+                            removeSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, -p.pts);
+                        }
+                    };
                     var plusBtn = card.querySelector('.qty-plus');
                     if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, p.pts); };
                     var minBtn = card.querySelector('.qty-min');
-                    if (sq > 0) minBtn.onclick = function (e) { e.stopPropagation(); var pts = -sq * p.pts; delete simQtyMap[qKey(p.name, date)]; updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
+                    if (sq > 0) minBtn.onclick = function (e) {
+                        e.stopPropagation();
+                        var pts = -sq * p.pts;
+                        animateCartRowsExit([p.name], function () {
+                            delete simQtyMap[qKey(p.name, date)];
+                            updateAll();
+                            showFloatingPts(e.pageX, e.pageY - 20, pts);
+                        });
+                    };
                     var maxBtn = card.querySelector('.qty-max');
                     if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim - aq - sq) * p.pts; simQtyMap[qKey(p.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
                     targetGrid.appendChild(card);
@@ -770,12 +789,28 @@ function initKrypton() {
                         };
                         subHdr.querySelector('.sub-selall').onclick = function (e) {
                             e.stopPropagation();
-                            subGroupPacks.forEach(function (p) { if (getSQ(p.name, date) < (p.limit || 1)) addSim(p, date); });
+                            var totalAddedPts = 0;
+                            subGroupPacks.forEach(function (p) {
+                                if (getSQ(p.name, date) < (p.limit || 1)) {
+                                    addSim(p, date, true);
+                                    totalAddedPts += p.pts;
+                                }
+                            });
+                            if (totalAddedPts > 0) {
+                                updateAll();
+                                showFloatingPts(e.pageX, e.pageY - 20, totalAddedPts);
+                            }
                         };
                         subHdr.querySelector('.sub-clr').onclick = function (e) {
                             e.stopPropagation();
-                            subGroupPacks.forEach(function (p) { delete simQtyMap[qKey(p.name, date)]; });
-                            updateAll();
+                            var names = subGroupPacks.map(function (p) { return p.name; });
+                            animateCartRowsExit(names, function () {
+                                subGroupPacks.forEach(function (p) {
+                                    var k = qKey(p.name, date);
+                                    if (simQtyMap[k]) delete simQtyMap[k];
+                                });
+                                updateAll();
+                            });
                         };
 
                         subSec.appendChild(subHdr);
@@ -798,13 +833,27 @@ function initKrypton() {
                 };
                 hdr.querySelector('.cat-selall').onclick = function (e) {
                     e.stopPropagation();
-                    catPacks.forEach(function (p) { if (getSQ(p.name, date) < (p.limit || 1)) addSim(p, date); });
+                    var totalAddedPts = 0;
+                    catPacks.forEach(function (p) {
+                        if (getSQ(p.name, date) < (p.limit || 1)) {
+                            addSim(p, date, true);
+                            totalAddedPts += p.pts;
+                        }
+                    });
+                    if (totalAddedPts > 0) {
+                        updateAll();
+                        showFloatingPts(e.pageX, e.pageY - 20, totalAddedPts);
+                    }
                 };
                 hdr.querySelector('.cat-clr').onclick = function (e) {
                     e.stopPropagation();
-                    catPacks.forEach(function (p) {
-                        var k = qKey(p.name, date); delete simQtyMap[k];
-                    }); updateAll();
+                    var names = catPacks.map(function (p) { return p.name; });
+                    animateCartRowsExit(names, function () {
+                        catPacks.forEach(function (p) {
+                            var k = qKey(p.name, date);
+                            if (simQtyMap[k]) delete simQtyMap[k];
+                        }); updateAll();
+                    });
                 };
 
                 sec.appendChild(hdr); sec.appendChild(wrapper); packList.appendChild(sec);
@@ -826,6 +875,22 @@ function initKrypton() {
                 });
                 if (anim) { packList.style.pointerEvents = 'none'; setTimeout(function () { packList.style.pointerEvents = ''; }, 450); }
             });
+        }
+
+        // ── 移除动画辅助 ──
+        function animateCartRowsExit(names, callback) {
+            var rowsToAnimate = [];
+            cartItemList.querySelectorAll('.cart-row').forEach(function (r) {
+                var rName = r.querySelector('.cart-row-name').innerText;
+                if (names.indexOf(rName) !== -1) rowsToAnimate.push(r);
+            });
+
+            if (rowsToAnimate.length > 0) {
+                rowsToAnimate.forEach(function (r) { r.classList.add('cart-row-exit'); });
+                setTimeout(callback, 250);
+            } else {
+                callback();
+            }
         }
 
         // ── 购物清单（右栏下方） ──
@@ -900,9 +965,19 @@ function initKrypton() {
 
         var clearCartBtn = document.getElementById('clearCartBtn');
         if (clearCartBtn) clearCartBtn.onclick = function () {
-            var date = normDate(rechargeDateInput.value), packs = getActivePacks(currentVersion);
-            packs.forEach(function (p) { var k = qKey(p.name, date); delete simQtyMap[k]; });
-            updateAll();
+            var rows = cartItemList.querySelectorAll('.cart-row');
+            if (rows.length > 0) {
+                rows.forEach(function (r) { r.classList.add('cart-row-exit'); });
+                setTimeout(function () {
+                    var date = normDate(rechargeDateInput.value), packs = getActivePacks(currentVersion);
+                    packs.forEach(function (p) { var k = qKey(p.name, date); delete simQtyMap[k]; });
+                    updateAll();
+                }, 250);
+            } else {
+                var date = normDate(rechargeDateInput.value), packs = getActivePacks(currentVersion);
+                packs.forEach(function (p) { var k = qKey(p.name, date); delete simQtyMap[k]; });
+                updateAll();
+            }
         };
 
 
@@ -1521,7 +1596,9 @@ function initKrypton() {
         '.cart-empty-msg{font-size:12px;color:#aaa;text-align:center;padding:20px 0;}',
         '.cart-row{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid #f8f5f0;transform-origin:right;}',
         '.cart-row-animate{animation:cartRowIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;}',
+        '.cart-row-exit{animation:cartRowOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;}',
         '@keyframes cartRowIn{0%{opacity:0;transform:translateX(20px);}100%{opacity:1;transform:translateX(0);}}',
+        '@keyframes cartRowOut{0%{opacity:1;transform:translateX(0);}100%{opacity:0;transform:translateX(20px);}}',
         '.cart-row:last-child{border-bottom:none;}',
         '.cart-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}',
         '.cart-row-name{font-size:14px;color:#3e3a33;font-weight:600;}',
