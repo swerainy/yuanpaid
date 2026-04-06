@@ -784,9 +784,10 @@ function initKrypton() {
                         if (!isPackInAct) return;
                         if (aq + sq >= lim) {
                             delete simQtyMap[qKey(p.name, date)];
-                            updateAll();
+                            updateAll(true, p.name);
                         } else {
-                            addSim(p, date);
+                            addSim(p, date, true); // 使用 silent 模式，由 updateAll 手动触发快速更新
+                            updateAll(true, p.name);
                             showFloatingPts(e.pageX, e.pageY - 20, p.pts);
                         }
                     });
@@ -794,25 +795,42 @@ function initKrypton() {
                     if (sq > 0) minusBtn.onclick = function (e) {
                         e.stopPropagation();
                         if (sq === 1) {
-                            animateCartRowsExit([p.name], function () { removeSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, -p.pts); });
+                            animateCartRowsExit([p.name], function () { 
+                                removeSim(p, date, true); 
+                                updateAll(true, p.name);
+                                showFloatingPts(e.pageX, e.pageY - 20, -p.pts); 
+                            });
                         } else {
-                            removeSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, -p.pts);
+                            removeSim(p, date, true); 
+                            updateAll(true, p.name);
+                            showFloatingPts(e.pageX, e.pageY - 20, -p.pts);
                         }
                     };
                     var plusBtn = card.querySelector('.qty-plus');
-                    if (!maxed) plusBtn.onclick = function (e) { e.stopPropagation(); addSim(p, date); showFloatingPts(e.pageX, e.pageY - 20, p.pts); };
+                    if (!maxed) plusBtn.onclick = function (e) { 
+                        e.stopPropagation(); 
+                        addSim(p, date, true); 
+                        updateAll(true, p.name);
+                        showFloatingPts(e.pageX, e.pageY - 20, p.pts); 
+                    };
                     var minBtn = card.querySelector('.qty-min');
                     if (sq > 0) minBtn.onclick = function (e) {
                         e.stopPropagation();
                         var pts = -sq * p.pts;
                         animateCartRowsExit([p.name], function () {
                             delete simQtyMap[qKey(p.name, date)];
-                            updateAll();
+                            updateAll(true, p.name);
                             showFloatingPts(e.pageX, e.pageY - 20, pts);
                         });
                     };
                     var maxBtn = card.querySelector('.qty-max');
-                    if (!maxed) maxBtn.onclick = function (e) { e.stopPropagation(); var pts = (lim - aq - sq) * p.pts; simQtyMap[qKey(p.name, date)] = (lim - aq); updateAll(); showFloatingPts(e.pageX, e.pageY - 20, pts); };
+                    if (!maxed) maxBtn.onclick = function (e) { 
+                        e.stopPropagation(); 
+                        var pts = (lim - aq - sq) * p.pts; 
+                        simQtyMap[qKey(p.name, date)] = (lim - aq); 
+                        updateAll(true, p.name); 
+                        showFloatingPts(e.pageX, e.pageY - 20, pts); 
+                    };
                     targetGrid.appendChild(card);
                 }
 
@@ -873,7 +891,7 @@ function initKrypton() {
                                 }
                             });
                             if (totalAddedPts > 0) {
-                                updateAll();
+                                updateAll(true);
                                 showFloatingPts(e.pageX, e.pageY - 20, totalAddedPts);
                             }
                         };
@@ -885,7 +903,7 @@ function initKrypton() {
                                     var k = qKey(p.name, date);
                                     if (simQtyMap[k]) delete simQtyMap[k];
                                 });
-                                updateAll();
+                                updateAll(true);
                             });
                         };
 
@@ -917,7 +935,7 @@ function initKrypton() {
                         }
                     });
                     if (totalAddedPts > 0) {
-                        updateAll();
+                        updateAll(true);
                         showFloatingPts(e.pageX, e.pageY - 20, totalAddedPts);
                     }
                 };
@@ -928,7 +946,8 @@ function initKrypton() {
                         catPacks.forEach(function (p) {
                             var k = qKey(p.name, date);
                             if (simQtyMap[k]) delete simQtyMap[k];
-                        }); updateAll();
+                        }); 
+                        updateAll(true);
                     });
                 };
 
@@ -1045,14 +1064,13 @@ function initKrypton() {
             if (rows.length > 0) {
                 rows.forEach(function (r) { r.classList.add('cart-row-exit'); });
                 setTimeout(function () {
-                    var date = normDate(rechargeDateInput.value), packs = getActivePacks(currentVersion);
-                    packs.forEach(function (p) { var k = qKey(p.name, date); delete simQtyMap[k]; });
-                    updateAll();
+                    var date = normDate(rechargeDateInput.value);
+                    simQtyMap = {}; // 直接全清
+                    updateAll(true);
                 }, 250);
             } else {
-                var date = normDate(rechargeDateInput.value), packs = getActivePacks(currentVersion);
-                packs.forEach(function (p) { var k = qKey(p.name, date); delete simQtyMap[k]; });
-                updateAll();
+                simQtyMap = {};
+                updateAll(true);
             }
         };
 
@@ -1693,20 +1711,76 @@ function initKrypton() {
             }
         }
 
-        // ── 总更新 ──
-        var updateAll = function() {
+        // ── 局部更新核心 (手术式精准刷新) ──
+        function updatePackCard(name, date) {
+            var cards = packList.querySelectorAll('.ziyong-card[data-name="' + name + '"]');
+            if (!cards.length) return;
+            
+            var allPacks = getActivePacks(currentVersion);
+            var p = allPacks.find(function(it){ return it.name === name; });
+            if (!p) return;
+            
+            var sq = getSQ(name, date), aq = getAQ(name, date), lim = p.limit || 1;
+            var maxed = (aq + sq) >= lim;
+            var fullyBought = aq >= lim;
+
+            cards.forEach(function(card) {
+                // 更新高亮状态
+                card.classList.toggle('actual', fullyBought);
+                card.classList.toggle('simulated', (!fullyBought && sq > 0));
+                card.classList.toggle('limit-reached', maxed);
+                
+                // 更新选购数量
+                var numEl = card.querySelector('.qty-num');
+                if (numEl) numEl.innerText = sq;
+                
+                // 更新限购文本与颜色
+                var limEl = card.querySelector('.card-limit-txt');
+                if (limEl) {
+                    limEl.innerText = (aq + sq) + '/' + lim;
+                    limEl.style.color = maxed ? '#d85c50' : '#a08060';
+                }
+                
+                // 更新按钮禁用状态
+                var minBtn = card.querySelector('.qty-min'), minusBtn = card.querySelector('.qty-minus');
+                var plusBtn = card.querySelector('.qty-plus'), maxBtn = card.querySelector('.qty-max');
+                
+                if (minBtn) minBtn.setAttribute('disabled', sq <= 0 ? 'true' : 'false');
+                if (minusBtn) minusBtn.setAttribute('disabled', sq <= 0 ? 'true' : 'false');
+                if (plusBtn) plusBtn.setAttribute('disabled', maxed ? 'true' : 'false');
+                if (maxBtn) maxBtn.setAttribute('disabled', maxed ? 'true' : 'false');
+            });
+        }
+
+        // ── 总更新 (带 Fast 模式) ──
+        var updateAll = function(isFast, targetName) {
+            var date = normDate(rechargeDateInput.value);
             var base = getBasePts();
             var actPts = base + calcMapPts(actQtyMap);
             var simPts = actPts + calcMapPts(simQtyMap);
+            
+            // 动画更新总分
             setAnimVal(totalActualPtsEl, actPts);
             setAnimVal(totalSimulatedPtsEl, simPts);
+            
             var stickyA = document.getElementById('stickyActualPts');
             var stickyS = document.getElementById('stickySimPts');
             if (stickyA) setAnimVal(stickyA, actPts);
             if (stickyS) setAnimVal(stickyS, simPts);
-            renderPacks();
-            var date = normDate(rechargeDateInput.value);
-            renderYuanqi(date); renderActivities(date);
+            
+            // 核心性能切换
+            if (!isFast) {
+                renderPacks();
+            } else if (targetName) {
+                updatePackCard(targetName, date);
+            } else {
+                // 如果是批量操作(全选/清空)，但使用了 isFast，则遍历局部更新
+                var allPacks = getActivePacks(currentVersion);
+                allPacks.forEach(function(p) { updatePackCard(p.name, date); });
+            }
+            
+            renderYuanqi(date); 
+            renderActivities(date);
             renderCart();
             saveState();
         };
