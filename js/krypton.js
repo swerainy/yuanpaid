@@ -29,26 +29,26 @@ var KRYPTON_DATA = {
         { id: 2, name: "半年卡", pts: 1200, limit: 1, draws: 90, priceUsd: 19.99, category: "超值", sortId: 10 },
         { id: 3, name: "季卡", pts: 720, limit: 1, draws: 45, priceUsd: 11.99, category: "超值", sortId: 10 },
         { id: 4, name: "广陵金库", pts: 600, limit: 1, draws: 34, priceUsd: 9.99, category: "超值", sortId: 10 },
-        { id: 5, name: "贤士礼包1", pts: 60, limit: 2, draws: 2, priceUsd: 0.99, category: "贤士", sortId: 30 },
-        { id: 6, name: "卡池超值", pts: 60, limit: 1, draws: 2, priceUsd: 0.99, category: "卡池", sortId: 20 },
-        { id: 7, name: "贤士礼包1.2", pts: 120, limit: 2, draws: 4, priceUsd: 1.99, category: "贤士", sortId: 30 },
-        { id: 8, name: "贤士礼包2", pts: 180, limit: 3, draws: 5, priceUsd: 2.99, category: "贤士", sortId: 30 },
-        { id: 9, name: "贤士礼包2.1", pts: 300, limit: 3, draws: 8, priceUsd: 4.99, category: "贤士", sortId: 30 },
-        { id: 10, name: "贤士礼包3", pts: 600, limit: 3, draws: 12, priceUsd: 9.99, category: "贤士", sortId: 30 },
-        { id: 11, name: "卡池特惠", pts: 300, limit: 1, draws: 5, priceUsd: 4.99, category: "卡池", sortId: 20 },
-        { id: 12, name: "卡池初级", pts: 600, limit: 1, draws: 10, priceUsd: 9.99, category: "卡池", sortId: 20 },
-        { id: 13, name: "贤士礼包3.1", pts: 900, limit: 3, draws: 15, priceUsd: 14.99, category: "贤士", sortId: 30 },
-        { id: 14, name: "贤士礼包3.2", pts: 1200, limit: 5, draws: 16, priceUsd: 19.99, category: "贤士", sortId: 30 },
+        { id: 5, name: "待贤礼包1", pts: 60, limit: 2, draws: 2, priceUsd: 0.99, category: "待贤", sortId: 30 },
+        { id: 6, name: "天机符传超值礼包", pts: 60, limit: 1, draws: 2, priceUsd: 0.99, category: "卡池", sortId: 20 },
+        { id: 7, name: "待贤礼包1.2", pts: 120, limit: 2, draws: 4, priceUsd: 1.99, category: "待贤", sortId: 30 },
+        { id: 8, name: "待贤礼包2", pts: 180, limit: 3, draws: 5, priceUsd: 2.99, category: "待贤", sortId: 30 },
+        { id: 9, name: "待贤礼包2.1", pts: 300, limit: 3, draws: 8, priceUsd: 4.99, category: "待贤", sortId: 30 },
+        { id: 10, name: "待贤礼包3", pts: 600, limit: 3, draws: 12, priceUsd: 9.99, category: "待贤", sortId: 30 },
+        { id: 11, name: "天机符传特惠礼包", pts: 300, limit: 1, draws: 5, priceUsd: 4.99, category: "卡池", sortId: 20 },
+        { id: 12, name: "天机符传初级礼包", pts: 600, limit: 1, draws: 10, priceUsd: 9.99, category: "卡池", sortId: 20 },
+        { id: 13, name: "待贤礼包3.1", pts: 900, limit: 3, draws: 15, priceUsd: 14.99, category: "待贤", sortId: 30 },
+        { id: 14, name: "待贤礼包3.2", pts: 1200, limit: 5, draws: 16, priceUsd: 19.99, category: "待贤", sortId: 30 },
         { id: 15, name: "卡池助力", pts: 780, limit: 3, draws: 10, priceUsd: 12.99, category: "卡池", sortId: 20 },
-        { id: 16, name: "卡池中级", pts: 1200, limit: 1, draws: 14, priceUsd: 19.99, category: "卡池", sortId: 20 },
-        { id: 17, name: "贤士礼包3.3", pts: 1800, limit: 5, draws: 20, priceUsd: 29.99, category: "贤士", sortId: 30 },
+        { id: 16, name: "天机符传助力礼包", pts: 1200, limit: 1, draws: 14, priceUsd: 19.99, category: "卡池", sortId: 20 },
+        { id: 17, name: "待贤礼包3.3", pts: 1800, limit: 5, draws: 20, priceUsd: 29.99, category: "待贤", sortId: 30 },
         { id: 18, name: "首充双倍60", pts: 60, limit: 1, draws: 0.6, priceUsd: 0.99, category: "其他", sortId: 50 },
-        { id: 19, name: "卡池高级", pts: 1800, limit: 1, draws: 18, priceUsd: 29.99, category: "卡池", sortId: 20 },
-        { id: 20, name: "贤士礼包3.4", pts: 3000, limit: 5, draws: 28, priceUsd: 49.99, category: "贤士", sortId: 30 },
-        { id: 21, name: "卡池特级", pts: 3000, limit: 1, draws: 25, priceUsd: 49.99, category: "卡池", sortId: 20 },
-        { id: 22, name: "贤士礼包3.5", pts: 6000, limit: 10, draws: 45, priceUsd: 99.99, category: "贤士", sortId: 30 },
-        { id: 23, name: "卡池终极", pts: 6000, limit: 1, draws: 40, priceUsd: 99.99, category: "卡池", sortId: 20 },
-        { id: 24, name: "卡池豪华", pts: 6000, limit: 2, draws: 40, priceUsd: 99.99, category: "卡池", sortId: 20 },
+        { id: 19, name: "天机符传高级礼包", pts: 1800, limit: 1, draws: 18, priceUsd: 29.99, category: "卡池", sortId: 20 },
+        { id: 20, name: "待贤礼包3.4", pts: 3000, limit: 5, draws: 28, priceUsd: 49.99, category: "待贤", sortId: 30 },
+        { id: 21, name: "天机符传特级礼包", pts: 3000, limit: 1, draws: 25, priceUsd: 49.99, category: "卡池", sortId: 20 },
+        { id: 22, name: "待贤礼包3.5", pts: 6000, limit: 10, draws: 45, priceUsd: 99.99, category: "待贤", sortId: 30 },
+        { id: 23, name: "天机符传终极礼包", pts: 6000, limit: 1, draws: 40, priceUsd: 99.99, category: "卡池", sortId: 20 },
+        { id: 24, name: "天机符传豪华礼包", pts: 6000, limit: 2, draws: 40, priceUsd: 99.99, category: "卡池", sortId: 20 },
         { id: 25, name: "首充双倍300", pts: 300, limit: 1, draws: 3, priceUsd: 4.99, category: "其他", sortId: 50 },
         { id: 26, name: "首充双倍900", pts: 900, limit: 1, draws: 9, priceUsd: 14.99, category: "其他", sortId: 50 },
         { id: 27, name: "首充双倍1800", pts: 1800, limit: 1, draws: 18, priceUsd: 29.99, category: "其他", sortId: 50 },
@@ -114,18 +114,18 @@ var KRYPTON_DATA = {
         { id: 86, name: "刘辩·魇恋念礼包 3", pts: 1200, limit: 999, draws: 0, priceUsd: 19.99, category: "恋念", extra: "20 阴文·魇", sortId: 41 },
         { id: 87, name: "密探特训37期", pts: 780, limit: 1, draws: 0, priceUsd: 12.99, category: "超值", sortId: 50 },
         { id: 88, name: "密探特训38期", pts: 780, limit: 1, draws: 0, priceUsd: 12.99, category: "超值", sortId: 50 },
-        { id: 89, name: "善恶簿体验包", pts: 60, limit: 2, draws: 0, priceUsd: 0.99, category: "贤士", extra: "10 善恶簿", sortId: 31 },
-        { id: 90, name: "善恶簿精选包", pts: 120, limit: 2, draws: 0, priceUsd: 1.99, category: "贤士", extra: "18 善恶簿", sortId: 31 },
-        { id: 91, name: "善恶簿高阶包", pts: 360, limit: 2, draws: 0, priceUsd: 5.99, category: "贤士", extra: "35 善恶簿", sortId: 31 },
-        { id: 92, name: "善恶簿丰盈包", pts: 1200, limit: 5, draws: 0, priceUsd: 19.99, category: "贤士", extra: "80 善恶簿", sortId: 31 },
-        { id: 93, name: "功过格体验包", pts: 120, limit: 2, draws: 0, priceUsd: 1.99, category: "贤士", extra: "10 功过格", sortId: 32 },
-        { id: 94, name: "功过格精选包", pts: 300, limit: 2, draws: 0, priceUsd: 4.99, category: "贤士", extra: "18 功过格", sortId: 32 },
-        { id: 95, name: "功过格高阶包", pts: 600, limit: 2, draws: 0, priceUsd: 9.99, category: "贤士", extra: "28 功过格", sortId: 32 },
-        { id: 96, name: "功过格丰盈包", pts: 1440, limit: 5, draws: 0, priceUsd: 23.99, category: "贤士", extra: "50 功过格", sortId: 32 },
+        { id: 89, name: "善恶簿体验包", pts: 60, limit: 2, draws: 0, priceUsd: 0.99, category: "待贤", extra: "10 善恶簿", sortId: 31 },
+        { id: 90, name: "善恶簿精选包", pts: 120, limit: 2, draws: 0, priceUsd: 1.99, category: "待贤", extra: "18 善恶簿", sortId: 31 },
+        { id: 91, name: "善恶簿高阶包", pts: 360, limit: 2, draws: 0, priceUsd: 5.99, category: "待贤", extra: "35 善恶簿", sortId: 31 },
+        { id: 92, name: "善恶簿丰盈包", pts: 1200, limit: 5, draws: 0, priceUsd: 19.99, category: "待贤", extra: "80 善恶簿", sortId: 31 },
+        { id: 93, name: "功过格体验包", pts: 120, limit: 2, draws: 0, priceUsd: 1.99, category: "待贤", extra: "10 功过格", sortId: 32 },
+        { id: 94, name: "功过格精选包", pts: 300, limit: 2, draws: 0, priceUsd: 4.99, category: "待贤", extra: "18 功过格", sortId: 32 },
+        { id: 95, name: "功过格高阶包", pts: 600, limit: 2, draws: 0, priceUsd: 9.99, category: "待贤", extra: "28 功过格", sortId: 32 },
+        { id: 96, name: "功过格丰盈包", pts: 1440, limit: 5, draws: 0, priceUsd: 23.99, category: "待贤", extra: "50 功过格", sortId: 32 },
         { id: 97, name: "地宫秘宝", pts: 900, limit: 1, draws: 22, priceUsd: 14.99, category: "超值", sortId: 40 },
-        { id: 98, name: "体力体验包", pts: 60, limit: 2, draws: 0, priceUsd: 0.99, category: "贤士", extra: "4 体力", sortId: 33 },
-        { id: 99, name: "体力精选包", pts: 180, limit: 2, draws: 0, priceUsd: 2.99, category: "贤士", extra: "8 体力", sortId: 33 },
-        { id: 100, name: "体力高阶包", pts: 300, limit: 5, draws: 0, priceUsd: 4.99, category: "贤士", extra: "11 体力", sortId: 33 },
+        { id: 98, name: "体力体验包", pts: 60, limit: 2, draws: 0, priceUsd: 0.99, category: "待贤", extra: "4 体力", sortId: 33 },
+        { id: 99, name: "体力精选包", pts: 180, limit: 2, draws: 0, priceUsd: 2.99, category: "待贤", extra: "8 体力", sortId: 33 },
+        { id: 100, name: "体力高阶包", pts: 300, limit: 5, draws: 0, priceUsd: 4.99, category: "待贤", extra: "11 体力", sortId: 33 },
         { id: 101, name: "主线助力", pts: 1200, limit: 2, draws: 0, priceUsd: 19.99, category: "其他", sortId: 50 }
     ],
 
@@ -143,29 +143,29 @@ var KRYPTON_DATA = {
         { id: 21, name: "卡池特级", pts: 3280, limit: 1, draws: 25, priceCny: 328, category: "卡池", sortId: 20 },
         { id: 23, name: "卡池终极", pts: 6480, limit: 1, draws: 40, priceCny: 648, category: "卡池", sortId: 20 },
         { id: 24, name: "卡池豪华", pts: 6480, limit: 2, draws: 40, priceCny: 648, category: "卡池", sortId: 20 },
-        { id: 5, name: "贤士礼包 1", pts: 60, limit: 2, draws: 2, priceCny: 6, category: "贤士", sortId: 30 },
-        { id: 7, name: "贤士礼包 1.2", pts: 120, limit: 2, draws: 4, priceCny: 12, category: "贤士", sortId: 30 },
-        { id: 8, name: "贤士礼包 2", pts: 180, limit: 3, draws: 5, priceCny: 18, category: "贤士", sortId: 30 },
-        { id: 9, name: "贤士礼包 2.1", pts: 300, limit: 3, draws: 8, priceCny: 30, category: "贤士", sortId: 30 },
-        { id: 10, name: "贤士礼包 3", pts: 680, limit: 3, draws: 12, priceCny: 68, category: "贤士", sortId: 30 },
-        { id: 13, name: "贤士礼包 3.1", pts: 980, limit: 3, draws: 15, priceCny: 98, category: "贤士", sortId: 30 },
-        { id: 14, name: "贤士礼包 3.2", pts: 1280, limit: 5, draws: 16, priceCny: 128, category: "贤士", sortId: 30 },
-        { id: 17, name: "贤士礼包 3.3", pts: 1980, limit: 5, draws: 20, priceCny: 198, category: "贤士", sortId: 30 },
-        { id: 20, name: "贤士礼包 3.4", pts: 3280, limit: 5, draws: 28, priceCny: 328, category: "贤士", sortId: 30 },
-        { id: 22, name: "贤士礼包 3.5", pts: 6480, limit: 10, draws: 45, priceCny: 648, category: "贤士", sortId: 30 },
+        { id: 5, name: "待贤礼包 1", pts: 60, limit: 2, draws: 2, priceCny: 6, category: "待贤", sortId: 30 },
+        { id: 7, name: "待贤礼包 1.2", pts: 120, limit: 2, draws: 4, priceCny: 12, category: "待贤", sortId: 30 },
+        { id: 8, name: "待贤礼包 2", pts: 180, limit: 3, draws: 5, priceCny: 18, category: "待贤", sortId: 30 },
+        { id: 9, name: "待贤礼包 2.1", pts: 300, limit: 3, draws: 8, priceCny: 30, category: "待贤", sortId: 30 },
+        { id: 10, name: "待贤礼包 3", pts: 680, limit: 3, draws: 12, priceCny: 68, category: "待贤", sortId: 30 },
+        { id: 13, name: "待贤礼包 3.1", pts: 980, limit: 3, draws: 15, priceCny: 98, category: "待贤", sortId: 30 },
+        { id: 14, name: "待贤礼包 3.2", pts: 1280, limit: 5, draws: 16, priceCny: 128, category: "待贤", sortId: 30 },
+        { id: 17, name: "待贤礼包 3.3", pts: 1980, limit: 5, draws: 20, priceCny: 198, category: "待贤", sortId: 30 },
+        { id: 20, name: "待贤礼包 3.4", pts: 3280, limit: 5, draws: 28, priceCny: 328, category: "待贤", sortId: 30 },
+        { id: 22, name: "待贤礼包 3.5", pts: 6480, limit: 10, draws: 45, priceCny: 648, category: "待贤", sortId: 30 },
         { id: 31, name: "地宫秘宝", pts: 980, limit: 1, draws: 22, priceCny: 98, category: "超值", sortId: 40 },
         { id: 30, name: "密探特训", pts: 780, limit: 1, draws: 0, priceCny: 78, category: "超值", sortId: 50 },
-        { id: 89, name: "善恶簿体验包", pts: 60, limit: 2, draws: 0, priceCny: 6, category: "贤士", extra: "10 善恶簿", sortId: 31 },
-        { id: 90, name: "善恶簿精选包", pts: 120, limit: 2, draws: 0, priceCny: 12, category: "贤士", extra: "18 善恶簿", sortId: 31 },
-        { id: 91, name: "善恶簿高阶包", pts: 360, limit: 2, draws: 0, priceCny: 36, category: "贤士", extra: "35 善恶簿", sortId: 31 },
-        { id: 92, name: "善恶簿丰盈包", pts: 1280, limit: 5, draws: 0, priceCny: 128, category: "贤士", extra: "80 善恶簿", sortId: 31 },
-        { id: 93, name: "功过格体验包", pts: 120, limit: 2, draws: 0, priceCny: 12, category: "贤士", extra: "10 功过格", sortId: 32 },
-        { id: 94, name: "功过格精选包", pts: 300, limit: 2, draws: 0, priceCny: 30, category: "贤士", extra: "18 功过格", sortId: 32 },
-        { id: 95, name: "功过格高阶包", pts: 680, limit: 2, draws: 0, priceCny: 68, category: "贤士", extra: "28 功过格", sortId: 32 },
-        { id: 96, name: "功过格丰盈包", pts: 1580, limit: 5, draws: 0, priceCny: 158, category: "贤士", extra: "50 功过格", sortId: 32 },
-        { id: 98, name: "体力体验包", pts: 60, limit: 2, draws: 0, priceCny: 6, category: "贤士", extra: "4 体力", sortId: 33 },
-        { id: 99, name: "体力精选包", pts: 180, limit: 2, draws: 0, priceCny: 18, category: "贤士", extra: "8 体力", sortId: 33 },
-        { id: 100, name: "体力高阶包", pts: 300, limit: 5, draws: 0, priceCny: 30, category: "贤士", extra: "11 体力", sortId: 33 },
+        { id: 89, name: "善恶簿体验包", pts: 60, limit: 2, draws: 0, priceCny: 6, category: "待贤", extra: "10 善恶簿", sortId: 31 },
+        { id: 90, name: "善恶簿精选包", pts: 120, limit: 2, draws: 0, priceCny: 12, category: "待贤", extra: "18 善恶簿", sortId: 31 },
+        { id: 91, name: "善恶簿高阶包", pts: 360, limit: 2, draws: 0, priceCny: 36, category: "待贤", extra: "35 善恶簿", sortId: 31 },
+        { id: 92, name: "善恶簿丰盈包", pts: 1280, limit: 5, draws: 0, priceCny: 128, category: "待贤", extra: "80 善恶簿", sortId: 31 },
+        { id: 93, name: "功过格体验包", pts: 120, limit: 2, draws: 0, priceCny: 12, category: "待贤", extra: "10 功过格", sortId: 32 },
+        { id: 94, name: "功过格精选包", pts: 300, limit: 2, draws: 0, priceCny: 30, category: "待贤", extra: "18 功过格", sortId: 32 },
+        { id: 95, name: "功过格高阶包", pts: 680, limit: 2, draws: 0, priceCny: 68, category: "待贤", extra: "28 功过格", sortId: 32 },
+        { id: 96, name: "功过格丰盈包", pts: 1580, limit: 5, draws: 0, priceCny: 158, category: "待贤", extra: "50 功过格", sortId: 32 },
+        { id: 98, name: "体力体验包", pts: 60, limit: 2, draws: 0, priceCny: 6, category: "待贤", extra: "4 体力", sortId: 33 },
+        { id: 99, name: "体力精选包", pts: 180, limit: 2, draws: 0, priceCny: 18, category: "待贤", extra: "8 体力", sortId: 33 },
+        { id: 100, name: "体力高阶包", pts: 300, limit: 5, draws: 0, priceCny: 30, category: "待贤", extra: "11 体力", sortId: 33 },
         { id: 18, name: "首充双倍 60", pts: 60, limit: 1, draws: 0.6, priceCny: 6, category: "其他", sortId: 50 },
         { id: 25, name: "首充双倍 300", pts: 300, limit: 1, draws: 3, priceCny: 30, category: "其他", sortId: 50 },
         { id: 26, name: "首充双倍 900", pts: 980, limit: 1, draws: 9, priceCny: 98, category: "其他", sortId: 50 },
@@ -415,10 +415,10 @@ function initKrypton() {
                         // 针对不同 API 格式的动态适配
                         if (api.type === 'coinbase') {
                             r = parseFloat(d.data.rates.CNY);
-                            dateStr = '实时市场价'; 
+                            dateStr = '实时市场价';
                         } else if (api.type === 'pearktrue') {
                             r = parseFloat(d.resultprice);
-                            dateStr = '国内镜像'; 
+                            dateStr = '国内镜像';
                         } else if (api.type === 'er-v6') {
                             r = d.rates.CNY;
                             dateStr = d.time_last_update_utc ? d.time_last_update_utc.substring(5, 16) : '';
@@ -430,7 +430,7 @@ function initKrypton() {
                         if (r && !isNaN(r)) {
                             console.log('[Krypton] 汇率同步成功(' + api.type + '):', r);
                             updateRate(r.toFixed(4));
-                            
+
                             if (btn) {
                                 btn.classList.remove('syncing');
                                 btn.classList.add('success');
@@ -673,15 +673,15 @@ function initKrypton() {
                     targetGrid.appendChild(card);
                 }
 
-                if (['贤士', '恋念'].includes(cat)) {
+                if (['待贤', '恋念'].includes(cat)) {
                     // 通用的二级分组逻辑
                     var subGroups = {}, subOrder = [];
-                    var subNames = { 
+                    var subNames = {
                         '30': '天机符传', '31': '善恶簿', '32': '功过格', '33': '体力',
                         '41': '刘辩', '42': '傅融', '43': '袁基', '44': '左慈', '45': '孙策'
                     };
                     catPacks.forEach(function (p) {
-                        var sid = String(p.sortId || (cat === '贤士' ? 30 : 40));
+                        var sid = String(p.sortId || (cat === '待贤' ? 30 : 40));
                         if (!subGroups[sid]) { subGroups[sid] = []; subOrder.push(sid); }
                         subGroups[sid].push(p);
                     });
@@ -901,95 +901,95 @@ function initKrypton() {
             var targetVal = localStorage.getItem('ziyong_yuanqi_target') || '60000';
             var remaining = Math.max(0, parseInt(targetVal) - c1si);
 
-                yuanqiContainer.innerHTML =
-                    '<div class="activity-item">' +
-                    '  <div class="activity-header">' +
-                    '    <div class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></div>' +
-                    '    <div class="target-calc-group">' +
-                    '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
+            yuanqiContainer.innerHTML =
+                '<div class="activity-item">' +
+                '  <div class="activity-header">' +
+                '    <div class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></div>' +
+                '    <div class="target-calc-group">' +
+                '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
+                '    </div>' +
+                '  </div>' +
+                '  <div class="activity-content-wrapper">' +
+                '    <div class="act-segment">' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-small">条件一: 年度累充满 60,000 积分 (25/05/01-26/04/30)</div>' +
+                '        <div class="target-calc-group">' + mkBaseInput('鸢起年度', c1b) + '</div>' +
+                '      </div>' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-med">年度累充进度</div>' +
+                '        <div class="act-val-row">实际: <span class="act-val-actual">' + c1a.toLocaleString() + '</span> (模拟: ' + c1si.toLocaleString() + ') / 60,000</div>' +
+                '      </div>' +
+                '      ' + mkBar(c1a, c1si, 60000) +
+                '      <div class="act-footer-right">距目的地还差: ' + remaining.toLocaleString() + '</div>' +
+                '    </div>' +
+                '    <div class="dashed-divider"></div>' +
+                '    <div class="act-segment">' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-small">条件二: 长期充值兑换礼盒 (23/03/30-26/04/30)</div>' +
+                '        <div class="target-calc-group">' + mkBaseInput('鸢起长期', c2b) + '</div>' +
+                '      </div>' +
+                '      <div class="act-row">' +
+                '        <div class="act-label-med">当前可领: <span class="act-val-actual">' + boxes + '</span> 个</div>' +
+                '        <div class="act-val-row">实际: <span class="act-val-actual">' + c2a.toLocaleString() + '</span> (模拟: ' + c2si.toLocaleString() + ') / ' + next.toLocaleString() + '</div>' +
+                '      </div>' +
+                '      ' + mkBar(c2a, c2si, next) +
+                '      <div class="act-footer-right">距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString() + '</div>' +
+                '    </div>' +
+                '  </div>' +
+                '</div>';
+            attachCollapse(yuanqiContainer);
+        }
+
+        function renderActivities(date) {
+            if (!activityContainer) return;
+            activityContainer.innerHTML = '';
+            var active = eventsData.filter(function (e) {
+                // 1. 排除掉已经确定的非累充项（如签到、年卡）
+                if (['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
+                // 2. 核心排除：已经在顶部专门显示的“鸢起礼盒”及其相关变体，避免重复显示
+                if (e.title.indexOf('鸢起礼盒') !== -1 || e.title.indexOf('鸢起年度') !== -1 || e.title.indexOf('鸢起长期') !== -1) return false;
+
+                return date >= e.start && date <= e.end && (
+                    e.title.includes('累充') ||
+                    e.type === 'pool'
+                );
+            });
+
+            // 3. 结果去重：防止同一活动在 eventsData 中多次出现导致列表出现重复项
+            var seenTitles = {};
+            active = active.filter(function (e) {
+                if (seenTitles[e.title]) return false;
+                seenTitles[e.title] = true;
+                return true;
+            });
+            if (!active.length) {
+                if (!(date >= '2023-03-30' && date <= '2026-04-30')) activityContainer.innerHTML = '<div class="no-activity">当前日期无累充活动</div>';
+                return;
+            }
+            active.forEach(function (act) {
+                var base = getCovBasePts(act.title, act.start, act.end), actA = base + calcRangePts(actQtyMap, act.start, act.end), actS = base + calcRangePts(simQtyMap, act.start, act.end);
+                var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000], maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
+                for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
+                var fD = function (d) { return d.split('-').slice(1).join('/'); };
+                var div = document.createElement('div'); div.className = 'activity-item';
+                div.innerHTML =
+                    '<div class="activity-header">' +
+                    '  <div class="activity-title">' + act.title + ' <span style="font-size:10px;opacity:.7">(' + fD(act.start) + '~' + fD(act.end) + ')</span> <span class="toggle-icon">▼</span></div>' +
+                    '</div>' +
+                    '<div class="activity-content-wrapper">' +
+                    '  <div class="act-segment">' +
+                    '    <div class="act-row">' +
+                    '      <div class="act-label-small">累充计算中 (包含基础值)</div>' +
+                    '      <div class="target-calc-group">' + mkBaseInput(act.title, base) + '</div>' +
                     '    </div>' +
-                    '  </div>' +
-                    '  <div class="activity-content-wrapper">' +
-                    '    <div class="act-segment">' +
-                    '      <div class="act-row">' +
-                    '        <div class="act-label-small">条件一: 年度累充满 60,000 积分 (25/05/01-26/04/30)</div>' +
-                    '        <div class="target-calc-group">' + mkBaseInput('鸢起年度', c1b) + '</div>' +
-                    '      </div>' +
-                    '      <div class="act-row">' +
-                    '        <div class="act-label-med">年度累充进度</div>' +
-                    '        <div class="act-val-row">实际: <span class="act-val-actual">' + c1a.toLocaleString() + '</span> (模拟: ' + c1si.toLocaleString() + ') / 60,000</div>' +
-                    '      </div>' +
-                    '      ' + mkBar(c1a, c1si, 60000) +
-                    '      <div class="act-footer-right">距目的地还差: ' + remaining.toLocaleString() + '</div>' +
+                    '    <div class="act-row">' +
+                    '      <div class="act-label-med">当前累充进度</div>' +
+                    '      <div class="act-val-row">实际: <span class="act-val-actual">' + actA.toLocaleString() + '</span> (模拟: ' + actS.toLocaleString() + ') / ' + nextT.toLocaleString() + '</div>' +
                     '    </div>' +
-                    '    <div class="dashed-divider"></div>' +
-                    '    <div class="act-segment">' +
-                    '      <div class="act-row">' +
-                    '        <div class="act-label-small">条件二: 长期充值兑换礼盒 (23/03/30-26/04/30)</div>' +
-                    '        <div class="target-calc-group">' + mkBaseInput('鸢起长期', c2b) + '</div>' +
-                    '      </div>' +
-                    '      <div class="act-row">' +
-                    '        <div class="act-label-med">当前可领: <span class="act-val-actual">' + boxes + '</span> 个</div>' +
-                    '        <div class="act-val-row">实际: <span class="act-val-actual">' + c2a.toLocaleString() + '</span> (模拟: ' + c2si.toLocaleString() + ') / ' + next.toLocaleString() + '</div>' +
-                    '      </div>' +
-                    '      ' + mkBar(c2a, c2si, next) +
-                    '      <div class="act-footer-right">距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString() + '</div>' +
-                    '    </div>' +
+                    '    ' + mkBar(actA, actS, nextT) +
+                    '    <div class="act-footer-right">' + (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString()) + '</div>' +
                     '  </div>' +
                     '</div>';
-                attachCollapse(yuanqiContainer);
-            }
-    
-            function renderActivities(date) {
-                if (!activityContainer) return;
-                activityContainer.innerHTML = '';
-                var active = eventsData.filter(function (e) {
-                    // 1. 排除掉已经确定的非累充项（如签到、年卡）
-                    if (['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
-                    // 2. 核心排除：已经在顶部专门显示的“鸢起礼盒”及其相关变体，避免重复显示
-                    if (e.title.indexOf('鸢起礼盒') !== -1 || e.title.indexOf('鸢起年度') !== -1 || e.title.indexOf('鸢起长期') !== -1) return false;
-                    
-                    return date >= e.start && date <= e.end && (
-                        e.title.includes('累充') || 
-                        e.type === 'pool'
-                    );
-                });
-                
-                // 3. 结果去重：防止同一活动在 eventsData 中多次出现导致列表出现重复项
-                var seenTitles = {};
-                active = active.filter(function(e) {
-                    if (seenTitles[e.title]) return false;
-                    seenTitles[e.title] = true;
-                    return true;
-                });
-                if (!active.length) {
-                    if (!(date >= '2023-03-30' && date <= '2026-04-30')) activityContainer.innerHTML = '<div class="no-activity">当前日期无累充活动</div>';
-                    return;
-                }
-                active.forEach(function (act) {
-                    var base = getCovBasePts(act.title, act.start, act.end), actA = base + calcRangePts(actQtyMap, act.start, act.end), actS = base + calcRangePts(simQtyMap, act.start, act.end);
-                    var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000], maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
-                    for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
-                    var fD = function (d) { return d.split('-').slice(1).join('/'); };
-                    var div = document.createElement('div'); div.className = 'activity-item';
-                    div.innerHTML =
-                        '<div class="activity-header">' +
-                        '  <div class="activity-title">' + act.title + ' <span style="font-size:10px;opacity:.7">(' + fD(act.start) + '~' + fD(act.end) + ')</span> <span class="toggle-icon">▼</span></div>' +
-                        '</div>' +
-                        '<div class="activity-content-wrapper">' +
-                        '  <div class="act-segment">' +
-                        '    <div class="act-row">' +
-                        '      <div class="act-label-small">累充计算中 (包含基础值)</div>' +
-                        '      <div class="target-calc-group">' + mkBaseInput(act.title, base) + '</div>' +
-                        '    </div>' +
-                        '    <div class="act-row">' +
-                        '      <div class="act-label-med">当前累充进度</div>' +
-                        '      <div class="act-val-row">实际: <span class="act-val-actual">' + actA.toLocaleString() + '</span> (模拟: ' + actS.toLocaleString() + ') / ' + nextT.toLocaleString() + '</div>' +
-                        '    </div>' +
-                        '    ' + mkBar(actA, actS, nextT) +
-                        '    <div class="act-footer-right">' + (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString()) + '</div>' +
-                        '  </div>' +
-                        '</div>';
                 activityContainer.appendChild(div);
             });
             attachCollapse(activityContainer);
