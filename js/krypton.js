@@ -1563,22 +1563,61 @@ function initKrypton() {
             };
         }
 
-        // ── 综合清空按钮 (全局) ──
-        function performGlobalClear() {
-            if (!confirm('确定要清空所有充值记录吗？（包括购物车和确认结算的记录）')) return;
-            console.log('[Krypton] 执行全局数据清空...');
-            simQtyMap = {};
-            actQtyMap = {};
-            // 清理所有已知的存储键
-            [
-                'ziyong_simQty', 'ziyong_actQty', 'ziyong_events_base',
-                'ziyong_simulated', 'ziyong_actual', 'krypton_records'
-            ].forEach(function (k) { localStorage.removeItem(k); });
+        // ── 综合清空按钮 (自定义美化弹窗版) ──
+        function showConfirmModal(msg, onConfirm) {
+            var overlay = document.createElement('div');
+            overlay.className = 'ziyong-modal-overlay';
+            overlay.innerHTML = 
+                '<div class="ziyong-modal-card">' +
+                '  <div class="ziyong-modal-icon">⚠️</div>' +
+                '  <div class="ziyong-modal-title">确认清空数据？</div>' +
+                '  <div class="ziyong-modal-msg">' + msg + '</div>' +
+                '  <div class="ziyong-modal-btns">' +
+                '    <button class="ziyong-modal-btn cancel">取消</button>' +
+                '    <button class="ziyong-modal-btn confirm">确定清空</button>' +
+                '  </div>' +
+                '</div>';
+            document.body.appendChild(overlay);
+            
+            // 动画淡入
+            setTimeout(function(){ overlay.classList.add('show'); }, 10);
 
-            animStates = {};
-            updateAll();
-            updateRecordsTable(); // 【修正】强制刷新总记录表
-            alert('所有记录已清空');
+            overlay.querySelector('.cancel').onclick = function() {
+                overlay.classList.remove('show');
+                setTimeout(function(){ overlay.remove(); }, 300);
+            };
+            overlay.querySelector('.confirm').onclick = function() {
+                overlay.classList.remove('show');
+                setTimeout(function(){ overlay.remove(); onConfirm(); }, 300);
+            };
+        }
+
+        function performGlobalClear() {
+            showConfirmModal('清空后所有礼包勾选、确认结算的历史记录都将无法恢复。', function() {
+                console.log('[Krypton] 执行全局数据清空...');
+                simQtyMap = {};
+                actQtyMap = {};
+                // 清理所有已知的存储键
+                [
+                    'ziyong_simQty', 'ziyong_actQty', 'ziyong_events_base',
+                    'ziyong_simulated', 'ziyong_actual', 'krypton_records'
+                ].forEach(function (k) { localStorage.removeItem(k); });
+
+                animStates = {};
+                updateAll();
+                updateRecordsTable();
+                
+                // 成功提示
+                var toast = document.createElement('div');
+                toast.className = 'ziyong-toast';
+                toast.innerText = '✨ 记录已全部清空';
+                document.body.appendChild(toast);
+                setTimeout(function(){ toast.classList.add('show'); }, 10);
+                setTimeout(function(){ 
+                    toast.classList.remove('show'); 
+                    setTimeout(function(){ toast.remove(); }, 500); 
+                }, 2000);
+            });
         }
 
         var btnClearGlobal = document.getElementById('clearAllRecordsBtn') || document.getElementById('clearDataBtn');
@@ -1835,6 +1874,22 @@ function initKrypton() {
         '  .quick-nav-bar{flex-direction:row; gap:10px; width:auto;}',
         '  .nav-jump-btn{flex:1; width:auto; height:48px; border-bottom:4px solid #c05b4d; font-size:14px;}',
         '}',
+        // 自定义美化弹窗
+        '.ziyong-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(93,64,55,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:all .3s ease;}',
+        '.ziyong-modal-overlay.show{opacity:1;visibility:visible;}',
+        '.ziyong-modal-card{background:#fffcf5;width:320px;border-radius:20px;padding:30px 20px;text-align:center;box-shadow:0 15px 50px rgba(0,0,0,0.2);border:1px solid #e8e2d4;transform:scale(0.85);transition:transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.2);}',
+        '.ziyong-modal-overlay.show .ziyong-modal-card{transform:scale(1);}',
+        '.ziyong-modal-icon{font-size:36px;margin-bottom:15px;}',
+        '.ziyong-modal-title{font-size:18px;font-weight:800;color:#5d4037;margin-bottom:12px;}',
+        '.ziyong-modal-msg{font-size:14px;color:#8d7365;line-height:1.6;margin-bottom:25px;}',
+        '.ziyong-modal-btns{display:flex;gap:12px;}',
+        '.ziyong-modal-btn{flex:1;height:44px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;border:none;}',
+        '.ziyong-modal-btn.cancel{background:#e8e2d4;color:#5d4037;}',
+        '.ziyong-modal-btn.cancel:hover{background:#d7ccc8;}',
+        '.ziyong-modal-btn.confirm{background:#d85c50;color:#fff;}',
+        '.ziyong-modal-btn.confirm:hover{background:#c1483d;box-shadow:0 5px 15px rgba(216,92,80,0.3);}',
+        '.ziyong-toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-20px);padding:12px 24px;background:#5d4037;color:#fff;border-radius:30px;font-size:14px;z-index:10000;opacity:0;transition:all .4s ease;box-shadow:0 10px 30px rgba(0,0,0,0.2);}',
+        '.ziyong-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}',
         // 奖励预览增强 (全局浮窗版)
         '.reward-badge-container{position:relative;}',
         '.reward-badge{display:inline-flex; align-items:center; background:#fff5f2; color:#c05b4d; border:1px solid #f9d9d5; border-radius:12px; padding:2px 8px; font-size:11px; font-weight:700; cursor:help; transition:all .2s; user-select:none;}',
