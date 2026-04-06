@@ -296,16 +296,24 @@ function initKrypton() {
             updateNavVisibility();
         }
 
-        // ── 快速导航监听 (针对内部循环滚动优化) ──
+        // ── 快速导航监听 (性能与跨设备兼容性优化) ──
         document.querySelectorAll('.nav-jump-btn').forEach(function (btn) {
             btn.onclick = function (e) {
                 e.preventDefault(); e.stopPropagation();
                 var tid = btn.dataset.target,
                     target = document.getElementById(tid),
                     rightCol = document.querySelector('.right-column');
-                if (target && rightCol) {
-                    var scrollPos = target.getBoundingClientRect().top - rightCol.getBoundingClientRect().top + rightCol.scrollTop;
-                    rightCol.scrollTo({ top: scrollPos - 10, behavior: 'smooth' });
+                if (!target) return;
+
+                if (window.innerWidth <= 860) {
+                    // 手机端：全屏滚动到目标位置 (因为此时面板在下方且页面较长)
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // 电脑端：精准内部局部滚动 (不惊动外层页面滚动)
+                    if (rightCol) {
+                        var scrollPos = target.getBoundingClientRect().top - rightCol.getBoundingClientRect().top + rightCol.scrollTop;
+                        rightCol.scrollTo({ top: scrollPos - 10, behavior: 'smooth' });
+                    }
                 }
             };
         });
