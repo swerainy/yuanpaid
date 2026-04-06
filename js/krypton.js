@@ -1405,18 +1405,45 @@ function initKrypton() {
             renderTable('usd');
         }
 
-        // ── CSV / 清空 ──
+        // ── Excel 导入导出核心逻辑 (修正为针对“总记录”) ──
         var exportCsvBtn = document.getElementById('exportCsvBtn');
         var importCsvBtn = document.getElementById('importCsvBtn');
         var csvInput = document.getElementById('csvInput');
+        
         if (exportCsvBtn) {
             exportCsvBtn.onclick = function () {
-                var packs = getActivePacks(currentVersion), csv = '名称,日期,积分,qty,类型\n';
-                Object.keys(simQtyMap).forEach(function (k) {
-                    var parts = k.split('|'), nm = parts[0], d = parts[1], sq = simQtyMap[k] || 0, aq = actQtyMap[k] || 0;
-                    if (sq) csv += nm + ',' + d + ',' + (function () { for (var i = 0; i < packs.length; i++)if (packs[i].name === nm) return packs[i].pts; return 0; }()) + ',' + sq + ',' + (aq ? '实际' : '模拟') + '\n';
+                if (typeof XLSX === 'undefined') { alert('Excel 库尚未加载，请稍候...'); return; }
+                
+                var packs = getActivePacks('daihao').concat(getActivePacks('ruyuan'));
+                var dataRows = [];
+                
+                // 遍历 actQtyMap (正式结算的历史总记录)
+                Object.keys(actQtyMap).sort().forEach(function (k) {
+                    var parts = k.split('|'), nm = parts[0], d = parts[1], qty = actQtyMap[k] || 0;
+                    if (qty <= 0) return;
+                    
+                    // 查找礼包的基础点数和价格
+                    var p = packs.find(function(it) { return it.name === nm; });
+                    var pts = p ? p.pts : 0;
+                    var usd = p ? (p.priceUsd || 0) : 0;
+                    var rmb = p ? (p.priceCny || 0) : 0;
+                    
+                    dataRows.push({
+                        "名称": nm,
+                        "日期": d,
+                        "数量": qty,
+                        "总积分": pts * qty,
+                        "单价(USD)": usd,
+                        "单价(RMB)": rmb
+                    });
                 });
-                var lk = document.createElement('a'); lk.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); lk.download = 'ziyong.csv'; document.body.appendChild(lk); lk.click();
+
+                if (dataRows.length === 0) { alert('当前总记录为空，没有可导出的数据'); return; }
+
+                var ws = XLSX.utils.json_to_sheet(dataRows);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "总充值记录");
+                XLSX.writeFile(wb, "广陵资用案_总记录_" + new Date().toLocaleDateString() + ".xlsx");
             };
 
             // 动态加入“导出图片”按钮
@@ -1473,7 +1500,46 @@ function initKrypton() {
                 });
             };
         }
-        if (importCsvBtn && csvInput) { importCsvBtn.onclick = function () { csvInput.click(); }; }
+        if (importCsvBtn && csvInput) { 
+            importCsvBtn.onclick = function () { csvInput.click(); }; 
+            csvInput.onchange = function (e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                if (typeof XLSX === 'undefined') { alert('Excel 库尚未加载'); return; }
+
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    try {
+                        var data = new Uint8Array(ev.target.result);
+                        var workbook = XLSX.read(data, { type: 'array' });
+                        var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        var rows = XLSX.utils.sheet_to_json(firstSheet);
+
+                        if (rows.length === 0) return;
+                        
+                        var importedCount = 0;
+                        rows.forEach(function(row) {
+                            var nm = row["名称"] || row["Name"];
+                            var d = row["日期"] || row["Date"];
+                            var q = parseInt(row["数量"] || row["Qty"] || 1);
+                            if (nm && d && !isNaN(q)) {
+                                var key = nm + "|" + d;
+                                actQtyMap[key] = (actQtyMap[key] || 0) + q;
+                                importedCount++;
+                            }
+                        });
+
+                        alert('成功导入 ' + importedCount + ' 条记录');
+                        saveState();
+                        updateAll();
+                    } catch(err) {
+                        console.error(err); alert('文件读取失败，请确保是正确的 Excel 格式');
+                    }
+                    csvInput.value = ""; // 重置 input
+                };
+                reader.readAsArrayBuffer(file);
+            };
+        }
 
         // ── 确认结算按钮 ──
         var checkoutBtn = document.getElementById('checkoutBtn');
@@ -1511,6 +1577,7 @@ function initKrypton() {
 
             animStates = {};
             updateAll();
+            updateRecordsTable(); // 【修正】强制刷新总记录表
             alert('所有记录已清空');
         }
 
