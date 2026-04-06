@@ -261,6 +261,7 @@ function initKrypton() {
         // qty-map: key = "packName|YYYY-MM-DD" → count
         var simQtyMap = {};
         var actQtyMap = {};
+        var prevCartQtys = {}; // 记录上个周期的购物车数量，用于触发动画
 
         // ── 工具 ──
         function normDate(d) { return d ? d.replace(/\//g, '-').split('T')[0] : ''; }
@@ -569,6 +570,9 @@ function initKrypton() {
                     btn.onclick = function () {
                         if (activeCategory === cat) return;
                         activeCategory = cat;
+                        // 自动展开目标分类
+                        if (cat !== '全部') collapsedCats[cat] = false;
+
                         packList.style.transition = 'opacity .18s ease, transform .18s ease';
                         packList.style.opacity = '0.3'; packList.style.transform = 'translateY(5px)';
 
@@ -836,6 +840,7 @@ function initKrypton() {
                 totalDraws += (p.draws || 0) * sq; totalCny += cny; totalUsd += usd; totalPts += p.pts * sq;
                 items.push({ p: p, sq: sq, cny: cny, usd: usd });
             });
+            var currentCartQtys = {};
             if (!items.length) {
                 cartItemList.innerHTML = '<div class="cart-empty-msg" style="padding:15px; color:#a08060; text-align:center;">尚未选购礼包</div>';
                 if (cartStats) cartStats.style.display = 'none';
@@ -843,12 +848,16 @@ function initKrypton() {
                 if (div) div.style.display = 'none';
             } else {
                 cartItemList.innerHTML = items.map(function (ci) {
+                    currentCartQtys[ci.p.name] = ci.sq;
+                    var isNew = ci.sq > (prevCartQtys[ci.p.name] || 0);
+                    var animClass = isNew ? ' cart-row-animate' : '';
+
                     var isDaihaoUsd = currentVersion === 'daihao' && ci.p.priceUsd;
                     var priceStr = isDaihaoUsd ? '$' + (ci.p.priceUsd * ci.sq).toFixed(2) : '¥' + ci.cny.toFixed(2);
                     var secondaryPriceHtml = isDaihaoUsd ? '<div class="cart-row-price-cny" style="font-size:14px; color:#a82e2e; font-weight:700;">¥' + ci.cny.toFixed(2) + '</div>' : '';
                     var unitPrice = isDaihaoUsd ? '$' + ci.p.priceUsd : '¥' + getPackCny(ci.p).toFixed(2);
 
-                    return '<div class="cart-row" style="gap:4px;">' +
+                    return '<div class="cart-row' + animClass + '" style="gap:4px;">' +
                         '<div class="cart-row-top" style="display:flex; justify-content:space-between; align-items:baseline;">' +
                         '  <span class="cart-row-name">' + ci.p.name + '</span>' +
                         '  <span class="cart-row-price" style="font-size:14px; font-weight:700;">' + priceStr + '</span>' +
@@ -859,6 +868,7 @@ function initKrypton() {
                         '</div>' +
                         '</div>';
                 }).join('');
+                prevCartQtys = currentCartQtys; // 同步当前状态到历史
                 if (cartStats) {
                     cartStats.style.display = '';
                     var div = document.getElementById('activitySectionDivider');
@@ -1509,7 +1519,9 @@ function initKrypton() {
         '.cart-title{font-size:13px;font-weight:700;color:#5d4037;white-space:nowrap;grid-column:2;}',
         '.cart-item-list{flex:none;padding:12px 12px 0;}',
         '.cart-empty-msg{font-size:12px;color:#aaa;text-align:center;padding:20px 0;}',
-        '.cart-row{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid #f8f5f0;}',
+        '.cart-row{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid #f8f5f0;transform-origin:right;}',
+        '.cart-row-animate{animation:cartRowIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;}',
+        '@keyframes cartRowIn{0%{opacity:0;transform:translateX(20px);}100%{opacity:1;transform:translateX(0);}}',
         '.cart-row:last-child{border-bottom:none;}',
         '.cart-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}',
         '.cart-row-name{font-size:14px;color:#3e3a33;font-weight:600;}',
