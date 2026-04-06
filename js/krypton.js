@@ -947,48 +947,71 @@ function initKrypton() {
             var targetVal = localStorage.getItem('ziyong_yuanqi_target') || '60000';
             var remaining = Math.max(0, parseInt(targetVal) - c1si);
 
-            yuanqiContainer.innerHTML =
-                '<div class="activity-item">' +
-                '  <div class="activity-header">' +
-                '    <div class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></div>' +
-                '    <div class="target-calc-group">' +
-                '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
-                '    </div>' +
-                '  </div>' +
-                '  <div class="activity-content-wrapper">' +
-                '    <div class="act-segment">' +
-                '      <div class="act-row">' +
-                '        <div class="act-label-small">条件一: 年度累充满 60,000 积分 (25/05/01-26/04/30)</div>' +
-                '        <div class="target-calc-group">' + mkBaseInput('鸢起年度', c1b) + '</div>' +
-                '      </div>' +
-                '      <div class="act-row">' +
-                '        <div class="act-label-med">年度累充进度</div>' +
-                '        <div class="act-val-row">实际: <span class="act-val-actual">' + c1a.toLocaleString() + '</span> (模拟: ' + c1si.toLocaleString() + ') / 60,000</div>' +
-                '      </div>' +
-                '      ' + mkBar(c1a, c1si, 60000) +
-                '      <div class="act-footer-right">距目的地还差: ' + remaining.toLocaleString() + '</div>' +
-                '    </div>' +
-                '    <div class="dashed-divider"></div>' +
-                '    <div class="act-segment">' +
-                '      <div class="act-row">' +
-                '        <div class="act-label-small">条件二: 长期充值兑换礼盒 (23/03/30-26/04/30)</div>' +
-                '        <div class="target-calc-group">' + mkBaseInput('鸢起长期', c2b) + '</div>' +
-                '      </div>' +
-                '      <div class="act-row">' +
-                '        <div class="act-label-med">当前可领: <span class="act-val-actual">' + boxes + '</span> 个</div>' +
-                '        <div class="act-val-row">实际: <span class="act-val-actual">' + c2a.toLocaleString() + '</span> (模拟: ' + c2si.toLocaleString() + ') / ' + next.toLocaleString() + '</div>' +
-                '      </div>' +
-                '      ' + mkBar(c2a, c2si, next) +
-                '      <div class="act-footer-right">距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString() + '</div>' +
-                '    </div>' +
-                '  </div>' +
-                '</div>';
+            var item = yuanqiContainer.querySelector('.activity-item');
+            if (!item) {
+                yuanqiContainer.innerHTML =
+                    '<div class="activity-item" data-title="鸢起礼盒">' +
+                    '  <div class="activity-header">' +
+                    '    <div class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></div>' +
+                    '    <div class="target-calc-group">' +
+                    '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
+                    '    </div>' +
+                    '  </div>' +
+                    '  <div class="activity-content-wrapper">' +
+                    '    <div class="act-segment">' +
+                    '      <div class="act-row">' +
+                    '        <div class="act-label-small">条件一: 年度累充满 60,000 积分 (25/05/01-26/04/30)</div>' +
+                    '        <div class="target-calc-group tc-box1"></div>' +
+                    '      </div>' +
+                    '      <div class="act-row">' +
+                    '        <div class="act-label-med">年度累充进度</div>' +
+                    '        <div class="act-val-row">实际: <span class="act-val-actual c1a-val">0</span> (模拟: <span class="c1si-val">0</span>) / 60,000</div>' +
+                    '      </div>' +
+                    '      <div class="pb-wrap1">' + mkBar(0, 0, 60000) + '</div>' +
+                    '      <div class="act-footer-right rem-val">距目的地还差: 0</div>' +
+                    '    </div>' +
+                    '    <div class="dashed-divider"></div>' +
+                    '    <div class="act-segment">' +
+                    '      <div class="act-row">' +
+                    '        <div class="act-label-small">条件二: 长期充值兑换礼盒 (23/03/30-26/04/30)</div>' +
+                    '        <div class="target-calc-group tc-box2"></div>' +
+                    '      </div>' +
+                    '      <div class="act-row">' +
+                    '        <div class="act-label-med">当前可领: <span class="act-val-actual boxes-val">0</span> 个</div>' +
+                    '        <div class="act-val-row">实际: <span class="act-val-actual c2a-val">0</span> (模拟: <span class="c2si-val">0</span>) / <span class="next-val">0</span></div>' +
+                    '      </div>' +
+                    '      <div class="pb-wrap2">' + mkBar(0, 0, 100) + '</div>' +
+                    '      <div class="act-footer-right next-rem-val">距下一礼盒: 0</div>' +
+                    '    </div>' +
+                    '  </div>' +
+                    '</div>';
+                item = yuanqiContainer.querySelector('.activity-item');
+            }
+
+            // 更新数据
+            item.querySelector('.tc-box1').innerHTML = mkBaseInput('鸢起年度', c1b);
+            item.querySelector('.tc-box2').innerHTML = mkBaseInput('鸢起长期', c2b);
+            item.querySelector('.rem-val').innerText = '距目的地还差: ' + remaining.toLocaleString();
+            item.querySelector('.boxes-val').innerText = boxes;
+            item.querySelector('.next-val').innerText = next.toLocaleString();
+            item.querySelector('.next-rem-val').innerText = '距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString();
+
+            // 进度条与数字
+            item.querySelector('.pb-wrap1 .progress-bar.actual').style.width = Math.min(c1a / 60000 * 100, 100).toFixed(1) + '%';
+            item.querySelector('.pb-wrap1 .progress-bar.simulated').style.width = Math.min(c1si / 60000 * 100, 100).toFixed(1) + '%';
+            item.querySelector('.pb-wrap2 .progress-bar.actual').style.width = Math.min(c2a / (next || 1) * 100, 100).toFixed(1) + '%';
+            item.querySelector('.pb-wrap2 .progress-bar.simulated').style.width = Math.min(c2si / (next || 1) * 100, 100).toFixed(1) + '%';
+
+            setAnimVal(item.querySelector('.c1a-val'), c1a);
+            setAnimVal(item.querySelector('.c1si-val'), c1si);
+            setAnimVal(item.querySelector('.c2a-val'), c2a);
+            setAnimVal(item.querySelector('.c2si-val'), c2si);
+
             attachCollapse(yuanqiContainer);
         }
 
         function renderActivities(date) {
             if (!activityContainer) return;
-            activityContainer.innerHTML = '';
             var active = eventsData.filter(function (e) {
                 // 1. 排除掉已经确定的非累充项（如签到、年卡）
                 if (['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
@@ -1012,7 +1035,18 @@ function initKrypton() {
                 if (!(date >= '2023-03-30' && date <= '2026-04-30')) activityContainer.innerHTML = '<div class="no-activity">当前日期无累充活动</div>';
                 return;
             }
+
+            // 获取现有项的映射，方便重用
+            var existingMap = {};
+            activityContainer.querySelectorAll('.activity-item').forEach(function(item) {
+                existingMap[item.dataset.title] = item;
+            });
+            
+            // 记录哪些项在本次渲染中仍然活跃
+            var activeTitles = {};
+            
             active.forEach(function (act) {
+                activeTitles[act.title] = true;
                 var inclEnd = getInclusiveEnd(act.end);
                 var base = getCovBasePts(act.title, act.start, inclEnd), actA = base + calcRangePts(actQtyMap, act.start, inclEnd), actS = actA + calcRangePts(simQtyMap, act.start, inclEnd);
                 var trackDataKey = '', trackName = '', trackData = null;
@@ -1024,38 +1058,64 @@ function initKrypton() {
 
                 var maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
                 for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
-
-                var fD = function (d) { return d.split('-').slice(1).join('/'); };
-                var div = document.createElement('div'); div.className = 'activity-item';
+                
+                var item = existingMap[act.title];
                 var iA = 'actVal' + act.title.replace(/[^\w]/g, ''), iS = 'simVal' + act.title.replace(/[^\w]/g, '');
-                div.innerHTML =
-                    '<div class="activity-header" style="position:relative; display:block; padding-bottom:6px;">' +
-                    '  <div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
-                    '    <div class="activity-title" style="flex:1;">' + act.title + ' <span class="toggle-icon">▼</span></div>' +
-                    (trackDataKey ? '<div class="reward-badge-container"><span class="reward-badge" data-track="' + trackDataKey + '" data-name="' + trackName + '" data-acta="' + actA + '" data-acts="' + actS + '">🎁 奖励</span></div>' : '') +
-                    '  </div>' +
-                    '  <div class="activity-date-row" style="font-size:10px; color:#a08060; margin-top:2px; display:flex; justify-content:space-between;">' +
-                    '    <span>活动周期: ' + fD(act.start) + '~' + fD(inclEnd) + '</span>' +
-                    '    ' + getRemainingTime(act.end) +
-                    '  </div>' +
-                    '</div>' +
-                    '<div class="activity-content-wrapper">' +
-                    '  <div class="act-segment">' +
-                    '    <div class="act-row">' +
-                    '      <div class="target-calc-group">' + mkBaseInput(act.title, base) + '</div>' +
-                    '    </div>' +
-                    '    <div class="act-row">' +
-                    '      <div class="act-label-med">当前累充进度</div>' +
-                    '      <div class="act-val-row">实际: <span id="' + iA + '" class="act-val-actual">' + actA.toLocaleString() + '</span> (模拟: <span id="' + iS + '">' + actS.toLocaleString() + '</span>) / ' + nextT.toLocaleString() + '</div>' +
-                    '    </div>' +
-                    '    ' + mkBar(actA, actS, nextT) +
-                    '    <div class="act-footer-right">' + (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString()) + '</div>' +
-                    '  </div>' +
-                    '</div>';
-                activityContainer.appendChild(div);
+
+                if (!item) {
+                    var fD = function (d) { return d.split('-').slice(1).join('/'); };
+                    item = document.createElement('div');
+                    item.className = 'activity-item';
+                    item.dataset.title = act.title;
+                    item.innerHTML =
+                        '<div class="activity-header" style="position:relative; display:block; padding-bottom:6px;">' +
+                        '  <div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
+                        '    <div class="activity-title" style="flex:1;">' + act.title + ' <span class="toggle-icon">▼</span></div>' +
+                        (trackDataKey ? '<div class="reward-badge-container"><span class="reward-badge" data-track="' + trackDataKey + '" data-name="' + trackName + '">🎁 奖励</span></div>' : '') +
+                        '  </div>' +
+                        '  <div class="activity-date-row" style="font-size:10px; color:#a08060; margin-top:2px; display:flex; justify-content:space-between;">' +
+                        '    <span>活动周期: ' + fD(act.start) + '~' + fD(inclEnd) + '</span>' +
+                        '    <span class="rem-time-box">' + getRemainingTime(act.end) + '</span>' +
+                        '  </div>' +
+                        '</div>' +
+                        '<div class="activity-content-wrapper">' +
+                        '  <div class="act-segment">' +
+                        '    <div class="act-row">' +
+                        '      <div class="target-calc-group">' + mkBaseInput(act.title, base) + '</div>' +
+                        '    </div>' +
+                        '    <div class="act-row">' +
+                        '      <div class="act-label-med">当前累充进度</div>' +
+                        '      <div class="act-val-row">实际: <span id="' + iA + '" class="act-val-actual">0</span> (模拟: <span id="' + iS + '">0</span>) / <span class="next-t-val">0</span></div>' +
+                        '    </div>' +
+                        '    <div class="pb-wrap">' + mkBar(0, 0, 100) + '</div>' +
+                        '    <div class="act-footer-right">正在计算...</div>' +
+                        '  </div>' +
+                        '</div>';
+                    activityContainer.appendChild(item);
+                }
+                
+                // 更新现有或新创建的项
+                item.querySelector('.reward-badge').dataset.acta = actA;
+                item.querySelector('.reward-badge').dataset.acts = actS;
+                item.querySelector('.next-t-val').innerText = nextT.toLocaleString();
+                item.querySelector('.act-footer-right').innerText = (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString());
+                
+                // 更新进度条
+                var pA = Math.min(actA / (nextT || 1) * 100, 100).toFixed(1);
+                var pS = Math.min(actS / (nextT || 1) * 100, 100).toFixed(1);
+                item.querySelector('.progress-bar.actual').style.width = pA + '%';
+                item.querySelector('.progress-bar.simulated').style.width = pS + '%';
+                
+                // 动画数字
                 setAnimVal(document.getElementById(iA), actA);
                 setAnimVal(document.getElementById(iS), actS);
             });
+            
+            // 移除不再需要的项
+            for (var t in existingMap) {
+                if (!activeTitles[t]) existingMap[t].remove();
+            }
+            
             attachCollapse(activityContainer);
         }
 
@@ -1393,8 +1453,8 @@ function initKrypton() {
         '.toggle-icon.collapsed{transform:rotate(-90deg);}',
         '.progress-bar-bg{height:5px;background:#efede8;border-radius:3px;overflow:hidden;position:relative;margin:6px 0;}',
         '.progress-bar{height:100%;position:absolute;left:0;top:0;transition:width 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);}',
-        '.progress-bar.actual{background:#b0998f;}',
-        '.progress-bar.simulated{background:#d0c4ba;}',
+        '.progress-bar.actual{background:#d85c50;}',
+        '.progress-bar.simulated{background:#a67c52;}',
         // 货币下拉
         '.custom-select{position:relative;display:inline-block;min-width:60px;}',
         '.select-selected{cursor:pointer;padding:2px 6px;border-radius:4px;border:1px solid #d5c8b2;background:#fff;font-size:12px;}',
