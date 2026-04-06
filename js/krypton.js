@@ -276,14 +276,28 @@ function initKrypton() {
             return '<span style="color:#d88a2e">剩余: ' + days + '天 ' + hours + '小时</span>';
         }
 
-        function renderRewardPopupHtml(track, title) {
+        function renderRewardPopupHtml(track, title, curA, curS) {
             if (!track || !track.length) return '';
-            var h = '<div class="reward-popup"><div class="reward-popup-title">' + title + ' 奖励清单</div>';
-            track.forEach(function (t) {
-                var rStr = t.rewards.map(function (r) { return r.name + '×' + r.count; }).join('、');
-                h += '<div class="reward-popup-row"><span class="reward-popup-pts">' + t.pts.toLocaleString() + '</span><span class="reward-popup-items">' + rStr + '</span></div>';
+            var maxA = -1, maxS = -1;
+            track.forEach(function (t, i) {
+                if (curA >= t.pts) maxA = i;
+                if (curS >= t.pts) maxS = i;
             });
-            h += '</div>';
+
+            var h = '<div class="reward-popup"><div class="reward-popup-title">' + title + ' 奖励清单</div>';
+            h += '<div class="reward-popup-container" style="position:relative; padding-left:14px;">';
+            // 垂直进度轴
+            h += '<div class="reward-v-path"></div>';
+            if (maxS >= 0) h += '<div class="reward-v-fill sim" style="height:' + ((maxS + 0.5) / track.length * 100) + '%"></div>';
+            if (maxA >= 0) h += '<div class="reward-v-fill act" style="height:' + ((maxA + 0.5) / track.length * 100) + '%"></div>';
+
+            track.forEach(function (t, i) {
+                var rStr = t.rewards.map(function (r) { return r.name + '×' + r.count; }).join('、');
+                var isAct = i <= maxA, isSim = i <= maxS;
+                var cls = isAct ? ' reached-act' : (isSim ? ' reached-sim' : '');
+                h += '<div class="reward-popup-row' + cls + '"><span class="reward-popup-pts">' + t.pts.toLocaleString() + '</span><span class="reward-popup-items">' + rStr + '</span></div>';
+            });
+            h += '</div></div>';
             return h;
         }
 
@@ -829,7 +843,7 @@ function initKrypton() {
                     var priceStr = isDaihaoUsd ? '$' + (ci.p.priceUsd * ci.sq).toFixed(2) : '¥' + ci.cny.toFixed(2);
                     var secondaryPriceHtml = isDaihaoUsd ? '<div class="cart-row-price-cny" style="font-size:14px; color:#a82e2e; font-weight:700;">¥' + ci.cny.toFixed(2) + '</div>' : '';
                     var unitPrice = isDaihaoUsd ? '$' + ci.p.priceUsd : '¥' + getPackCny(ci.p).toFixed(2);
-                    
+
                     return '<div class="cart-row" style="gap:4px;">' +
                         '<div class="cart-row-top" style="display:flex; justify-content:space-between; align-items:baseline;">' +
                         '  <span class="cart-row-name">' + ci.p.name + '</span>' +
@@ -916,7 +930,7 @@ function initKrypton() {
 
         function mkBar(act, sim, max) {
             var pA = Math.min(act / (max || 1) * 100, 100).toFixed(1), pS = Math.min(sim / (max || 1) * 100, 100).toFixed(1);
-            return '<div class="progress-bar-bg"><div class="progress-bar simulated" style="width:' + pS + '%"></div><div class="progress-bar actual" style="width:' + pA + '%"></div></div>';
+            return '<div class="progress-bar-bg"><div class="progress-bar simulated" style="width:' + pS + '%; z-index:1;"></div><div class="progress-bar actual" style="width:' + pA + '%; z-index:2;"></div></div>';
         }
         function mkBaseInput(title, base) {
             return '<span class="base-input-group"><label>基础</label><input type="number" class="ancient-input mini act-base-input" data-title="' + title + '" value="' + base + '" style="width:50px;font-size:11px;text-align:right;"></span>';
@@ -925,8 +939,8 @@ function initKrypton() {
         function renderYuanqi(date) {
             if (!yuanqiContainer) return;
             var c1s = '2025-05-01', c1e = '2026-04-30', c2s = '2023-03-30', c2e = '2026-04-30';
-            var c1b = getCovBasePts('鸢起年度', c1s, c1e), c1a = c1b + calcRangePts(actQtyMap, c1s, c1e), c1si = c1b + calcRangePts(simQtyMap, c1s, c1e);
-            var c2b = getCovBasePts('鸢起长期', c2s, c2e), c2a = c2b + calcRangePts(actQtyMap, c2s, c2e), c2si = c2b + calcRangePts(simQtyMap, c2s, c2e);
+            var c1b = getCovBasePts('鸢起年度', c1s, c1e), c1a = c1b + calcRangePts(actQtyMap, c1s, c1e), c1si = c1a + calcRangePts(simQtyMap, c1s, c1e);
+            var c2b = getCovBasePts('鸢起长期', c2s, c2e), c2a = c2b + calcRangePts(actQtyMap, c2s, c2e), c2si = c2a + calcRangePts(simQtyMap, c2s, c2e);
             var tiers = KRYPTON_DATA.rewardTiers, boxes = 0, next = tiers[tiers.length - 1];
             for (var i = 0; i < tiers.length; i++) { if (c2a >= tiers[i]) boxes++; if (c2si < tiers[i] && next === tiers[tiers.length - 1]) next = tiers[i]; }
 
@@ -1000,21 +1014,25 @@ function initKrypton() {
             }
             active.forEach(function (act) {
                 var inclEnd = getInclusiveEnd(act.end);
-                var base = getCovBasePts(act.title, act.start, inclEnd), actA = base + calcRangePts(actQtyMap, act.start, inclEnd), actS = base + calcRangePts(simQtyMap, act.start, inclEnd);
-                var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000], maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
+                var base = getCovBasePts(act.title, act.start, inclEnd), actA = base + calcRangePts(actQtyMap, act.start, inclEnd), actS = actA + calcRangePts(simQtyMap, act.start, inclEnd);
+                var trackDataKey = '', trackName = '', trackData = null;
+                if (act.title.includes('三周年累充')) { trackData = KRYPTON_DATA.track1; trackDataKey = 'track1'; trackName = '周年限时累充'; }
+                else if (act.title.includes('地宫伴生池')) { trackData = KRYPTON_DATA.track2; trackDataKey = 'track2'; trackName = '男主限时累充'; }
+
+                var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000];
+                if (trackData) T = trackData.map(function (item) { return item.pts; });
+
+                var maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
                 for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
-                
-                var trackDataKey = '', trackName = '';
-                if (act.title.includes('三周年累充')) { trackDataKey = 'track1'; trackName = '周年限时累充'; }
-                else if (act.title.includes('地宫伴生池')) { trackDataKey = 'track2'; trackName = '男主限时累充'; }
 
                 var fD = function (d) { return d.split('-').slice(1).join('/'); };
                 var div = document.createElement('div'); div.className = 'activity-item';
+                var iA = 'actVal' + act.title.replace(/[^\w]/g, ''), iS = 'simVal' + act.title.replace(/[^\w]/g, '');
                 div.innerHTML =
                     '<div class="activity-header" style="position:relative; display:block; padding-bottom:6px;">' +
                     '  <div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
                     '    <div class="activity-title" style="flex:1;">' + act.title + ' <span class="toggle-icon">▼</span></div>' +
-                    (trackDataKey ? '<div class="reward-badge-container"><span class="reward-badge" data-track="' + trackDataKey + '" data-name="' + trackName + '">🎁 奖励</span></div>' : '') +
+                    (trackDataKey ? '<div class="reward-badge-container"><span class="reward-badge" data-track="' + trackDataKey + '" data-name="' + trackName + '" data-acta="' + actA + '" data-acts="' + actS + '">🎁 奖励</span></div>' : '') +
                     '  </div>' +
                     '  <div class="activity-date-row" style="font-size:10px; color:#a08060; margin-top:2px; display:flex; justify-content:space-between;">' +
                     '    <span>活动周期: ' + fD(act.start) + '~' + fD(inclEnd) + '</span>' +
@@ -1024,18 +1042,19 @@ function initKrypton() {
                     '<div class="activity-content-wrapper">' +
                     '  <div class="act-segment">' +
                     '    <div class="act-row">' +
-                    '      <div class="act-label-small">累充计算中 (包含基础值)</div>' +
                     '      <div class="target-calc-group">' + mkBaseInput(act.title, base) + '</div>' +
                     '    </div>' +
                     '    <div class="act-row">' +
                     '      <div class="act-label-med">当前累充进度</div>' +
-                    '      <div class="act-val-row">实际: <span class="act-val-actual">' + actA.toLocaleString() + '</span> (模拟: ' + actS.toLocaleString() + ') / ' + nextT.toLocaleString() + '</div>' +
+                    '      <div class="act-val-row">实际: <span id="' + iA + '" class="act-val-actual">' + actA.toLocaleString() + '</span> (模拟: <span id="' + iS + '">' + actS.toLocaleString() + '</span>) / ' + nextT.toLocaleString() + '</div>' +
                     '    </div>' +
                     '    ' + mkBar(actA, actS, nextT) +
                     '    <div class="act-footer-right">' + (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString()) + '</div>' +
                     '  </div>' +
                     '</div>';
                 activityContainer.appendChild(div);
+                setAnimVal(document.getElementById(iA), actA);
+                setAnimVal(document.getElementById(iS), actS);
             });
             attachCollapse(activityContainer);
         }
@@ -1044,25 +1063,25 @@ function initKrypton() {
         (function initTooltipDelegation() {
             var gp = document.getElementById('rewardGlobalPopup');
             if (!gp) { gp = document.createElement('div'); gp.id = 'rewardGlobalPopup'; document.body.appendChild(gp); }
-            
-            document.body.addEventListener('mouseover', function(e) {
+
+            document.body.addEventListener('mouseover', function (e) {
                 var btn = e.target.closest('.reward-badge');
                 if (!btn) return;
-                
-                var trackKey = btn.dataset.track, name = btn.dataset.name;
+
+                var trackKey = btn.dataset.track, name = btn.dataset.name, actA = parseFloat(btn.dataset.acta) || 0, actS = parseFloat(btn.dataset.acts) || 0;
                 var trackData = KRYPTON_DATA[trackKey];
                 if (!trackData) return;
-                
-                gp.innerHTML = renderRewardPopupHtml(trackData, name);
+
+                gp.innerHTML = renderRewardPopupHtml(trackData, name, actA, actS);
                 gp.style.display = 'block';
-                
+
                 var rect = btn.getBoundingClientRect();
                 var popupHeight = gp.offsetHeight;
-                
+
                 // 1. 水平定位：优先在左侧，空间不足跳到右侧
                 var leftPos = rect.left - 280;
                 if (leftPos < 20) leftPos = rect.right + 20;
-                
+
                 // 2. 垂直自适应：尝试居中对齐勋章，但确保不超出视口上下界
                 var topPos = rect.top + (rect.height / 2) - (popupHeight / 2);
                 var margin = 20;
@@ -1070,22 +1089,22 @@ function initKrypton() {
                 if (topPos + popupHeight > window.innerHeight - margin) {
                     topPos = window.innerHeight - popupHeight - margin;
                 }
-                
+
                 gp.style.left = leftPos + 'px';
                 gp.style.top = topPos + 'px';
-                
+
                 // 3. 触发动画
-                requestAnimationFrame(function() {
+                requestAnimationFrame(function () {
                     gp.classList.add('visible');
                 });
             });
-            
-            document.body.addEventListener('mouseout', function(e) {
+
+            document.body.addEventListener('mouseout', function (e) {
                 var btn = e.target.closest('.reward-badge');
                 if (btn) {
                     gp.classList.remove('visible');
                     // 动画完成后隐藏，防止干扰
-                    setTimeout(function() {
+                    setTimeout(function () {
                         if (!gp.classList.contains('visible')) gp.style.display = 'none';
                     }, 250);
                 }
@@ -1373,7 +1392,7 @@ function initKrypton() {
         '.toggle-icon{font-size:9px;margin-left:3px;vertical-align:middle;transition:transform .25s;display:inline-block;}',
         '.toggle-icon.collapsed{transform:rotate(-90deg);}',
         '.progress-bar-bg{height:5px;background:#efede8;border-radius:3px;overflow:hidden;position:relative;margin:6px 0;}',
-        '.progress-bar{height:100%;position:absolute;left:0;top:0;transition:width .4s ease;}',
+        '.progress-bar{height:100%;position:absolute;left:0;top:0;transition:width 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);}',
         '.progress-bar.actual{background:#b0998f;}',
         '.progress-bar.simulated{background:#d0c4ba;}',
         // 货币下拉
@@ -1400,7 +1419,14 @@ function initKrypton() {
         '.reward-popup{width:260px; background:rgba(255,255,255,0.98); backdrop-filter:blur(12px); border:1.2px solid #f3e9da; border-radius:12px; padding:12px; box-shadow:0 15px 45px rgba(192,91,77,0.25); max-height:calc(100vh - 60px); overflow-y:auto; display:flex; flex-direction:column;}',
         '.reward-popup::-webkit-scrollbar{width:4px;}',
         '.reward-popup::-webkit-scrollbar-thumb{background:#e8dcc5; border-radius:10px;}',
-        '.reward-popup-title { text-align:center; font-size:13px; font-weight:800; color:#5d4037; margin-bottom:10px; border-bottom:1.5px solid #f3e9da; padding-bottom:6px; letter-spacing:0.5px; position:sticky; top:0; background:rgba(255,255,255,0.95); z-index:2;}',
+        '.reward-v-path{position:absolute; left:6px; top:12px; bottom:12px; width:3px; background:#efede8; border-radius:3px; z-index:1;}',
+        '.reward-v-fill{position:absolute; left:6px; top:12px; width:3px; border-radius:3px; z-index:2; transition:height .5s cubic-bezier(0.34, 1.4, 0.64, 1);}',
+        '.reward-v-fill.act{background:#d85c50; box-shadow:0 0 8px rgba(216,92,80,0.3);}',
+        '.reward-v-fill.sim{background:#a67c52; opacity:0.9;}',
+        '.reward-popup-row.reached-act{opacity:1; transform:translateX(3px); transition:all .3s;}',
+        '.reward-popup-row.reached-act .reward-popup-pts{background:#d85c50 !important; color:#fff !important; border-color:#c05b4d !important; box-shadow:0 2px 6px rgba(216,92,80,0.3);}',
+        '.reward-popup-row.reached-sim .reward-popup-pts{background:#ede0d4 !important; color:#8d6e63 !important; border-color:#d7ccc8 !important; font-weight:800;}',
+        '.reward-popup-title { text-align:center; font-size:13px; font-weight:800; color:#5d4037; margin-bottom:10px; border-bottom:1.5px solid #f3e9da; padding-bottom:6px; letter-spacing:0.5px; position:sticky; top:0; background:rgba(255,255,255,0.98); z-index:3; backdrop-filter:blur(5px);}',
         '.reward-popup-row{display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:11px; line-height:1.4;}',
         '.reward-popup-row:last-child{margin-bottom:0;}',
         '.reward-popup-pts{background:#fff3e3; color:#a67c52; padding:2px 6px; border-radius:4px; font-weight:800; min-width:55px; text-align:center; border:1px solid #ffeeba;}',
