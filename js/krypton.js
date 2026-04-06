@@ -260,6 +260,13 @@ function initKrypton() {
 
         // ── 工具 ──
         function normDate(d) { return d ? d.replace(/\//g, '-').split('T')[0] : ''; }
+        function getInclusiveEnd(d) {
+            if (!d) return '';
+            var date = new Date(d.replace(/-/g, '/'));
+            date.setDate(date.getDate() - 1);
+            var y = date.getFullYear(), m = String(date.getMonth() + 1).padStart(2, '0'), dd = String(date.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + dd;
+        }
 
         function animateValue(el, start, end, dur) {
             var t0 = null;
@@ -867,7 +874,7 @@ function initKrypton() {
             var ts = '', te = '';
             if (title === '鸢起年度') { ts = '2025-05-01'; te = '2026-04-30'; }
             else if (title === '鸢起长期') { ts = '2023-03-30'; te = '2026-04-30'; }
-            else { var act = eventsData.filter(function (ev) { return ev.title === title; })[0]; if (act) { ts = act.start; te = act.end; } }
+            else { var act = eventsData.filter(function (ev) { return ev.title === title; })[0]; if (act) { ts = act.start; te = getInclusiveEnd(act.end); } }
             if (ts) { var eff = getCovBasePts(title, ts, te), cur = parseInt(sb[title]) || 0; sb[title] = nv - (eff - cur); }
             else sb[title] = nv;
             localStorage.setItem('ziyong_events_base', JSON.stringify(sb)); updateAll();
@@ -955,7 +962,7 @@ function initKrypton() {
                 // 2. 核心排除：已经在顶部专门显示的“鸢起礼盒”及其相关变体，避免重复显示
                 if (e.title.indexOf('鸢起礼盒') !== -1 || e.title.indexOf('鸢起年度') !== -1 || e.title.indexOf('鸢起长期') !== -1) return false;
 
-                return date >= e.start && date <= e.end && (
+                return date >= e.start && date < e.end && (
                     e.title.includes('累充') ||
                     e.type === 'pool'
                 );
@@ -973,14 +980,15 @@ function initKrypton() {
                 return;
             }
             active.forEach(function (act) {
-                var base = getCovBasePts(act.title, act.start, act.end), actA = base + calcRangePts(actQtyMap, act.start, act.end), actS = base + calcRangePts(simQtyMap, act.start, act.end);
+                var inclEnd = getInclusiveEnd(act.end);
+                var base = getCovBasePts(act.title, act.start, inclEnd), actA = base + calcRangePts(actQtyMap, act.start, inclEnd), actS = base + calcRangePts(simQtyMap, act.start, inclEnd);
                 var T = KRYPTON_DATA.cumulativeTiers[act.title] || [1000, 2000, 5000, 10000], maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
                 for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
                 var fD = function (d) { return d.split('-').slice(1).join('/'); };
                 var div = document.createElement('div'); div.className = 'activity-item';
                 div.innerHTML =
                     '<div class="activity-header">' +
-                    '  <div class="activity-title">' + act.title + ' <span style="font-size:10px;opacity:.7">(' + fD(act.start) + '~' + fD(act.end) + ')</span> <span class="toggle-icon">▼</span></div>' +
+                    '  <div class="activity-title">' + act.title + ' <span style="font-size:10px;opacity:.7">(' + fD(act.start) + '~' + fD(inclEnd) + ')</span> <span class="toggle-icon">▼</span></div>' +
                     '</div>' +
                     '<div class="activity-content-wrapper">' +
                     '  <div class="act-segment">' +
