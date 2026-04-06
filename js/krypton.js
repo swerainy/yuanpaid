@@ -268,11 +268,21 @@ function initKrypton() {
                 // 只有当该区域进入视口且未完全离开时显示
                 if (rect.top < window.innerHeight - 150 && rect.bottom > 100) {
                     navBar.style.setProperty('display', 'flex', 'important');
-                    // 动态定位 (Desktop)
+                    
                     if (window.innerWidth > 860) {
-                        var targetLeft = rect.right - 340 - 18 - 80 - 5;
-                        navBar.style.left = targetLeft + 'px';
-                        navBar.style.top = '220px';
+                        // 电脑端：定位至回顶按钮左侧（红框位置）
+                        navBar.style.right = '150px'; 
+                        navBar.style.bottom = '30px'; 
+                        navBar.style.left = 'auto';
+                        navBar.style.top = 'auto';
+                        navBar.style.flexDirection = 'column';
+                    } else {
+                        // 缩小视图（手机端）：恢复到底部横向排列，不随电脑端变动
+                        navBar.style.left = '15px';
+                        navBar.style.right = '15px';
+                        navBar.style.bottom = '20px';
+                        navBar.style.top = 'auto';
+                        navBar.style.flexDirection = 'row';
                     }
                 } else {
                     navBar.style.setProperty('display', 'none', 'important');
@@ -1739,13 +1749,16 @@ function initKrypton() {
         '.sync-icon{width:14px;height:14px;stroke:currentColor;stroke-width:3;transition:transform .5s ease;}',
         '.sync-rate-btn.syncing .sync-icon{animation:spinRate 1s linear infinite;}',
         '.sync-rate-btn.success{background:#edf8ee;border-color:#5d8a50;color:#5d8a50;}',
-        // 快速导航 (强制隐藏/显示版)
-        '.quick-nav-bar{position:fixed; display:none!important; flex-direction:column; gap:8px; z-index:2500; pointer-events:auto;}',
-        '.nav-jump-btn{width:80px; height:45px; border:1.8px solid #d5c8b2; border-radius:12px; background:#fff; color:#5d4037; font-size:13px; font-weight:800; cursor:pointer; transition:all .2s; box-shadow:0 8px 20px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.2; border-right:4px solid #c05b4d;}',
-        '.nav-jump-btn:hover{background:#fdfaf3; color:#a82e2e; transform:translateX(-5px);}',
+        // 快速导航 (响应式适配版)
+        '.quick-nav-bar{position:fixed; display:none!important; z-index:2500; pointer-events:auto;}',
+        '.nav-jump-btn{width:82px; height:46px; border:1.8px solid #d5c8b2; border-radius:12px; background:#fff; color:#5d4037; font-size:13px; font-weight:800; cursor:pointer; transition:all .2s; box-shadow:0 8px 25px rgba(93,64,55,0.15); display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.2;}',
+        '.nav-jump-btn:hover{background:#fdfaf3; border-color:#c05b4d; color:#a82e2e; transform:scale(1.05);}',
+        // 电脑端：纵向排列，带左装饰条
+        '@media(min-width:861px){ .quick-nav-bar{flex-direction:column; gap:8px;} .nav-jump-btn{border-left:4px solid #c05b4d;} }',
+        // 手机端：横向排列，底装饰条，不随电脑端位置变化
         '@media(max-width:860px){',
-        '  .quick-nav-bar{left:15px; right:15px; bottom:20px; top:auto!important; flex-direction:row; gap:10px; width:auto;}',
-        '  .nav-jump-btn{flex:1; width:auto; height:48px; border-right:none; border-bottom:4px solid #c05b4d;}',
+        '  .quick-nav-bar{flex-direction:row; gap:10px; width:auto;}',
+        '  .nav-jump-btn{flex:1; width:auto; height:48px; border-bottom:4px solid #c05b4d; font-size:14px;}',
         '}',
         // 奖励预览增强 (全局浮窗版)
         '.reward-badge-container{position:relative;}',
