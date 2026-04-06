@@ -944,8 +944,23 @@ function initKrypton() {
                 if (!activityContainer) return;
                 activityContainer.innerHTML = '';
                 var active = eventsData.filter(function (e) {
-                    if (e.title.includes('鸢起礼盒') || ['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
-                    return date >= e.start && date <= e.end && (e.title.includes('累充') || ['pool', 'anniversary', 'palace'].includes(e.type));
+                    // 1. 排除掉已经确定的非累充项（如签到、年卡）
+                    if (['三周年一阶段', '年卡', '三周年签到'].some(function (x) { return e.title.includes(x); })) return false;
+                    // 2. 核心排除：已经在顶部专门显示的“鸢起礼盒”及其相关变体，避免重复显示
+                    if (e.title.indexOf('鸢起礼盒') !== -1 || e.title.indexOf('鸢起年度') !== -1 || e.title.indexOf('鸢起长期') !== -1) return false;
+                    
+                    return date >= e.start && date <= e.end && (
+                        e.title.includes('累充') || 
+                        e.type === 'pool'
+                    );
+                });
+                
+                // 3. 结果去重：防止同一活动在 eventsData 中多次出现导致列表出现重复项
+                var seenTitles = {};
+                active = active.filter(function(e) {
+                    if (seenTitles[e.title]) return false;
+                    seenTitles[e.title] = true;
+                    return true;
                 });
                 if (!active.length) {
                     if (!(date >= '2023-03-30' && date <= '2026-04-30')) activityContainer.innerHTML = '<div class="no-activity">当前日期无累充活动</div>';
