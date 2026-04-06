@@ -240,14 +240,65 @@ function initKrypton() {
     console.log('[Krypton] v5 初始化中...');
     try {
         var rechargeDateInput = document.getElementById('rechargeDate');
-        var totalActualPtsEl = document.getElementById('totalActualPts');
-        var totalSimulatedPtsEl = document.getElementById('totalSimulatedPts');
+        var packList = document.getElementById('packList');
+        var packCatTabs = document.getElementById('packCatTabs');
+        var exchangeRateInput = document.getElementById('exchangeRateInput');
         var packsSummaryTitle = document.getElementById('packsSummaryTitle');
         var cartPanelTitle = document.getElementById('cartPanelTitle');
-        var exchangeRateInput = document.getElementById('exchangeRateInput');
         var cartItemList = document.getElementById('cartItemList');
         var cartStats = document.getElementById('cartStats');
-        if (!rechargeDateInput || !packList) { console.error('[Krypton] 缺少关键DOM'); return; }
+        var activityPanel = document.getElementById('activityPanel');
+        var cartPanel = document.getElementById('cartPanel');
+        var activityContainer = document.getElementById('activityContainer');
+        var yuanqiContainer = document.getElementById('yuanqiContainer');
+        var totalActualPtsEl = document.getElementById('totalActualPts');
+        var totalSimulatedPtsEl = document.getElementById('totalSimulatedPts');
+
+        if (!rechargeDateInput || !packList || !cartItemList) { console.error('[Krypton] 缺少关键DOM'); return; }
+
+        // ── 快速导航：仅在“广陵资用案”区域显示 ──
+        var navBar = document.getElementById('ziyongQuickNav');
+        if (navBar) {
+            var scrollTimer = null;
+            function updateNavVisibility() {
+                var planArea = document.querySelector('.plan-layout');
+                if (!planArea) return;
+                var rect = planArea.getBoundingClientRect();
+                
+                // 只有当该区域进入视口且未完全离开时显示
+                if (rect.top < window.innerHeight - 150 && rect.bottom > 100) {
+                    navBar.style.setProperty('display', 'flex', 'important');
+                    // 动态定位 (Desktop)
+                    if (window.innerWidth > 860) {
+                        var targetLeft = rect.right - 340 - 18 - 80 - 5;
+                        navBar.style.left = targetLeft + 'px';
+                        navBar.style.top = '220px';
+                    }
+                } else {
+                    navBar.style.setProperty('display', 'none', 'important');
+                }
+            }
+            window.addEventListener('scroll', function() {
+                if (scrollTimer) clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(updateNavVisibility, 10);
+            }, { passive: true });
+            window.addEventListener('resize', updateNavVisibility);
+            updateNavVisibility();
+        }
+
+        // ── 快速导航监听 (针对内部循环滚动优化) ──
+        document.querySelectorAll('.nav-jump-btn').forEach(function (btn) {
+            btn.onclick = function (e) {
+                e.preventDefault(); e.stopPropagation();
+                var tid = btn.dataset.target,
+                    target = document.getElementById(tid),
+                    rightCol = document.querySelector('.right-column');
+                if (target && rightCol) {
+                    var scrollPos = target.getBoundingClientRect().top - rightCol.getBoundingClientRect().top + rightCol.scrollTop;
+                    rightCol.scrollTo({ top: scrollPos - 10, behavior: 'smooth' });
+                }
+            };
+        });
 
         // ── 状态 ──
         var currentVersion = 'daihao';
@@ -377,7 +428,14 @@ function initKrypton() {
         }
         // toggleActual function removed as card-check has been removed and bulk checkout is used
 
-        // ── pts计算 ──
+        // ── 积分计算器 —— 鸢起礼盒专用档位 ──
+        KRYPTON_DATA.rewardTiers = [1000, 2000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 120000, 150000, 180000, 200000];
+
+        function getActivePacks(ver) {
+            return ver === 'daihao' ? KRYPTON_DATA.packsDaihao :
+                ver === 'ruyuan' ? KRYPTON_DATA.packsRuyuan : [];
+        }
+
         function calcMapPts(qmap) {
             var packs = getActivePacks(currentVersion), total = 0;
             Object.keys(qmap).forEach(function (k) {
@@ -1512,7 +1570,7 @@ function initKrypton() {
         }
 
         // ── 总更新 ──
-        function updateAll() {
+        var updateAll = function() {
             var base = getBasePts();
             var actPts = base + calcMapPts(actQtyMap);
             var simPts = actPts + calcMapPts(simQtyMap);
@@ -1527,7 +1585,7 @@ function initKrypton() {
             renderYuanqi(date); renderActivities(date);
             renderCart();
             saveState();
-        }
+        };
 
         // ── 动态同步粘性偏移量 ──
         function syncStickyOffset() {
@@ -1681,6 +1739,14 @@ function initKrypton() {
         '.sync-icon{width:14px;height:14px;stroke:currentColor;stroke-width:3;transition:transform .5s ease;}',
         '.sync-rate-btn.syncing .sync-icon{animation:spinRate 1s linear infinite;}',
         '.sync-rate-btn.success{background:#edf8ee;border-color:#5d8a50;color:#5d8a50;}',
+        // 快速导航 (强制隐藏/显示版)
+        '.quick-nav-bar{position:fixed; display:none!important; flex-direction:column; gap:8px; z-index:2500; pointer-events:auto;}',
+        '.nav-jump-btn{width:80px; height:45px; border:1.8px solid #d5c8b2; border-radius:12px; background:#fff; color:#5d4037; font-size:13px; font-weight:800; cursor:pointer; transition:all .2s; box-shadow:0 8px 20px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.2; border-right:4px solid #c05b4d;}',
+        '.nav-jump-btn:hover{background:#fdfaf3; color:#a82e2e; transform:translateX(-5px);}',
+        '@media(max-width:860px){',
+        '  .quick-nav-bar{left:15px; right:15px; bottom:20px; top:auto!important; flex-direction:row; gap:10px; width:auto;}',
+        '  .nav-jump-btn{flex:1; width:auto; height:48px; border-right:none; border-bottom:4px solid #c05b4d;}',
+        '}',
         // 奖励预览增强 (全局浮窗版)
         '.reward-badge-container{position:relative;}',
         '.reward-badge{display:inline-flex; align-items:center; background:#fff5f2; color:#c05b4d; border:1px solid #f9d9d5; border-radius:12px; padding:2px 8px; font-size:11px; font-weight:700; cursor:help; transition:all .2s; user-select:none;}',
