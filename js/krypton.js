@@ -1422,12 +1422,25 @@ function initKrypton() {
 
                 var rect = btn.getBoundingClientRect();
                 var popupHeight = gp.offsetHeight;
+                var popupWidth = gp.offsetWidth || 260;
 
-                // 1. 水平定位：优先在左侧，空间不足跳到右侧
-                var leftPos = rect.left - 280;
-                if (leftPos < 20) leftPos = rect.right + 20;
+                // 1. 水平定位：手机端居中，电脑端侧边
+                var leftPos;
+                if (window.innerWidth < 800) {
+                    leftPos = (window.innerWidth - popupWidth) / 2;
+                } else {
+                    leftPos = rect.left - popupWidth - 20;
+                    if (leftPos < 20) leftPos = rect.right + 20;
+                }
 
-                // 2. 垂直自适应：尝试居中对齐勋章，但确保不超出视口上下界
+                // 2. 最终视口安全检查 (防止超出左右边界)
+                var edgePadding = 10;
+                if (leftPos < edgePadding) leftPos = edgePadding;
+                if (leftPos + popupWidth > window.innerWidth - edgePadding) {
+                    leftPos = window.innerWidth - popupWidth - edgePadding;
+                }
+
+                // 3. 垂直自适应：尝试居中对齐勋章，但确保不超出视口上下界
                 var topPos = rect.top + (rect.height / 2) - (popupHeight / 2);
                 var margin = 20;
                 if (topPos < margin) topPos = margin;
