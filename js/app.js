@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const tooltip = document.getElementById('customTooltip');
     const excelInput = document.getElementById('excelInput');
 
-    let currentVersion = 'daihao';
+    window.currentVersion = 'daihao';
     let excelEvents = [];
 
     // Helper: Format date for Tooltip
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
         buttonText: { year: '年', month: '月', week: '周' },
 
         events: function (info, successCallback, failureCallback) {
-            let baseEvents = currentVersion === 'daihao' ? daihaoEvents : ruyuanEvents;
+            let baseEvents = window.currentVersion === 'daihao' ? daihaoEvents : ruyuanEvents;
             let activeFilters = Array.from(document.querySelectorAll('.filter-tag.active')).map(el => el.dataset.type);
 
             // Combine with Excel events if any

@@ -319,7 +319,7 @@ function initKrypton() {
         });
 
         // ── 状态 ──
-        var currentVersion = 'daihao';
+        window.currentVersion = 'daihao';
         var exchangeRate = parseFloat(localStorage.getItem('ziyong_exchangeRate')) || 7.2;
         var eventsData = [];
         var animStates = {};
@@ -590,7 +590,7 @@ function initKrypton() {
         if (exchangeRateInput) exchangeRateInput.addEventListener('input', function (e) { updateRate(e.target.value); });
 
         function syncVersion(ver) {
-            currentVersion = ver;
+            window.currentVersion = ver;
             var rg = document.getElementById('rateInputGroup');
             if (rg) rg.style.display = ver === 'daihao' ? '' : 'none';
             
@@ -690,7 +690,7 @@ function initKrypton() {
 
         // ── 分类Tab（主栏+粘性栏同步） ──
         function renderPackCatTabs() {
-            var packs = getActivePacks(currentVersion), cats = ['全部'], seen = {};
+            var packs = getActivePacks(window.currentVersion), cats = ['全部'], seen = {};
             packs.forEach(function (p) { if (!seen[p.category]) { seen[p.category] = true; cats.push(p.category); } });
             function buildTabs(container) {
                 if (!container) return;
@@ -1846,7 +1846,7 @@ function initKrypton() {
                 updatePackCard(targetName, date);
             } else {
                 // 如果是批量操作(全选/清空)，但使用了 isFast，则遍历局部更新
-                var allPacks = getActivePacks(currentVersion);
+                var allPacks = getActivePacks(window.currentVersion);
                 allPacks.forEach(function (p) { updatePackCard(p.name, date); });
             }
 
