@@ -500,11 +500,15 @@ function initKrypton() {
         var todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
         rechargeDateInput.value = todayStr;
 
-        function updateRate(val) {
+        function updateRate(val, dateStr) {
             exchangeRate = parseFloat(val) || 7.2;
             if (exchangeRateInput) exchangeRateInput.value = val;
             localStorage.setItem('ziyong_exchangeRate', val);
-            renderPacks(); renderCart();
+            if (dateStr !== undefined) {
+                localStorage.setItem('ziyong_exchangeRateDate', dateStr);
+            }
+            // 汇率更新后，执行全局重绘以确保右侧统计也使用新汇率
+            updateAll();
         }
         function fetchExchangeRate() {
             var btn = document.getElementById('syncRateBtn');
@@ -556,19 +560,22 @@ function initKrypton() {
 
                         if (r && !isNaN(r)) {
                             console.log('[Krypton] 汇率同步成功(' + api.type + '):', r);
-                            updateRate(r.toFixed(4));
+                            updateRate(r.toFixed(4), dateStr);
 
                             if (btn) {
                                 btn.classList.remove('syncing');
                                 btn.classList.add('success');
                                 setTimeout(function () { btn.classList.remove('success'); }, 1000);
                             }
-                            if (timeMsg) {
-                                var now = new Date();
-                                timeMsg.innerText = '同步于: ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-                            }
+                            
+                            var now = new Date();
+                            var timeStr = '同步于: ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                            localStorage.setItem('ziyong_exchangeSyncTime', timeStr);
+                            
+                            if (timeMsg) timeMsg.innerText = timeStr;
+                            
                             if (dataDateEl) {
-                                // 检查是否有明显的节假日延迟（针对 2026-04-03 这种周末/休市情况）
+                                // 检查是否有明显的节假日延迟
                                 if (dateStr && dateStr.includes('2026-04-03')) {
                                     dataDateEl.innerHTML = '<span style="color:#d85c50">(数据日期: ' + dateStr + ', 银行休市中)</span>';
                                 } else {
@@ -1896,14 +1903,22 @@ function initKrypton() {
         // ── 初始化启动 ──
         loadState();
         initMappingPanel();
+        // 刷新时快速恢复上次的汇率状态显示
+        var savedDate = localStorage.getItem('ziyong_exchangeRateDate');
+        var savedTime = localStorage.getItem('ziyong_exchangeSyncTime');
+        if (savedDate && document.getElementById('syncDataDate')) document.getElementById('syncDataDate').innerText = '(数据日期: ' + savedDate + ')';
+        if (savedTime && document.getElementById('syncTimeMsg')) document.getElementById('syncTimeMsg').innerText = savedTime;
+
         syncVersion('daihao');
+        updateAll(); // 立即触发一次全量渲染，填充右侧数据
+
         setTimeout(function () {
             loadEvents();
             if (!eventsData.length && window.calendar) setTimeout(loadEvents, 1000);
-            fetchExchangeRate();
+            fetchExchangeRate(); // 自动执行一次静默同步
             syncStickyOffset();
-            console.log('[Krypton] v4 完成');
-        }, 800);
+            console.log('[Krypton] v5 初始化完成');
+        }, 500);
         // 也可额外在 updateAll() 中同步（防止内容折行引起高度变化）
         var oldUpdateAll = updateAll;
         updateAll = function () {
