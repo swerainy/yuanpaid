@@ -2949,6 +2949,11 @@
            电脑端(>900px)布局完全不受任何影响
            ==================================================== */
         @media (max-width: 900px) {
+            /* Fix Calendar header overlap */
+            .fc .fc-col-header-cell-cushion { 
+                font-size: 10px !important; 
+                padding: 2px 1px !important; 
+            }
             /* Ziyong Header Optimization */
             .ziyong-header { padding: 15px 10px !important; }
             .ziyong-header .title-row { 
@@ -3426,7 +3431,7 @@
             /* 积分对照表：圆形悬浮球 固定在右下角 */
             .panel-item {
                 position: fixed !important;
-                left: 16px !important; right: auto !important; bottom: 20px !important;
+                left: 10px !important; right: auto !important; bottom: 20px !important;
                 width: 52px !important;
                 height: 52px !important;
                 border-radius: 50% !important;
@@ -3471,7 +3476,7 @@
                 font-size: 14px !important;
                 flex-direction: row !important;
                 justify-content: space-between !important;
-                padding: 0 15px !important;
+                padding: 0 16px 0 20px !important;
                 letter-spacing: 1px !important;
             }
 
