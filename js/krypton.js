@@ -264,15 +264,15 @@ function initKrypton() {
                 var planArea = document.querySelector('.plan-layout');
                 if (!planArea) return;
                 var rect = planArea.getBoundingClientRect();
-                
+
                 // 只有当该区域进入视口且未完全离开时显示
                 if (rect.top < window.innerHeight - 150 && rect.bottom > 100) {
                     navBar.style.setProperty('display', 'flex', 'important');
-                    
+
                     if (window.innerWidth > 860) {
                         // 电脑端：定位至回顶按钮左侧（红框位置）
-                        navBar.style.right = '150px'; 
-                        navBar.style.bottom = '30px'; 
+                        navBar.style.right = '150px';
+                        navBar.style.bottom = '30px';
                         navBar.style.left = 'auto';
                         navBar.style.top = 'auto';
                         navBar.style.flexDirection = 'column';
@@ -288,7 +288,7 @@ function initKrypton() {
                     navBar.style.setProperty('display', 'none', 'important');
                 }
             }
-            window.addEventListener('scroll', function() {
+            window.addEventListener('scroll', function () {
                 if (scrollTimer) clearTimeout(scrollTimer);
                 scrollTimer = setTimeout(updateNavVisibility, 10);
             }, { passive: true });
@@ -795,23 +795,23 @@ function initKrypton() {
                     if (sq > 0) minusBtn.onclick = function (e) {
                         e.stopPropagation();
                         if (sq === 1) {
-                            animateCartRowsExit([p.name], function () { 
-                                removeSim(p, date, true); 
+                            animateCartRowsExit([p.name], function () {
+                                removeSim(p, date, true);
                                 updateAll(true, p.name);
-                                showFloatingPts(e.pageX, e.pageY - 20, -p.pts); 
+                                showFloatingPts(e.pageX, e.pageY - 20, -p.pts);
                             });
                         } else {
-                            removeSim(p, date, true); 
+                            removeSim(p, date, true);
                             updateAll(true, p.name);
                             showFloatingPts(e.pageX, e.pageY - 20, -p.pts);
                         }
                     };
                     var plusBtn = card.querySelector('.qty-plus');
-                    if (!maxed) plusBtn.onclick = function (e) { 
-                        e.stopPropagation(); 
-                        addSim(p, date, true); 
+                    if (!maxed) plusBtn.onclick = function (e) {
+                        e.stopPropagation();
+                        addSim(p, date, true);
                         updateAll(true, p.name);
-                        showFloatingPts(e.pageX, e.pageY - 20, p.pts); 
+                        showFloatingPts(e.pageX, e.pageY - 20, p.pts);
                     };
                     var minBtn = card.querySelector('.qty-min');
                     if (sq > 0) minBtn.onclick = function (e) {
@@ -824,12 +824,12 @@ function initKrypton() {
                         });
                     };
                     var maxBtn = card.querySelector('.qty-max');
-                    if (!maxed) maxBtn.onclick = function (e) { 
-                        e.stopPropagation(); 
-                        var pts = (lim - aq - sq) * p.pts; 
-                        simQtyMap[qKey(p.name, date)] = (lim - aq); 
-                        updateAll(true, p.name); 
-                        showFloatingPts(e.pageX, e.pageY - 20, pts); 
+                    if (!maxed) maxBtn.onclick = function (e) {
+                        e.stopPropagation();
+                        var pts = (lim - aq - sq) * p.pts;
+                        simQtyMap[qKey(p.name, date)] = (lim - aq);
+                        updateAll(true, p.name);
+                        showFloatingPts(e.pageX, e.pageY - 20, pts);
                     };
                     targetGrid.appendChild(card);
                 }
@@ -946,7 +946,7 @@ function initKrypton() {
                         catPacks.forEach(function (p) {
                             var k = qKey(p.name, date);
                             if (simQtyMap[k]) delete simQtyMap[k];
-                        }); 
+                        });
                         updateAll(true);
                     });
                 };
@@ -1174,7 +1174,7 @@ function initKrypton() {
             // 更新数据
             item.querySelector('.tc-box1').innerHTML = mkBaseInput('鸢起年度', c1b);
             item.querySelector('.tc-box2').innerHTML = mkBaseInput('鸢起长期', c2b);
-            item.querySelector('.rem-val').innerText = '距目的地还差: ' + remaining.toLocaleString();
+            item.querySelector('.rem-val').innerText = '距目标还差: ' + remaining.toLocaleString();
             item.querySelector('.boxes-val').innerText = boxes;
             item.querySelector('.next-val').innerText = next.toLocaleString();
             item.querySelector('.next-rem-val').innerText = '距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString();
@@ -1221,13 +1221,13 @@ function initKrypton() {
 
             // 获取现有项的映射，方便重用
             var existingMap = {};
-            activityContainer.querySelectorAll('.activity-item').forEach(function(item) {
+            activityContainer.querySelectorAll('.activity-item').forEach(function (item) {
                 existingMap[item.dataset.title] = item;
             });
-            
+
             // 记录哪些项在本次渲染中仍然活跃
             var activeTitles = {};
-            
+
             active.forEach(function (act) {
                 activeTitles[act.title] = true;
                 var inclEnd = getInclusiveEnd(act.end);
@@ -1241,7 +1241,7 @@ function initKrypton() {
 
                 var maxT = Math.max.apply(null, T), nextT = T[T.length - 1];
                 for (var i = 0; i < T.length; i++) { if (actS < T[i]) { nextT = T[i]; break; } }
-                
+
                 var item = existingMap[act.title];
                 var iA = 'actVal' + act.title.replace(/[^\w]/g, ''), iS = 'simVal' + act.title.replace(/[^\w]/g, '');
 
@@ -1284,36 +1284,36 @@ function initKrypton() {
                 // 统一更新属性 (无论新旧)
                 var badge = item.querySelector('.reward-badge');
                 if (badge) { badge.dataset.acta = actA; badge.dataset.acts = actS; }
-                
+
                 var ntv = item.querySelector('.next-t-val'); if (ntv) ntv.innerText = nextT.toLocaleString();
                 var afr = item.querySelector('.act-footer-right'); if (afr) afr.innerText = (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString());
-                
+
                 // 更新进度条
                 var pA = Math.min(actA / (nextT || 1) * 100, 100).toFixed(1);
                 var pS = Math.min(actS / (nextT || 1) * 100, 100).toFixed(1);
                 var barA = item.querySelector('.progress-bar.actual'), barS = item.querySelector('.progress-bar.simulated');
-                
+
                 if (existingMap[act.title]) {
                     if (barA) barA.style.width = pA + '%';
                     if (barS) barS.style.width = pS + '%';
                 } else {
                     // 新建项需要微小延迟触发动画
-                    setTimeout(function() {
+                    setTimeout(function () {
                         if (barA) barA.style.width = pA + '%';
                         if (barS) barS.style.width = pS + '%';
                     }, 50);
                 }
-                
+
                 // 动画数字
                 setAnimVal(document.getElementById(iA), actA);
                 setAnimVal(document.getElementById(iS), actS);
             });
-            
+
             // 移除不再需要的项
             for (var t in existingMap) {
                 if (!activeTitles[t]) existingMap[t].remove();
             }
-            
+
             attachCollapse(activityContainer);
         }
 
@@ -1427,25 +1427,25 @@ function initKrypton() {
         var exportCsvBtn = document.getElementById('exportCsvBtn');
         var importCsvBtn = document.getElementById('importCsvBtn');
         var csvInput = document.getElementById('csvInput');
-        
+
         if (exportCsvBtn) {
             exportCsvBtn.onclick = function () {
                 if (typeof XLSX === 'undefined') { alert('Excel 库尚未加载，请稍候...'); return; }
-                
+
                 var packs = getActivePacks('daihao').concat(getActivePacks('ruyuan'));
                 var dataRows = [];
-                
+
                 // 遍历 actQtyMap (正式结算的历史总记录)
                 Object.keys(actQtyMap).sort().forEach(function (k) {
                     var parts = k.split('|'), nm = parts[0], d = parts[1], qty = actQtyMap[k] || 0;
                     if (qty <= 0) return;
-                    
+
                     // 查找礼包的基础点数和价格
-                    var p = packs.find(function(it) { return it.name === nm; });
+                    var p = packs.find(function (it) { return it.name === nm; });
                     var pts = p ? p.pts : 0;
                     var usd = p ? (p.priceUsd || 0) : 0;
                     var rmb = p ? (p.priceCny || 0) : 0;
-                    
+
                     dataRows.push({
                         "名称": nm,
                         "日期": d,
@@ -1498,7 +1498,7 @@ function initKrypton() {
                 html2canvas(target, {
                     scale: 2.5, // 极高清晰度
                     useCORS: true,
-                    backgroundColor: '#fffcf5', 
+                    backgroundColor: '#fffcf5',
                     onclone: function (clonedDoc) {
                         var c = clonedDoc.querySelector('.cart-panel') || clonedDoc.querySelector('.shopping-list-panel');
                         if (c) {
@@ -1518,15 +1518,15 @@ function initKrypton() {
                 });
             };
         }
-        if (importCsvBtn && csvInput) { 
-            importCsvBtn.onclick = function () { csvInput.click(); }; 
+        if (importCsvBtn && csvInput) {
+            importCsvBtn.onclick = function () { csvInput.click(); };
             csvInput.onchange = function (e) {
                 var file = e.target.files[0];
                 if (!file) return;
                 if (typeof XLSX === 'undefined') { alert('Excel 库尚未加载'); return; }
 
                 var reader = new FileReader();
-                reader.onload = function(ev) {
+                reader.onload = function (ev) {
                     try {
                         var data = new Uint8Array(ev.target.result);
                         var workbook = XLSX.read(data, { type: 'array' });
@@ -1534,9 +1534,9 @@ function initKrypton() {
                         var rows = XLSX.utils.sheet_to_json(firstSheet);
 
                         if (rows.length === 0) return;
-                        
+
                         var importedCount = 0;
-                        rows.forEach(function(row) {
+                        rows.forEach(function (row) {
                             var nm = row["名称"] || row["Name"];
                             var d = row["日期"] || row["Date"];
                             var q = parseInt(row["数量"] || row["Qty"] || 1);
@@ -1550,7 +1550,7 @@ function initKrypton() {
                         alert('成功导入 ' + importedCount + ' 条记录');
                         saveState();
                         updateAll();
-                    } catch(err) {
+                    } catch (err) {
                         console.error(err); alert('文件读取失败，请确保是正确的 Excel 格式');
                     }
                     csvInput.value = ""; // 重置 input
@@ -1585,7 +1585,7 @@ function initKrypton() {
         function showConfirmModal(msg, onConfirm) {
             var overlay = document.createElement('div');
             overlay.className = 'ziyong-modal-overlay';
-            overlay.innerHTML = 
+            overlay.innerHTML =
                 '<div class="ziyong-modal-card">' +
                 '  <div class="ziyong-modal-icon">⚠️</div>' +
                 '  <div class="ziyong-modal-title">确认清空数据？</div>' +
@@ -1596,22 +1596,22 @@ function initKrypton() {
                 '  </div>' +
                 '</div>';
             document.body.appendChild(overlay);
-            
-            // 动画淡入
-            setTimeout(function(){ overlay.classList.add('show'); }, 10);
 
-            overlay.querySelector('.cancel').onclick = function() {
+            // 动画淡入
+            setTimeout(function () { overlay.classList.add('show'); }, 10);
+
+            overlay.querySelector('.cancel').onclick = function () {
                 overlay.classList.remove('show');
-                setTimeout(function(){ overlay.remove(); }, 300);
+                setTimeout(function () { overlay.remove(); }, 300);
             };
-            overlay.querySelector('.confirm').onclick = function() {
+            overlay.querySelector('.confirm').onclick = function () {
                 overlay.classList.remove('show');
-                setTimeout(function(){ overlay.remove(); onConfirm(); }, 300);
+                setTimeout(function () { overlay.remove(); onConfirm(); }, 300);
             };
         }
 
         function performGlobalClear() {
-            showConfirmModal('清空后所有礼包勾选、确认结算的历史记录都将无法恢复。', function() {
+            showConfirmModal('清空后所有礼包勾选、确认结算的历史记录都将无法恢复。', function () {
                 console.log('[Krypton] 执行全局数据清空...');
                 simQtyMap = {};
                 actQtyMap = {};
@@ -1624,16 +1624,16 @@ function initKrypton() {
                 animStates = {};
                 updateAll();
                 updateRecordsTable();
-                
+
                 // 成功提示
                 var toast = document.createElement('div');
                 toast.className = 'ziyong-toast';
                 toast.innerText = '✨ 记录已全部清空';
                 document.body.appendChild(toast);
-                setTimeout(function(){ toast.classList.add('show'); }, 10);
-                setTimeout(function(){ 
-                    toast.classList.remove('show'); 
-                    setTimeout(function(){ toast.remove(); }, 500); 
+                setTimeout(function () { toast.classList.add('show'); }, 10);
+                setTimeout(function () {
+                    toast.classList.remove('show');
+                    setTimeout(function () { toast.remove(); }, 500);
                 }, 2000);
             });
         }
@@ -1644,7 +1644,7 @@ function initKrypton() {
                 e.preventDefault();
                 performGlobalClear();
             });
-            
+
             // 按钮物理位置已在创建时锁定，此处仅确保功能绑定
             var eBtn = document.getElementById('exportImgBtn');
             if (eBtn) {
@@ -1659,7 +1659,7 @@ function initKrypton() {
         function updateRecordsTable() {
             if (!recordsBody) return;
             var packs = getActivePacks(currentVersion);
-            
+
             // 更新表头 (增加美金和人民币列)
             var thead = recordsBody.previousElementSibling;
             if (thead && thead.tagName === 'THEAD') {
@@ -1673,22 +1673,22 @@ function initKrypton() {
                 var parts = k.split('|'), nm = parts[0], d = parts[1], aq = actQtyMap[k] || 0;
                 if (!aq) return;
 
-                var pack = null; 
+                var pack = null;
                 for (var i = 0; i < packs.length; i++) { if (packs[i].name === nm) { pack = packs[i]; break; } }
-                
-                var act = eventsData.filter(function (e) { 
+
+                var act = eventsData.filter(function (e) {
                     var dn = d.replace(/-/g, '/');
-                    return d >= e.start && d <= normDate(getInclusiveEnd(actQtyMap[k] ? e.end : '')); 
+                    return d >= e.start && d <= normDate(getInclusiveEnd(actQtyMap[k] ? e.end : ''));
                 })[0];
                 // 更加精确的活动匹配
                 if (!act) {
-                    act = eventsData.filter(function(e){ return d >= e.start && d <= e.end && (e.title.includes('累充') || e.type === 'pool'); })[0];
+                    act = eventsData.filter(function (e) { return d >= e.start && d <= e.end && (e.title.includes('累充') || e.type === 'pool'); })[0];
                 }
 
                 var pts = pack ? pack.pts * aq : 0;
                 var usd = pack ? (pack.priceUsd || 0) * aq : 0;
                 var cny = pack ? getPackCny(pack) * aq : 0;
-                
+
                 totalPts += pts; totalUsd += usd; totalCny += cny;
 
                 var tr = document.createElement('tr');
@@ -1704,9 +1704,9 @@ function initKrypton() {
                 footTr.style.fontWeight = '800';
                 footTr.style.color = '#5d4037';
                 footTr.innerHTML = '<td colspan="3" style="text-align:right;padding-right:15px;">总计：</td>' +
-                                   '<td>' + totalPts + '</td>' +
-                                   '<td>$' + totalUsd.toFixed(2) + '</td>' +
-                                   '<td>¥' + totalCny.toFixed(2) + '</td>';
+                    '<td>' + totalPts + '</td>' +
+                    '<td>$' + totalUsd.toFixed(2) + '</td>' +
+                    '<td>¥' + totalCny.toFixed(2) + '</td>';
                 recordsBody.appendChild(footTr);
             }
         }
@@ -1715,36 +1715,36 @@ function initKrypton() {
         function updatePackCard(name, date) {
             var cards = packList.querySelectorAll('.ziyong-card[data-name="' + name + '"]');
             if (!cards.length) return;
-            
+
             var allPacks = getActivePacks(currentVersion);
-            var p = allPacks.find(function(it){ return it.name === name; });
+            var p = allPacks.find(function (it) { return it.name === name; });
             if (!p) return;
-            
+
             var sq = getSQ(name, date), aq = getAQ(name, date), lim = p.limit || 1;
             var maxed = (aq + sq) >= lim;
             var fullyBought = aq >= lim;
 
-            cards.forEach(function(card) {
+            cards.forEach(function (card) {
                 // 更新高亮状态
                 card.classList.toggle('actual', fullyBought);
                 card.classList.toggle('simulated', (!fullyBought && sq > 0));
                 card.classList.toggle('limit-reached', maxed);
-                
+
                 // 更新选购数量
                 var numEl = card.querySelector('.qty-num');
                 if (numEl) numEl.innerText = sq;
-                
+
                 // 更新限购文本与颜色
                 var limEl = card.querySelector('.card-limit-txt');
                 if (limEl) {
                     limEl.innerText = (aq + sq) + '/' + lim;
                     limEl.style.color = maxed ? '#d85c50' : '#a08060';
                 }
-                
+
                 // 更新按钮禁用状态
                 var minBtn = card.querySelector('.qty-min'), minusBtn = card.querySelector('.qty-minus');
                 var plusBtn = card.querySelector('.qty-plus'), maxBtn = card.querySelector('.qty-max');
-                
+
                 if (minBtn) minBtn.setAttribute('disabled', sq <= 0 ? 'true' : 'false');
                 if (minusBtn) minusBtn.setAttribute('disabled', sq <= 0 ? 'true' : 'false');
                 if (plusBtn) plusBtn.setAttribute('disabled', maxed ? 'true' : 'false');
@@ -1753,21 +1753,21 @@ function initKrypton() {
         }
 
         // ── 总更新 (带 Fast 模式) ──
-        var updateAll = function(isFast, targetName) {
+        var updateAll = function (isFast, targetName) {
             var date = normDate(rechargeDateInput.value);
             var base = getBasePts();
             var actPts = base + calcMapPts(actQtyMap);
             var simPts = actPts + calcMapPts(simQtyMap);
-            
+
             // 动画更新总分
             setAnimVal(totalActualPtsEl, actPts);
             setAnimVal(totalSimulatedPtsEl, simPts);
-            
+
             var stickyA = document.getElementById('stickyActualPts');
             var stickyS = document.getElementById('stickySimPts');
             if (stickyA) setAnimVal(stickyA, actPts);
             if (stickyS) setAnimVal(stickyS, simPts);
-            
+
             // 核心性能切换
             if (!isFast) {
                 renderPacks();
@@ -1776,10 +1776,10 @@ function initKrypton() {
             } else {
                 // 如果是批量操作(全选/清空)，但使用了 isFast，则遍历局部更新
                 var allPacks = getActivePacks(currentVersion);
-                allPacks.forEach(function(p) { updatePackCard(p.name, date); });
+                allPacks.forEach(function (p) { updatePackCard(p.name, date); });
             }
-            
-            renderYuanqi(date); 
+
+            renderYuanqi(date);
             renderActivities(date);
             renderCart();
             saveState();
@@ -1871,8 +1871,8 @@ function initKrypton() {
         '.stat-total{margin-top:20px;padding-top:15px; border-top:1.2px solid #eee; align-items:center;color:#333;font-weight:700; display:flex; justify-content:space-between;}',
         '.stat-total #statTotalPrice{font-size:32px;color:#a82e2e;font-weight:800;line-height:1;}',
         // 原版卡片
-        '.ziyong-card{background:#fffefb;border:1.5px solid #e0d5c1;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
-        '.ziyong-card:hover:not(.disabled){border-color:#c09d62;box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-2px);}',
+        '.ziyong-card{background:#fffefb;border:1.5px solid #e0d5c1;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background-color .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
+        '.ziyong-card:hover:not(.disabled){border-color:#c09d62;box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-2px);will-change:transform,box-shadow;}',
         '.ziyong-card.simulated{background:#faf7f1;border-color:#d85c50;}',
         '.ziyong-card.actual{background:#e2d9c5;border-color:#e0d5c1;cursor:default;}',
         '.ziyong-card.limit-reached{opacity:.6;}',
@@ -1914,8 +1914,8 @@ function initKrypton() {
         '.act-val-actual{color:#d85c50;font-weight:700;}',
         '.act-footer-right{text-align:right;font-size:10px;color:#b0998f;margin-top:2px;}',
         '.dashed-divider{border-top:1px dashed #e8e2d4;margin:12px 0;}',
-        '.activity-content-wrapper{overflow:hidden;transition:max-height .3s ease,opacity .25s;max-height:600px;opacity:1;}',
-        '.activity-content-wrapper.collapsed{max-height:0!important;opacity:0;}',
+        '.activity-content-wrapper{overflow:hidden;transition:max-height .4s cubic-bezier(0.4, 0, 0.2, 1),opacity .25s;max-height:800px;opacity:1;will-change:max-height,opacity;contain:content;}',
+        '.activity-content-wrapper.collapsed{max-height:0!important;opacity:0;pointer-events:none;}',
         '.toggle-icon{font-size:9px;margin-left:3px;vertical-align:middle;transition:transform .25s;display:inline-block;}',
         '.toggle-icon.collapsed{transform:rotate(-90deg);}',
         '.progress-bar-bg{height:5px;background:#efede8;border-radius:3px;overflow:hidden;position:relative;margin:6px 0;}',

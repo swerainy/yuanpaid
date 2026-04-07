@@ -1122,14 +1122,17 @@
         }
 
         .activity-content {
-            transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
             overflow: hidden;
+            will-change: max-height, opacity;
+            contain: content;
         }
 
         .activity-content.collapsed {
             max-height: 0;
             opacity: 0;
             margin-bottom: 0;
+            pointer-events: none;
         }
 
         .shop-summary-title {
@@ -1420,7 +1423,7 @@
             border-radius: 4px;
             color: #8d7365;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
             font-weight: 600;
         }
 
@@ -1437,13 +1440,14 @@
                 opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             opacity: 1;
-            visibility: visible;
+            will-change: grid-template-rows, opacity;
+            contain: layout;
         }
 
         .category-content-wrapper.collapsed {
             grid-template-rows: 0fr;
             opacity: 0;
-            visibility: hidden;
+            pointer-events: none;
         }
 
         .category-content-inner {
@@ -1486,7 +1490,7 @@
             border-radius: 0 6px 6px 0;
             box-sizing: border-box;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, border-color 0.3s ease;
             user-select: none;
         }
 
@@ -1537,7 +1541,7 @@
             border-radius: 3px;
             color: #8d7365;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
             font-weight: 600;
         }
 
@@ -1556,13 +1560,14 @@
             overflow: hidden;
             width: 100%;
             opacity: 1;
-            visibility: visible;
+            will-change: grid-template-rows, opacity;
+            contain: layout;
         }
 
         .sub-category-content-wrapper.collapsed {
             grid-template-rows: 0fr;
             opacity: 0;
-            visibility: hidden;
+            pointer-events: none;
         }
 
         .sub-category-content-inner {
@@ -1590,7 +1595,10 @@
             padding: 15px;
             position: relative;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background-color 0.25s ease;
             user-select: none;
         }
 
