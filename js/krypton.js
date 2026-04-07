@@ -223,7 +223,7 @@ var KRYPTON_DATA = {
     cumulativeTiers: {
         '万氪礼盒统计': [2000, 5000, 10000],
         '累充池': [1000, 2000, 5000, 10000],
-        '鸢起礼盒·三': [60000, 150000, 300000, 450000, 600000, 750000]
+        '鸢起礼盒·三': [150000, 300000, 450000, 600000, 750000]
     }
 };
 
@@ -447,7 +447,6 @@ function initKrypton() {
         // toggleActual function removed as card-check has been removed and bulk checkout is used
 
         // ── 积分计算器 —— 鸢起礼盒专用档位 ──
-        KRYPTON_DATA.rewardTiers = [1000, 2000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 120000, 150000, 180000, 200000];
 
         function getActivePacks(ver) {
             return ver === 'daihao' ? KRYPTON_DATA.packsDaihao :
@@ -1124,18 +1123,25 @@ function initKrypton() {
             var c1s = '2025-05-01', c1e = '2026-04-30', c2s = '2023-03-30', c2e = '2026-04-30';
             var c1b = getCovBasePts('鸢起年度', c1s, c1e), c1a = c1b + calcRangePts(actQtyMap, c1s, c1e), c1si = c1a + calcRangePts(simQtyMap, c1s, c1e);
             var c2b = getCovBasePts('鸢起长期', c2s, c2e), c2a = c2b + calcRangePts(actQtyMap, c2s, c2e), c2si = c2a + calcRangePts(simQtyMap, c2s, c2e);
-            var tiers = KRYPTON_DATA.rewardTiers, boxes = 0, next = tiers[tiers.length - 1];
-            for (var i = 0; i < tiers.length; i++) { if (c2a >= tiers[i]) boxes++; if (c2si < tiers[i] && next === tiers[tiers.length - 1]) next = tiers[i]; }
+
+            // 條件二檔位與禮盒數 (15w/30w/45w/60w/75w)
+            var tiers = KRYPTON_DATA.rewardTiers;
+            var boxes = 0, next = tiers[tiers.length - 1];
+            for (var i = 0; i < tiers.length; i++) {
+                if (c2a >= tiers[i]) boxes = i + 1;
+                if (c2si < tiers[i] && next === 750000) next = tiers[i];
+            }
 
             var targetVal = localStorage.getItem('ziyong_yuanqi_target') || '60000';
             var remaining = Math.max(0, parseInt(targetVal) - c1si);
 
             var item = yuanqiContainer.querySelector('.activity-item');
             if (!item) {
+                var linkUrl = "https://r.qookkagames.com/p/r/69a258e8c7a0a80cbd2537f4/index?access=hk_offical";
                 yuanqiContainer.innerHTML =
                     '<div class="activity-item" data-title="鸢起礼盒">' +
                     '  <div class="activity-header">' +
-                    '    <div class="activity-title">鸢起礼盒·三 <span class="toggle-icon">▼</span></div>' +
+                    '    <div class="activity-title"><a href="' + linkUrl + '" target="_blank" class="yuanqi-title-link">鸢起礼盒·三<span class="yuanqi-tooltip"> 点击跳转官方积分查询链接 </span></a> <span class="toggle-icon">▼</span></div>' +
                     '    <div class="target-calc-group">' +
                     '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
                     '    </div>' +
@@ -1151,7 +1157,7 @@ function initKrypton() {
                     '        <div class="act-val-row">实际: <span class="act-val-actual c1a-val">0</span> (模拟: <span class="c1si-val">0</span>) / 60,000</div>' +
                     '      </div>' +
                     '      <div class="pb-wrap1">' + mkBar(0, 0, 60000) + '</div>' +
-                    '      <div class="act-footer-right rem-val">距目的地还差: 0</div>' +
+                    '      <div class="act-footer-right rem-val">正在计算...</div>' +
                     '    </div>' +
                     '    <div class="dashed-divider"></div>' +
                     '    <div class="act-segment">' +
@@ -1163,8 +1169,8 @@ function initKrypton() {
                     '        <div class="act-label-med">当前可领: <span class="act-val-actual boxes-val">0</span> 个</div>' +
                     '        <div class="act-val-row">实际: <span class="act-val-actual c2a-val">0</span> (模拟: <span class="c2si-val">0</span>) / <span class="next-val">0</span></div>' +
                     '      </div>' +
-                    '      <div class="pb-wrap2">' + mkBar(0, 0, 100) + '</div>' +
-                    '      <div class="act-footer-right next-rem-val">距下一礼盒: 0</div>' +
+                    '      <div class="pb-wrap2">' + mkBar(0, 0, 1) + '</div>' +
+                    '      <div class="act-footer-right next-rem-val">正在计算...</div>' +
                     '    </div>' +
                     '  </div>' +
                     '</div>';
@@ -1172,12 +1178,37 @@ function initKrypton() {
             }
 
             // 更新数据
+            var linkUrl = "https://r.qookkagames.com/p/r/69a258e8c7a0a80cbd2537f4/index?access=hk_offical";
+            var tEl = item.querySelector('.activity-title');
+            if (tEl && !tEl.querySelector('.yuanqi-title-link')) {
+                tEl.innerHTML = '<a href="' + linkUrl + '" target="_blank" class="yuanqi-title-link">鸢起礼盒·三<span class="yuanqi-tooltip"> 点击跳转官方积分查询链接 </span></a> <span class="toggle-icon">▼</span>';
+            }
+
             item.querySelector('.tc-box1').innerHTML = mkBaseInput('鸢起年度', c1b);
             item.querySelector('.tc-box2').innerHTML = mkBaseInput('鸢起长期', c2b);
-            item.querySelector('.rem-val').innerText = '距目标还差: ' + remaining.toLocaleString();
+
+            // 條件一狀態標記
+            var remVal = item.querySelector('.rem-val');
+            if (remaining <= 0) {
+                remVal.innerText = '✓ 已达成';
+                remVal.style.color = '#3e8e41'; // 綠色
+            } else {
+                remVal.innerText = '距目標還差: ' + remaining.toLocaleString();
+                remVal.style.color = '';
+            }
+
             item.querySelector('.boxes-val').innerText = boxes;
             item.querySelector('.next-val').innerText = next.toLocaleString();
-            item.querySelector('.next-rem-val').innerText = '距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString();
+
+            // 條件二狀態標記
+            var nrVal = item.querySelector('.next-rem-val');
+            if (c2si >= 750000) {
+                nrVal.innerText = '✓ 已达成';
+                nrVal.style.color = '#3e8e41';
+            } else {
+                nrVal.innerText = '距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString();
+                nrVal.style.color = '';
+            }
 
             // 进度条与数字
             item.querySelector('.pb-wrap1 .progress-bar.actual').style.width = Math.min(c1a / 60000 * 100, 100).toFixed(1) + '%';
@@ -1286,8 +1317,16 @@ function initKrypton() {
                 if (badge) { badge.dataset.acta = actA; badge.dataset.acts = actS; }
 
                 var ntv = item.querySelector('.next-t-val'); if (ntv) ntv.innerText = nextT.toLocaleString();
-                var afr = item.querySelector('.act-footer-right'); if (afr) afr.innerText = (actS >= maxT ? '✓ 已达成' : '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString());
-
+                var afr = item.querySelector('.act-footer-right');
+                if (afr) {
+                    if (actS >= maxT) {
+                        afr.innerText = '✓ 已达成';
+                        afr.style.color = '#3e8e41';
+                    } else {
+                        afr.innerText = '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString();
+                        afr.style.color = '';
+                    }
+                }
                 // 更新进度条
                 var pA = Math.min(actA / (nextT || 1) * 100, 100).toFixed(1);
                 var pS = Math.min(actS / (nextT || 1) * 100, 100).toFixed(1);

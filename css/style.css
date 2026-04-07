@@ -2014,8 +2014,64 @@
             animation-delay: 0.08s;
         }
 
+
         .fade-in-rows tr:nth-child(6) {
             animation-delay: 0.10s;
+        }
+
+        /* ================= 鸢起礼盒专用链接与气泡 ================= */
+        .yuanqi-title-link {
+            color: #5d4037;
+            text-decoration: none;
+            position: relative;
+            border-bottom: 1.5px dashed #d88a2e;
+            padding-bottom: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .yuanqi-title-link:hover {
+            color: #d88a2e;
+            border-bottom-style: solid;
+        }
+
+        .yuanqi-tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 0;
+            transform: translateY(5px);
+            background-color: rgba(62, 58, 51, 0.95);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            font-weight: normal;
+        }
+
+        /* 气泡小箭头 */
+        .yuanqi-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(62, 58, 51, 0.95) transparent transparent transparent;
+        }
+
+        .yuanqi-title-link:hover .yuanqi-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: 140%;
+            transform: translateY(0);
         }
 
         .fade-in-rows tr:nth-child(7) {
