@@ -265,27 +265,28 @@ function initKrypton() {
                 if (!planArea) return;
                 var rect = planArea.getBoundingClientRect();
 
-                // 只有当该区域进入视口且未完全离开时显示
-                if (rect.top < window.innerHeight - 150 && rect.bottom > 100) {
+                // 手机端：强制显示，不加滚动限制 (只要页面加载了 Ziyong 代码就显示)
+                if (window.innerWidth <= 860) {
                     navBar.style.setProperty('display', 'flex', 'important');
-
-                    if (window.innerWidth > 860) {
-                        // 电脑端：定位至回顶按钮左侧（红框位置）
+                    navBar.style.left = '10px';
+                    navBar.style.right = '10px';
+                    navBar.style.bottom = '20px';
+                    navBar.style.top = 'auto';
+                    navBar.style.flexDirection = 'row';
+                    navBar.style.gap = '8px';
+                    navBar.style.justifyContent = 'center';
+                } else {
+                    // 电脑端：保持原有的滚动区域显示逻辑
+                    if (rect.top < window.innerHeight - 150 && rect.bottom > 100) {
+                        navBar.style.setProperty('display', 'flex', 'important');
                         navBar.style.right = '150px';
                         navBar.style.bottom = '30px';
                         navBar.style.left = 'auto';
                         navBar.style.top = 'auto';
                         navBar.style.flexDirection = 'column';
                     } else {
-                        // 缩小视图（手机端）：恢复到底部横向排列，不随电脑端变动
-                        navBar.style.left = '15px';
-                        navBar.style.right = '15px';
-                        navBar.style.bottom = '20px';
-                        navBar.style.top = 'auto';
-                        navBar.style.flexDirection = 'row';
+                        navBar.style.setProperty('display', 'none', 'important');
                     }
-                } else {
-                    navBar.style.setProperty('display', 'none', 'important');
                 }
             }
             window.addEventListener('scroll', function () {
@@ -1486,6 +1487,18 @@ function initKrypton() {
             // 将渲染逻辑暴露给全局，方便统一逻辑调用
             window.renderMappingTable = renderTable;
             renderTable('usd');
+            var panelMapping = document.getElementById('panelMapping');
+            if (panelMapping) {
+                var btn = panelMapping.querySelector('.panel-trigger');
+                if (btn) {
+                    btn.onclick = function(e) {
+                        if (window.innerWidth <= 900) {
+                            panelMapping.classList.toggle('expanded');
+                            e.stopPropagation();
+                        }
+                    };
+                }
+            }
         }
 
         // ── Excel 导入导出核心逻辑 (修正为针对“总记录”) ──
@@ -2017,15 +2030,13 @@ function initKrypton() {
         '.sync-rate-btn.syncing .sync-icon{animation:spinRate 1s linear infinite;}',
         '.sync-rate-btn.success{background:#edf8ee;border-color:#5d8a50;color:#5d8a50;}',
         // 快速导航 (响应式适配版)
-        '.quick-nav-bar{position:fixed; display:none!important; z-index:2500; pointer-events:auto;}',
+        '.quick-nav-bar{position:fixed; display:none; z-index:2500; pointer-events:auto;}',
         '.nav-jump-btn{width:82px; height:46px; border:1.8px solid #d5c8b2; border-radius:12px; background:#fff; color:#5d4037; font-size:13px; font-weight:800; cursor:pointer; transition:all .2s; box-shadow:0 8px 25px rgba(93,64,55,0.15); display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.2;}',
         '.nav-jump-btn:hover{background:#fdfaf3; border-color:#c05b4d; color:#a82e2e; transform:scale(1.05);}',
         // 电脑端：纵向排列，带左装饰条
         '@media(min-width:861px){ .quick-nav-bar{flex-direction:column; gap:8px;} .nav-jump-btn{border-left:4px solid #c05b4d;} }',
-        // 手机端：横向排列，底装饰条，不随电脑端位置变化
-        '@media(max-width:860px){',
-        '  .quick-nav-bar{flex-direction:row; gap:10px; width:auto;}',
-        '  .nav-jump-btn{flex:1; width:auto; height:48px; border-bottom:4px solid #c05b4d; font-size:14px;}',
+        // 手机端：不再需要快速导航栏，因为就在最底部一划就到了
+        '@media(max-width:860px){', '  .quick-nav-bar{display:flex !important; gap:6px; justify-content:center; width:calc(100vw - 150px); left:75px !important; right:75px !important; bottom:20px !important;}', '  .nav-jump-btn{width:70px; height:36px; font-size:11px; padding:0 4px;}',
         '}',
         // 自定义美化弹窗
         '.ziyong-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(93,64,55,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:all .3s ease;}',
@@ -2077,3 +2088,6 @@ function initKrypton() {
 // 程序入口
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initKrypton); }
 else { initKrypton(); }
+
+// Force layout cache bust
+

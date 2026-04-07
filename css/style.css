@@ -850,6 +850,9 @@
 
             .fc-event-title {
                 font-size: 10px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
 
             .fc-event {
@@ -861,12 +864,15 @@
                 margin-top: 2px !important;
             }
 
+            /* 回到顶部按钮移到左下角，给右侧积分对照表悬浮球让位 */
             #backToTop {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-                bottom: 15px;
-                right: 15px;
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+                bottom: 20px;
+                left: 16px;
+                right: auto;
+                z-index: 2000;
             }
 
             /* 年视图手机端改为1列 */
@@ -910,6 +916,9 @@
 
             .fc-event-title {
                 font-size: 9px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
 
             .fc-daygrid-day-number {
@@ -1846,6 +1855,8 @@
 
         .panel-item:hover,
         .panel-item.expanded {
+                z-index: 5100 !important;
+                z-index: 3100 !important;
             width: 320px;
         }
 
@@ -2934,31 +2945,141 @@
             transition: opacity 0.2s;
         }
 
-        /* 版本对应宽度调整 & 移动端适配排版 */
+        /* ====================================================
+           手机端适配 — 所有规则严格锁定在 max-width:900px 内
+           电脑端(>900px)布局完全不受任何影响
+           ==================================================== */
         @media (max-width: 900px) {
+            .floating-panels { z-index: 5000 !important; }
+            body { max-width: 100vw; overflow-x: hidden; }
+
+            .ziyong-wrapper.modern-ancient {
+                max-width: 100vw !important;
+                box-sizing: border-box !important;
+                width: calc(100vw - 16px) !important;
+                margin: 10px 8px 80px 8px !important;
+                padding: 15px 12px !important;
+            }
+
+            /* ① 礼包在上，购物清单+累充进度在下 */
             .plan-layout {
-                grid-template-columns: 1fr;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0 !important;
+            }
+
+            .pack-panel {
+                order: 1 !important;
+                width: 100% !important;
+                overflow: visible !important;
+            }
+
+            .right-column {
+                order: 2 !important;
+                width: 100% !important;
+                position: static !important;
+                max-height: none !important;
+                overflow: visible !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+                padding-bottom: 20px !important;
             }
 
             .cart-panel {
-                position: static;
+                position: static !important;
+                width: 100% !important;
+                flex: none !important;
             }
 
+            .activity-panel {
+                flex: none !important;
+                min-height: auto !important;
+            }
+
+            /* ② 控制栏：氪条绝对定位到右上角 */
             .ziyong-control-bar {
-                padding: 10px;
-                gap: 8px;
+                padding: 10px 10px 8px 10px !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 5000 !important;
+            }
+
+            /* 氪条悬浮在右上角 */
+            .ziyong-control-bar .total-pts-overview {
+                position: absolute !important;
+                top: 10px !important;
+                right: 10px !important;
+                gap: 6px !important;
+                flex-shrink: 0 !important;
+                flex-direction: row !important;
+            }
+
+            /* 给日期/汇率行腾出右侧空间，避免与氪条重叠 */
+            .ziyong-control-bar .bar-top-row {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                padding-right: 140px !important;
+            }
+
+            .ziyong-control-bar .bar-row {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 6px !important;
+            }
+
+            .ziyong-control-bar .bar-left {
+                flex-direction: column !important;
+                gap: 4px !important;
+                align-items: flex-start !important;
             }
 
             .ziyong-control-bar .helper-text.desktop-only {
-                display: none;
-            }
-
-            .ziyong-control-bar .total-pts-overview {
-                gap: 15px;
+                display: none !important;
             }
 
             .total-pts-overview .pts-box {
-                padding: 4px 8px;
+                padding: 2px 6px !important;
+                min-width: 55px !important;
+                text-align: center !important;
+            }
+
+            .pts-box .label { font-size: 9px; }
+            .pts-box .value { font-size: 13px; }
+
+            /* ③ 礼包卡片：右侧不被裁剪，全部可见 */
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                overflow: visible !important;
+            }
+
+            .pack-list-categorized,
+            #packList {
+                overflow: visible !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .category-content-inner,
+            .category-content-wrapper,
+            .pack-category-section {
+                overflow: visible !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .ziyong-card {
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+            }
+
+            /* ④ 积分悬浮球：不被回到顶部按钮遮挡 */
+            .floating-panels {
+                top: auto !important;
+                bottom: 80px !important;
+                right: 0 !important;
             }
         }
 
@@ -3205,3 +3326,110 @@
         .custom-select.open .select-selected::after {
             transform: translateY(-70%) rotate(180deg) !important;
         }
+
+        /* ====================================================
+           手机端专属(Max 768px)：积分对照表悬浮球 + 卡片不被裁剪
+           严格不影响电脑端任何布局
+           ==================================================== */
+        @media (max-width: 768px) {
+            /* 外层wrapper不裁剪内容 */
+            .ziyong-wrapper.modern-ancient {
+                overflow: visible !important;
+                padding: 12px 6px !important;
+                margin: 10px 0 80px 0 !important;
+            }
+
+            /* 积分对照表：圆形悬浮球 固定在右下角 */
+            .panel-item {
+                position: fixed !important;
+                right: 16px !important;
+                bottom: 20px !important;
+                width: 52px !important;
+                height: 52px !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.35) !important;
+                z-index: 2005 !important;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                overflow: hidden !important;
+                cursor: pointer !important;
+            }
+
+            .panel-item.expanded {
+                width: calc(100vw - 32px) !important;
+                height: 70vh !important;
+                max-height: 520px !important;
+                border-radius: 16px !important;
+                right: 16px !important;
+                bottom: 16px !important;
+                flex-direction: column !important;
+            }
+
+            .panel-trigger {
+                writing-mode: horizontal-tb !important;
+                width: 100% !important;
+                height: 100% !important;
+                padding: 0 !important;
+                font-size: 10px !important;
+                letter-spacing: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 50% !important;
+                line-height: 1.2 !important;
+            }
+
+            .panel-item.expanded .panel-trigger {
+                height: 44px !important;
+                flex-shrink: 0 !important;
+                border-radius: 0 !important;
+                font-size: 14px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                padding: 0 15px !important;
+                letter-spacing: 1px !important;
+            }
+
+            .panel-item.expanded .panel-trigger::after {
+                content: 'x';
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            .panel-content {
+                display: none !important;
+                border-left: none !important;
+                border-top: 1px solid #d5c8b2 !important;
+                min-width: unset !important;
+                width: 100% !important;
+                flex-grow: 1 !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+
+            .panel-item.expanded .panel-content {
+                display: block !important;
+            }
+
+            /* 阻止hover效果在手机端触发 */
+            .panel-item:hover:not(.expanded) {
+                width: 52px !important;
+                height: 52px !important;
+            }
+
+            .panel-item:hover:not(.expanded) .panel-content {
+                display: none !important;
+            }
+        }
+
+
+/* 强制隐藏冲突元素：当积分对照表展开时，隐藏导航按钮 */
+@media (max-width: 900px) {
+    body:has(#panelMapping.expanded) #ziyongQuickNav {
+        display: none !important;
+    }
+}
