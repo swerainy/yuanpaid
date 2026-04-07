@@ -98,17 +98,21 @@
                             <input type="date" id="rechargeDate" class="ancient-input mini">
                         </div>
                         <div class="rate-input-group" id="rateInputGroup">
-                            <label>当前汇率 (USD to CNY):</label>
-                            <div class="rate-input-wrapper">
-                                <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2"
-                                    step="0.01" min="1" style="width:55px;">
-                                <button id="syncRateBtn" class="sync-rate-btn" title="从 API 同步实时汇率">
-                                    <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="23 4 23 10 17 10"></polyline>
-                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                    </svg>
-                                </button>
+                            <div class="rate-input-top-flex">
+                                <label>当前汇率 (USD to CNY):</label>
+                                <div class="rate-input-wrapper">
+                                    <input type="number" id="exchangeRateInput" class="ancient-input mini" value="7.2"
+                                        step="0.01" min="1" style="width:55px;">
+                                    <button id="syncRateBtn" class="sync-rate-btn" title="从 API 同步实时汇率">
+                                        <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"></polyline>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="sync-info-labels">
                                 <span id="syncTimeMsg" class="sync-time-msg"></span>
                                 <span id="syncDataDate" class="sync-time-msg"
                                     style="color:#8c6e5e; margin-left:5px;"></span>

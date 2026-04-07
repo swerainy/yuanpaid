@@ -3524,3 +3524,60 @@
         display: none !important;
     }
 }
+
+/* ================= 广陵资用案 布局对齐补丁 (绕过 CSP 拦截) ================= */
+.date-selector-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+/* 电脑端默认：保持一行 */
+.rate-input-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.rate-input-top-flex, .sync-info-labels {
+    display: contents !important; /* 使其子元素直接参与父级 flex，从而在一行显示 */
+}
+
+.date-selector-group label, .rate-input-top-flex label {
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.rate-input-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+/* 手机端专属：切换为两行并对齐 */
+@media (max-width: 860px) {
+    .rate-input-group {
+        flex-direction: column !important; /* 强制两行 */
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+
+    .rate-input-top-flex {
+        display: flex !important; /* 恢复容器 */
+        align-items: center !important;
+        gap: 10px !important;
+        width: 100%;
+    }
+
+    .sync-info-labels {
+        display: block !important; /* 恢复容器，实现换行 */
+        margin-top: 2px !important;
+        padding-left: 0 !important;
+        font-size: 11px !important;
+    }
+    
+    #syncDataDate {
+        margin-left: 5px !important;
+    }
+}
