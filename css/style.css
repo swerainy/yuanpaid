@@ -1200,6 +1200,10 @@
             font-size: 1.4em;
             font-weight: 800;
             font-family: 'Georgia', serif;
+            font-variant-numeric: tabular-nums;
+            display: inline-block;
+            min-width: 60px;
+            text-align: right;
         }
 
         .pts-box.actual .value {

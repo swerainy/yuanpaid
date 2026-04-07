@@ -1985,7 +1985,7 @@ function initKrypton() {
         '.stat-badge{background:#f8f9fa;color:#444;padding:3px 10px;border-radius:6px;font-weight:600;min-width:65px;text-align:center;font-size:13px;}',
         '.stat-badge.highlight{background:#fff9e6;color:#a67c52;border:1px solid #ffeeba;}',
         '.stat-total{margin-top:20px;padding-top:15px; border-top:1.2px solid #eee; align-items:center;color:#333;font-weight:700; display:flex; justify-content:space-between;}',
-        '.stat-total #statTotalPrice{font-size:32px;color:#a82e2e;font-weight:800;line-height:1;}',
+        '.stat-total #statTotalPrice{font-size:32px;color:#a82e2e;font-weight:800;line-height:1;font-variant-numeric: tabular-nums; display:inline-block; min-width:120px; text-align:right;}',
         // 原版卡片
         '.ziyong-card{background:#fffefb;border:1.5px solid #e0d5c1;border-radius:8px;padding:10px 10px 8px;cursor:pointer;position:relative;transition:border-color .25s,box-shadow .25s,background-color .25s,transform .25s;display:flex;flex-direction:column;gap:2px;}',
         '.ziyong-card:hover:not(.disabled){border-color:#c09d62;box-shadow:0 3px 10px rgba(0,0,0,.08);transform:translateY(-2px);will-change:transform,box-shadow;}',
