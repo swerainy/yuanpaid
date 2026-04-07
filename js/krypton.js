@@ -347,7 +347,7 @@ function initKrypton() {
             var diff = new Date(endStr.replace(/-/g, '/')).getTime() - new Date().getTime();
             if (diff <= 0) return '<span style="display:inline-block; background-color: #fceceb; color:#d85c50; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-left: 8px; vertical-align: middle;">已结束</span>';
             var days = Math.floor(diff / 86400000), hours = Math.floor((diff % 86400000) / 3600000);
-            return '<span style="display:inline-block; background-color: #fff9ed; color:#d88a2e; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(216, 138, 46, 0.25); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-left: 8px; vertical-align: middle;">⏳ 剩余: ' + days + '天 ' + hours + '小时</span>';
+            return '<span style="display:inline-block; background-color: #fff9ed; color:#d88a2e; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(216, 138, 46, 0.25); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-left: 8px; vertical-align: middle;">⏳  ' + days + '天 ' + hours + '小时</span>';
         }
 
         function renderRewardPopupHtml(track, title, curA, curS) {
@@ -593,13 +593,13 @@ function initKrypton() {
             window.currentVersion = ver;
             var rg = document.getElementById('rateInputGroup');
             if (rg) rg.style.display = ver === 'daihao' ? '' : 'none';
-            
+
             // 同步下拉框显示文本
             var vToggle = document.getElementById('versionToggle');
             if (vToggle) {
                 var s = vToggle.querySelector('.select-selected');
                 var items = vToggle.querySelectorAll('.select-items div');
-                items.forEach(function(it) {
+                items.forEach(function (it) {
                     if (it.dataset.val === ver) {
                         if (s) s.innerText = it.innerText;
                         it.classList.add('active');
@@ -625,22 +625,22 @@ function initKrypton() {
             if (!select) return;
             var selected = select.querySelector('.select-selected');
             var items = select.querySelectorAll('.select-items div');
-            
+
             if (selected) {
-                selected.onclick = function(e) {
+                selected.onclick = function (e) {
                     e.stopPropagation();
                     var isOpen = select.classList.contains('open');
-                    document.querySelectorAll('.custom-select').forEach(function(s) { s.classList.remove('open'); });
+                    document.querySelectorAll('.custom-select').forEach(function (s) { s.classList.remove('open'); });
                     if (!isOpen) select.classList.add('open');
                 };
             }
-            
-            items.forEach(function(item) {
-                item.onclick = function(e) {
+
+            items.forEach(function (item) {
+                item.onclick = function (e) {
                     e.stopPropagation();
                     var val = item.dataset.val;
                     if (selected) selected.innerText = item.innerText;
-                    items.forEach(function(i) { i.classList.remove('active'); });
+                    items.forEach(function (i) { i.classList.remove('active'); });
                     item.classList.add('active');
                     if (onSelect) onSelect(val);
                     select.classList.remove('open');
@@ -649,13 +649,13 @@ function initKrypton() {
         }
 
         setupSelect('versionToggle', syncVersion);
-        setupSelect('currencyToggle', function(val) {
+        setupSelect('currencyToggle', function (val) {
             if (window.renderMappingTable) window.renderMappingTable(val);
         });
 
         // 点击外部关闭所有下拉
-        document.addEventListener('click', function() {
-            document.querySelectorAll('.custom-select').forEach(function(s) { s.classList.remove('open'); });
+        document.addEventListener('click', function () {
+            document.querySelectorAll('.custom-select').forEach(function (s) { s.classList.remove('open'); });
         });
 
         // ── Tab ──
