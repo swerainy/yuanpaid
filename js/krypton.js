@@ -1243,11 +1243,9 @@ function initKrypton() {
             // 條件一狀態標記
             var remVal = item.querySelector('.rem-val');
             if (remaining <= 0) {
-                remVal.innerText = '✓ 已达成';
-                remVal.style.color = '#3e8e41'; // 綠色
+                remVal.innerHTML = '<span class="reached-tag">✓ 已达成</span>';
             } else {
-                remVal.innerText = '距目標還差: ' + remaining.toLocaleString();
-                remVal.style.color = '';
+                remVal.innerHTML = '距目標還差: ' + remaining.toLocaleString();
             }
 
             item.querySelector('.boxes-val').innerText = boxes;
@@ -1256,11 +1254,9 @@ function initKrypton() {
             // 條件二狀態標記
             var nrVal = item.querySelector('.next-rem-val');
             if (c2si >= 750000) {
-                nrVal.innerText = '✓ 已达成';
-                nrVal.style.color = '#3e8e41';
+                nrVal.innerHTML = '<span class="reached-tag">✓ 已达成</span>';
             } else {
-                nrVal.innerText = '距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString();
-                nrVal.style.color = '';
+                nrVal.innerHTML = '距下一礼盒(' + next.toLocaleString() + '): ' + Math.max(0, next - c2si).toLocaleString();
             }
 
             // 进度条与数字
@@ -1373,11 +1369,9 @@ function initKrypton() {
                 var afr = item.querySelector('.act-footer-right');
                 if (afr) {
                     if (actS >= maxT) {
-                        afr.innerText = '✓ 已达成';
-                        afr.style.color = '#3e8e41';
+                        afr.innerHTML = '<span class="reached-tag">✓ 已达成</span>';
                     } else {
-                        afr.innerText = '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString();
-                        afr.style.color = '';
+                        afr.innerHTML = '距下档(' + nextT.toLocaleString() + ')还差: ' + Math.max(0, nextT - actS).toLocaleString();
                     }
                 }
                 // 更新进度条
@@ -1905,6 +1899,7 @@ function initKrypton() {
         '.sticky-pts-item.sim b{color:#a08060;}',
         '.sticky-controls-group{display:flex;gap:8px;align-items:center;}',
         '.sticky-cat-tabs{display:flex;gap:4px;flex-wrap:wrap;}',
+        '.reached-tag{display:inline-block; background-color: #e6f4ea; color:#1e8e3e; padding: 2px 10px; border-radius: 14px; font-size: 11px; font-weight: 800; margin-left: 8px; vertical-align: middle; border: 1px solid rgba(30, 142, 62, 0.25); box-shadow: 0 2px 5px rgba(30, 142, 62, 0.08);}',
         // 右栏布局
         '.plan-layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;}',
         '@media(max-width:860px){.plan-layout{grid-template-columns:1fr;}}',
