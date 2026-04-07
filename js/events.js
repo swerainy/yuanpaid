@@ -191,34 +191,3 @@ generateTraining('2026-03-12', 37, 6);
 generatePalace('2026-04-02', 4);
 generateFurniture('2026-02-01', 4);
 
-// Excel Parsing Logic
-async function loadExcelEvents(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const json = XLSX.utils.sheet_to_json(worksheet);
-
-                const excelEvents = json.map(row => ({
-                    title: row['活动名称'] || row['Title'],
-                    start: row['开始时间'] || row['Start'],
-                    end: row['结束时间'] || row['End'],
-                    type: row['类型'] || row['Type'] || 'anniversary',
-                    backgroundColor: COLORS[row['类型'] || row['Type']] || COLORS.anniversary,
-                    extendedProps: {
-                        noFilter: row['不参与筛选'] === '是' || row['NoFilter'] === true
-                    }
-                }));
-                resolve(excelEvents);
-            } catch (err) {
-                reject(err);
-            }
-        };
-        reader.onerror = (err) => reject(err);
-        reader.readAsArrayBuffer(file);
-    });
-}

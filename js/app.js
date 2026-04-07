@@ -9,10 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const versionToggle = document.getElementById('versionToggle');
     const backToTopBtn = document.getElementById('backToTop');
     const tooltip = document.getElementById('customTooltip');
-    const excelInput = document.getElementById('excelInput');
 
     window.currentVersion = 'daihao';
-    let excelEvents = [];
 
     // Helper: Format date for Tooltip
     function formatDateMMDD(dateObj) {
@@ -59,8 +57,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let baseEvents = window.currentVersion === 'daihao' ? daihaoEvents : ruyuanEvents;
             let activeFilters = Array.from(document.querySelectorAll('.filter-tag.active')).map(el => el.dataset.type);
 
-            // Combine with Excel events if any
-            let allVisibleEvents = [...baseEvents, ...excelEvents];
+            // Filter events
+            let allVisibleEvents = [...baseEvents];
 
             let filteredEvents = allVisibleEvents.filter(e => {
                 if (e.extendedProps && e.extendedProps.noFilter) return true;
@@ -230,19 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Excel Import
-    excelInput.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        try {
-            excelEvents = await loadExcelEvents(file);
-            calendar.refetchEvents();
-            alert('Excel 数据加载成功！');
-        } catch (err) {
-            console.error(err);
-            alert('加载 Excel 失败，请确保使用正确的模板。');
-        }
-    };
 
     // PNG Export
     document.getElementById('exportPngBtn').onclick = () => {
