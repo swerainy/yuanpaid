@@ -3186,3 +3186,22 @@
         .fade-in-rows tr:nth-child(6) {
             animation-delay: 0.10s;
         }
+        /* Fix overlapping dropdown icons */
+        .select-selected {
+            background-image: none !important;
+            background: none !important;
+            padding-right: 22px !important;
+        }
+        .select-selected::after {
+            content: "" !important;
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-30%);
+            border: 5px solid transparent;
+            border-top-color: currentColor;
+            transition: transform 0.3s;
+        }
+        .custom-select.open .select-selected::after {
+            transform: translateY(-70%) rotate(180deg) !important;
+        }

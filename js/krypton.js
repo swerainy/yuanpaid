@@ -593,6 +593,22 @@ function initKrypton() {
             currentVersion = ver;
             var rg = document.getElementById('rateInputGroup');
             if (rg) rg.style.display = ver === 'daihao' ? '' : 'none';
+            
+            // 同步下拉框显示文本
+            var vToggle = document.getElementById('versionToggle');
+            if (vToggle) {
+                var s = vToggle.querySelector('.select-selected');
+                var items = vToggle.querySelectorAll('.select-items div');
+                items.forEach(function(it) {
+                    if (it.dataset.val === ver) {
+                        if (s) s.innerText = it.innerText;
+                        it.classList.add('active');
+                    } else {
+                        it.classList.remove('active');
+                    }
+                });
+            }
+
             var tv = ver === 'daihao' ? 'usd' : 'rmb';
             document.querySelectorAll('#currencyToggleWrapper .currency-tab').forEach(function (d) {
                 if (d.dataset.val === tv) d.click();
@@ -600,9 +616,46 @@ function initKrypton() {
             activeCategory = '全部';
             renderPackCatTabs();
             renderPacks();
+            // 同时更新日历
+            if (window.calendar) window.calendar.refetchEvents();
         }
-        document.querySelectorAll('#versionToggle .select-items div').forEach(function (item) {
-            item.addEventListener('click', function () { syncVersion(item.dataset.val); });
+        // ── 统一全局下拉框逻辑 ──
+        function setupSelect(id, onSelect) {
+            var select = document.getElementById(id);
+            if (!select) return;
+            var selected = select.querySelector('.select-selected');
+            var items = select.querySelectorAll('.select-items div');
+            
+            if (selected) {
+                selected.onclick = function(e) {
+                    e.stopPropagation();
+                    var isOpen = select.classList.contains('open');
+                    document.querySelectorAll('.custom-select').forEach(function(s) { s.classList.remove('open'); });
+                    if (!isOpen) select.classList.add('open');
+                };
+            }
+            
+            items.forEach(function(item) {
+                item.onclick = function(e) {
+                    e.stopPropagation();
+                    var val = item.dataset.val;
+                    if (selected) selected.innerText = item.innerText;
+                    items.forEach(function(i) { i.classList.remove('active'); });
+                    item.classList.add('active');
+                    if (onSelect) onSelect(val);
+                    select.classList.remove('open');
+                };
+            });
+        }
+
+        setupSelect('versionToggle', syncVersion);
+        setupSelect('currencyToggle', function(val) {
+            if (window.renderMappingTable) window.renderMappingTable(val);
+        });
+
+        // 点击外部关闭所有下拉
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.custom-select').forEach(function(s) { s.classList.remove('open'); });
         });
 
         // ── Tab ──
@@ -1436,29 +1489,8 @@ function initKrypton() {
                     mBody.appendChild(tr);
                 });
             }
-            if (currencyToggle) {
-                var selectedLabel = currencyToggle.querySelector('.select-selected');
-                var itemsList = currencyToggle.querySelectorAll('.select-items div');
-                if (selectedLabel && itemsList.length > 0) {
-                    selectedLabel.onclick = function (e) {
-                        e.stopPropagation();
-                        currencyToggle.classList.toggle('open');
-                    };
-                    itemsList.forEach(function (item) {
-                        item.onclick = function () {
-                            var val = this.dataset.val;
-                            selectedLabel.innerText = this.innerText;
-                            itemsList.forEach(function (i) { i.classList.remove('active'); });
-                            this.classList.add('active');
-                            renderTable(val);
-                            currencyToggle.classList.remove('open');
-                        };
-                    });
-                }
-                document.addEventListener('click', function () {
-                    currencyToggle.classList.remove('open');
-                });
-            }
+            // 将渲染逻辑暴露给全局，方便统一逻辑调用
+            window.renderMappingTable = renderTable;
             renderTable('usd');
         }
 
@@ -1961,13 +1993,19 @@ function initKrypton() {
         '.progress-bar{height:100%;position:absolute;left:0;top:0;transition:width 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);}',
         '.progress-bar.actual{background:#d85c50;}',
         '.progress-bar.simulated{background:#a67c52;}',
-        // 货币下拉
-        '.custom-select{position:relative;display:inline-block;min-width:60px;}',
-        '.select-selected{cursor:pointer;padding:2px 6px;border-radius:4px;border:1px solid #d5c8b2;background:#fff;font-size:12px;}',
-        '.select-items{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #d5c8b2;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:100;min-width:80px;}',
+        // 货币/平台切换 下拉卡片
+        '.custom-select{position:relative;display:inline-block;min-width:75px;cursor:pointer;user-select:none;vertical-align:middle;}',
+        '.select-selected{padding:4px 22px 4px 8px;border-radius:8px;background:none !important;font-size:15px;font-weight:700;color:#5d4037;display:flex;align-items:center;position:relative;transition:all .2s;}',
+        '.select-selected:hover{color:#d85c50;}',
+        '.select-selected::after{content:"";position:absolute;right:4px;top:50%;transform:translateY(-30%);border:5px solid transparent;border-top-color:currentColor;transition:transform .3s;}',
+        '.custom-select.open .select-selected{color:#d85c50;background:none !important;}',
+        '.custom-select.open .select-selected::after{transform:translateY(-70%) rotate(180deg);}',
+        '.select-items{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(10px);background:#fffefb;border:1.2px solid #e8e2d4;border-radius:15px;box-shadow:0 12px 40px rgba(93,64,55,0.18);z-index:3000;min-width:110px;padding:8px 0;overflow:hidden;animation:selectCardIn .28s cubic-bezier(0.175, 0.885, 0.32, 1.25);}',
+        '@keyframes selectCardIn{from{opacity:0;transform:translateX(-50%) translateY(0);}to{opacity:1;transform:translateX(-50%) translateY(10px);}}',
         '.custom-select.open .select-items{display:block;}',
-        '.select-items div{padding:5px 10px;cursor:pointer;font-size:12px;color:#5d4037;}',
-        '.select-items div:hover,.select-items div.active{background:#f2e6ce;color:#c09d62;}',
+        '.select-items div{padding:12px 15px;cursor:pointer;font-size:15px;color:#5d4037;text-align:center;transition:all .2s;font-weight:500;}',
+        '.select-items div:hover{background:#fdfaf3;color:#d85c50;}',
+        '.select-items div.active{color:#d85c50;font-weight:800;background:#fdf9f0;}',
         // 汇率按钮与时间提示 (自定义 SVG 版)
         '.rate-input-wrapper{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;}',
         '.sync-rate-btn{padding:3px;background:#fdfaf3;border:1px solid #d5c8b2;border-radius:4px;cursor:pointer;line-height:1;transition:all .2s ease;display:flex;align-items:center;justify-content:center;color:#a08060;box-shadow:0 1px 2px rgba(0,0,0,0.05);}',

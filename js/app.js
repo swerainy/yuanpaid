@@ -197,35 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- UI Event Listeners ---
 
-    // Version Toggle
-    if (versionToggle) {
-        const vLabel = versionToggle.querySelector('.select-selected');
-        const vItems = versionToggle.querySelectorAll('.select-items div');
-        
-        vLabel.addEventListener('click', (e) => {
-            e.stopPropagation();
-            versionToggle.classList.toggle('open');
-            vLabel.classList.toggle('open');
-        });
-
-        document.addEventListener('click', () => {
-            versionToggle.classList.remove('open');
-            vLabel.classList.remove('open');
-        });
-
-        vItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const val = this.dataset.val;
-                if (val !== currentVersion) {
-                    currentVersion = val;
-                    vLabel.innerText = this.innerText;
-                    vItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    calendar.refetchEvents();
-                }
-            });
-        });
-    }
+    // Version Toggle logic moved to krypton.js to avoid conflicts with recharge management
 
     // Filter Toggle
     document.querySelectorAll('.filter-tag').forEach(tag => {
