@@ -515,6 +515,7 @@ function initKrypton() {
             // 再次优化 API 列表：Coinbase 拥有最高精度(5位)与实时性，优先使用
             var apis = [
                 { url: 'https://api.coinbase.com/v2/exchange-rates?currency=USD', type: 'coinbase' },
+                { url: 'https://v6.exchangerate-api.com/v6/f23d6a41ab9c46a46475aa46/latest/USD', type: 'er-v6' },
                 { url: 'https://api.pearktrue.cn/api/exchangerate/?type=get&before=USD&after=CNY&price=1', type: 'pearktrue' },
                 { url: 'https://open.er-api.com/v6/latest/USD', type: 'er-v6' },
                 { url: 'https://api.exchangerate-api.com/v4/latest/USD', type: 'er-v4' }
@@ -545,7 +546,8 @@ function initKrypton() {
                             r = parseFloat(d.resultprice);
                             dateStr = '国内镜像';
                         } else if (api.type === 'er-v6') {
-                            r = d.rates.CNY;
+                            // 兼容带 Key 的 v6 (conversion_rates) 和开放版 v6 (rates)
+                            r = d.conversion_rates ? d.conversion_rates.CNY : (d.rates ? d.rates.CNY : null);
                             dateStr = d.time_last_update_utc ? d.time_last_update_utc.substring(5, 16) : '';
                         } else if (api.type === 'er-v4') {
                             r = d.rates.CNY;
@@ -1504,7 +1506,7 @@ function initKrypton() {
             if (panelMapping) {
                 var btn = panelMapping.querySelector('.panel-trigger');
                 if (btn) {
-                    btn.onclick = function(e) {
+                    btn.onclick = function (e) {
                         if (window.innerWidth <= 900) {
                             panelMapping.classList.toggle('expanded');
                             e.stopPropagation();
