@@ -570,22 +570,22 @@
             border: none !important;
             border-radius: 3px;
             margin: 1px 0 !important;
-            height: 20px;
-            line-height: 20px;
+            min-height: 20px;
+            height: auto;
+            line-height: 1.2;
             display: flex;
             align-items: center;
             cursor: pointer;
-            padding: 0 4px !important;
+            padding: 2px 4px !important;
             transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
         }
 
         .fc-event-title {
             color: #3e3a33 !important;
             font-weight: 600 !important;
-            font-size: 12px !important;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 11px !important;
+            white-space: normal;
+            word-break: break-all;
             width: 100%;
         }
 

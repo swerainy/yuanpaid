@@ -52,6 +52,7 @@ function getLastDayOfMonth(dateStr) {
 // Event Generators
 function generateMonthlyEvents(startYear, startMonth, count) {
     let events = [];
+    const CAVE_REWARDS = ['历练次数', '善恶簿', '行装匣'];
     for (let i = 0; i < count; i++) {
         let y = startYear;
         let m = startMonth + i;
@@ -61,6 +62,11 @@ function generateMonthlyEvents(startYear, startMonth, count) {
         let lastDay = getLastDayOfMonth(firstDay);
         let lastDayParts = lastDay.split('-');
         let lastDayNum = lastDayParts[2];
+
+        // 计算神秘洞窟奖励循环: 4月历练(0), 5月善恶(1), 6月行装(2)
+        // 公式: (m-1) % 3 (结果 0,1,2 对应三个奖励)
+        let rewardIdx = (m - 1) % 3;
+        let rewardName = CAVE_REWARDS[rewardIdx];
 
         events.push({
             title: '新一期白鹄行动',
@@ -74,14 +80,14 @@ function generateMonthlyEvents(startYear, startMonth, count) {
             }
         });
         events.push({
-            title: '新一期神秘洞窟',
+            title: `新一期神秘洞窟（${rewardName}）`,
             start: firstDay,
             end: addDays(firstDay, 1),
             backgroundColor: COLORS.newperiod,
             display: 'block',
             extendedProps: {
                 noFilter: true,
-                tooltipOverride: `神秘洞窟  ${monthStr}月01日 ~ ${monthStr}月${lastDayNum}日`
+                tooltipOverride: `神秘洞窟（${rewardName}）  ${monthStr}月01日 ~ ${monthStr}月${lastDayNum}日`
             }
         });
     }
