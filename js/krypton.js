@@ -345,9 +345,9 @@ function initKrypton() {
         function getRemainingTime(endStr) {
             if (!endStr) return '';
             var diff = new Date(endStr.replace(/-/g, '/')).getTime() - new Date().getTime();
-            if (diff <= 0) return '<span style="color:#b0998f">已结束</span>';
+            if (diff <= 0) return '<span style="display:inline-block; background-color: #fceceb; color:#d85c50; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-left: 8px; vertical-align: middle;">已结束</span>';
             var days = Math.floor(diff / 86400000), hours = Math.floor((diff % 86400000) / 3600000);
-            return '<span style="color:#d88a2e">剩余: ' + days + '天 ' + hours + '小时</span>';
+            return '<span style="display:inline-block; background-color: #fff9ed; color:#d88a2e; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(216, 138, 46, 0.25); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-left: 8px; vertical-align: middle;">⏳ 剩余: ' + days + '天 ' + hours + '小时</span>';
         }
 
         function renderRewardPopupHtml(track, title, curA, curS) {
@@ -1199,7 +1199,7 @@ function initKrypton() {
                     '      目标 <input type="number" class="target-input-box yuanqi-target-input" value="' + targetVal + '"> <button class="calc-btn yuanqi-calc-btn">算</button>' +
                     '    </div>' +
                     '  </div>' +
-                    '  <div class="activity-content-wrapper">' +
+                    '  <div class="activity-content-wrapper"><div class="grid-inner">' +
                     '    <div class="act-segment">' +
                     '      <div class="act-row">' +
                     '        <div class="act-label-small">条件一: 年度累充满 60,000 积分 (25/05/01-26/04/30)</div>' +
@@ -1225,7 +1225,7 @@ function initKrypton() {
                     '      <div class="pb-wrap2">' + mkBar(0, 0, 1) + '</div>' +
                     '      <div class="act-footer-right next-rem-val">正在计算...</div>' +
                     '    </div>' +
-                    '  </div>' +
+                    '  </div></div>' +
                     '</div>';
                 item = yuanqiContainer.querySelector('.activity-item');
             }
@@ -1908,6 +1908,13 @@ function initKrypton() {
         // 右栏布局
         '.plan-layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;}',
         '@media(max-width:860px){.plan-layout{grid-template-columns:1fr;}}',
+        '.gift-pack-list{display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s ease, margin .3s ease;overflow:hidden;}',
+        '.gift-pack-list.collapsed{grid-template-rows:0fr;margin-bottom:0 !important;}',
+        '.active-content-wrapper{display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s ease;overflow:hidden;}',
+        '.active-content-wrapper.collapsed{grid-template-rows:0fr;}',
+        '.grid-inner{min-height:0;}',
+        '.activity-content-wrapper{display:grid;grid-template-rows:1fr;transition:grid-template-rows .33s cubic-bezier(0.4, 0, 0.2, 1);overflow:hidden;}',
+        '.activity-content-wrapper.collapsed{grid-template-rows:0fr;}',
         '.right-column{display:flex;flex-direction:column;gap:15px;position:sticky;top:200px;max-height:calc(100vh - 220px);overflow:hidden;}',
         '.activity-panel{background:#fff;border:1px solid #e8e2d4;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:180px;}',
         '.activity-panel-header{padding:10px 14px;background:#fdfaf3;border-bottom:1px solid #e8e2d4;}',
